@@ -1,36 +1,45 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
-
-First, run the development server:
-
+## プロジェクトの作成
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx create-next-app@latest
+cd 任意で作成したディレクトリ名
+code .
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## GitHubにコミットする
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Gitリポジトリの初期化
+git init
+# ファイルをステージング
+git add .
+# 最初のコミット
+git commit -m "初回コミット"
+# リモートリポジトリの追加（URLをあなたのGitHubリポジトリに置き換えてください）
+git remote add origin https://github.com/TA1851/Nextjs-App.git
+# メインブランチの設定（新しいGitではmainがデフォルト）
+git branch -M main
+# リモートリポジトリにプッシュ
+git push -u origin main
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 仕様書関連
+```
+Notionで管理する
+https://www.notion.so/C2C-1a680eadf311808d99f7fa2ccb4d6be3?pvs=4
+```
 
-## Learn More
+## プロジェクトの作成
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx create-next-app@latest --ts
+cd gihyo-book
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## APIモックの作成（json server）
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm i -D json-server
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
