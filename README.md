@@ -37,6 +37,10 @@ npx create-next-app@latest --ts
 cd gihyo-book
 ```
 
+## モックの作成
+
+
+
 ## APIモックの作成（json server）
 
 ```bash
