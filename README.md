@@ -37,8 +37,8 @@ npx create-next-app@latest --ts
 cd gihyo-book
 ```
 
-## モックの作成
-
+## モックの作成(Flowrift)
+https://flowrift.com/c/banner
 
 
 ## APIモックの作成（json server）
