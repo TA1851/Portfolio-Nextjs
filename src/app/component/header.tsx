@@ -16,19 +16,19 @@ const HeaderComp: FC = () => {
 
             <nav className="hidden gap-12 lg:flex">
               <a
-                href="#"
+                href="/detail"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 概要
               </a>
               <a
-                href="#"
+                href="/plan"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 料金プラン
               </a>
               <a
-                href="#"
+                href="/contact"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 お問い合わせ
