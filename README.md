@@ -38,7 +38,10 @@ cd gihyo-book
 ```
 
 ## モックの作成(画面の作成)
-https://flowrift.com/c/banner
+[flowriftを使って作成する](https://flowrift.com/c/banner)
+
+### ログイン画面
+![ログイン画面](./img/スクリーンショット%202025-04-01%2016.54.48.png)
 
 
 ## APIモックの作成（json server）
