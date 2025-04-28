@@ -16,24 +16,30 @@ const HeaderComp: FC = () => {
             </a>
 
             <nav className="hidden gap-12 lg:flex">
-              <a
+            <Link
+                href="/"
+                className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
+              >
+                ホーム
+              </Link>
+              <Link
                 href="/create"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 記事を書く
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/update"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 記事を編集する
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/delete"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 記事を削除する
-              </a>
+              </Link>
             </nav>
 
             {/* 検索ボックス */}
