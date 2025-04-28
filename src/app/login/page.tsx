@@ -20,6 +20,11 @@ const LoginComp: FC = () => {
 
             <button className="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base">Log in</button>
           </div>
+          <p className="text-center mb-4">
+            <a href="/register" className="text-gray-800 hover:text-blue-600 transition duration-100">
+              新規登録はこちら
+            </a>
+          </p>
         </form>
       </div>
     </>
