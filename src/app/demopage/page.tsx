@@ -56,6 +56,12 @@ const HeaderComp: FC = () => {
               >
                 検索
               </button>
+              <button
+                type="submit"
+                className="text-black px-4 py-1 bg-blue-500 hover:bg-blue-400 rounded"
+              >
+                ログアウト
+              </button>
           </header>
         </div>
       </div>
