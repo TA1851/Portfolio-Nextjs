@@ -19,7 +19,11 @@ const LoginComp: FC = () => {
               <input name="password" className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" />
             </div>
 
-            <button className="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base">ログイン</button>
+            <button className="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base">
+              <Link href="/">
+                ログイン
+              </Link>
+            </button>
           </div>
           <p className="text-center mb-4">
             <Link href="/register" className="text-gray-800 hover:text-blue-600 transition duration-100">
