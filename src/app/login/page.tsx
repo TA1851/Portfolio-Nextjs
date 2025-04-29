@@ -88,7 +88,9 @@ const LoginComp: FC = () => {
                 >
                   Email
                 </label>
-              <input name="email"
+              <input
+                name="email"
+                type="email"
                 className="
                   w-full
                   rounded
@@ -111,7 +113,9 @@ const LoginComp: FC = () => {
                 >
                   Password
                 </label>
-              <input name="password"
+              <input
+                name="password"
+                type="password"
                 className="
                   w-full rounded border
                   bg-gray-50 px-3 py-2
