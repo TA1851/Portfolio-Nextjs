@@ -2,47 +2,46 @@
 
 import Link from "next/link";
 import { FC } from "react";
+import { useRouter } from 'next/navigation';
 import axios from "axios";
 
-
 const LoginComp: FC = () => {
-  const onClickLogin = (
-    event:
-      React.MouseEvent<
-        HTMLButtonElement,
-        MouseEvent>
-      ): void => {
-    console.log('ログインボタンがクリックされました');
-    // エンドポイントを指定する
-    // const endpoint = 'https://example.com/api/login';
+  const router = useRouter(); // useRouterを使用
 
-    // GETメソッド
-    axios({
-      method: 'get',
-      url: '',
-      responseType: 'stream'
-    })
-      // 成功した場合
-      .then(function (response) {
-        console.log('成功:', response.data);
-      });
-    event.preventDefault();
+  const onClickLogin = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): Promise<void> => {
+    event.preventDefault(); // ページリロードを防ぐ
 
-    // Get form values
+    console.log('ログインボタンがクリックされました。');
+
+    // フォームの要素を取得
     const form = event.currentTarget.form;
     if (form) {
       const email = form.email.value;
       const password = form.password.value;
 
-      // Basic validation
+      // ログイン情報が空の場合
       if (!email || !password) {
         alert('メールアドレスとパスワードを入力してください。');
         return;
       }
-      // In a real app, you would call an API here
-      console.log('ログイン試行:', { email, password });
+
+      try {
+        // APIリクエスト
+        const response = await axios.post('http://127.0.0.1:8000/api/v1/login', {
+          email,
+          password,
+        });
+
+        console.log('ログインに成功しました:', response.data);
+        router.push('/demopage'); // ページ遷移
+      } catch (error) {
+        console.error('ログインに失敗しました:', error);
+        router.push('/loginfail'); // ログイン失敗時の遷移
+      }
     }
-  }
+  };
 
   return (
     <>
@@ -143,9 +142,7 @@ const LoginComp: FC = () => {
               md:text-base"
               onClick={onClickLogin}
             >
-              <Link href="/">
-                ログイン
-              </Link>
+              ログイン
             </button>
           </div>
           <p className="text-center mb-4">
@@ -162,7 +159,7 @@ const LoginComp: FC = () => {
         </form>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default LoginComp;
