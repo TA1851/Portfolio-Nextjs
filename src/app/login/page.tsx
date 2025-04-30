@@ -1,12 +1,13 @@
 'use client';
 
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
 
 const LoginComp: FC = () => {
   const router = useRouter(); // useRouterを使用
+  const formRef = useRef<HTMLFormElement>(null);
 
   const onClickLogin = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -15,30 +16,41 @@ const LoginComp: FC = () => {
 
     console.log('ログインボタンがクリックされました。');
 
-    // フォームの要素を取得
-    const form = event.currentTarget.form;
-    if (form) {
-      const email = form.email.value;
-      const password = form.password.value;
+    if (formRef.current) {
+      const email = formRef.current.elements.namedItem('email') as HTMLInputElement;
+      const password = formRef.current.elements.namedItem('password') as HTMLInputElement;
+      const emailValue = email.value;
+      const passwordValue = password.value;
 
       // ログイン情報が空の場合
-      if (!email || !password) {
+      if (!emailValue || !passwordValue) {
         alert('メールアドレスとパスワードを入力してください。');
         return;
       }
-
+      // FormDataを使用する
       try {
-        // APIリクエスト
-        const response = await axios.post('http://127.0.0.1:8000/api/v1/login', {
-          email,
-          password,
-        });
+        const formData = new FormData();
+        formData.append('username', emailValue);
+        formData.append('password', passwordValue);
 
+        console.log('送信データ:', {username: emailValue, password: passwordValue});
+        const response = await axios.post(
+          'http://127.0.0.1:8000/api/v1/login',
+          formData
+        );
+
+        localStorage.setItem('authToken', response.data.access_token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
         console.log('ログインに成功しました:', response.data);
+
         router.push('/demopage'); // ページ遷移
       } catch (error) {
-        console.error('ログインに失敗しました:', error);
-        router.push('/loginfail'); // ログイン失敗時の遷移
+        if (axios.isAxiosError(error) && error.response) {
+          console.error('ログインに失敗しました:', error.response.data);
+        } else {
+          console.error('ログインに失敗しました:', error);
+        }
+        router.push('/loginfail');
       }
     }
   };
@@ -63,7 +75,9 @@ const LoginComp: FC = () => {
           ログイン
         </h2>
 
-        <form className="
+        <form
+          ref={formRef}
+          className="
           mx-auto
           max-w-lg
           rounded-lg
