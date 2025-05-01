@@ -6,19 +6,53 @@ import { useRouter } from "next/navigation";
 import DemoBody from "@/app/demopage/demobody/page";
 
 const HeaderComp: FC = () => {
+  // const router = useRouter();
+
+  // const handleLogout = () => {
+  //   // console.log("ログアウトボタンがクリックされました");
+    
+  //   // LocalStorageからトークンを削除
+  //   localStorage.removeItem('authToken');
+    
+  //   // axioshヘッダーから認証情報を削除（必要に応じて）
+  //   // axios.defaults.headers.common['Authorization'] = '';
+    
+  //   // ログアウト後にログイン画面やホーム画面に遷移
+  //   router.push('/logout');
   const router = useRouter();
 
-  const handleLogout = () => {
-    console.log("ログアウトボタンがクリックされました");
-    
-    // LocalStorageからトークンを削除
-    localStorage.removeItem('authToken');
-    
-    // axioshヘッダーから認証情報を削除（必要に応じて）
-    // axios.defaults.headers.common['Authorization'] = '';
-    
-    // ログアウト後にログイン画面やホーム画面に遷移
-    router.push('/logout');
+  // ログアウト処理関数
+  const handleLogout = async () => {
+    try {
+      // ローカルストレージからトークンを取得
+      const token = localStorage.getItem('authToken');
+      console.log(`トークン：${token}`);
+      
+      if (!token) {
+        console.error('トークンがありません');
+        return;
+      }
+      
+      // APIにログアウトリクエストを送信
+      const response = await fetch('http://127.0.0.1:8000/api/v1/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        // ログアウト成功
+        localStorage.removeItem('authToken'); // トークンをローカルストレージから削除
+        console.log('ログアウトしました');
+        // ログイン画面にリダイレクト
+        router.push('/logout');
+      } else {
+        console.error('ログアウトに失敗しました');
+      }
+    } catch (error) {
+      console.error('ログアウト処理中にエラーが発生しました', error);
+    }
   };
 
   return (

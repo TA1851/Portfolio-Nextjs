@@ -26,7 +26,9 @@ const LogoutPage: FC = () => {
               font-bold
               mb-6"
               >
-                ログアウトしました
+                ご利用ありがとうございました、
+                <br />
+                ログアウトが完了しています。
             </h1>
           <Link
             href="/login"
