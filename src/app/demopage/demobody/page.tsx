@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState, useMemo } from "react";
 import Link from "next/link";
 
 // 記事データの型定義
@@ -16,11 +16,17 @@ const DemoBody: FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // 現在のログインユーザー情報の状態を追加
+  const [currentUser, setCurrentUser] = useState<{id: number, name?: string} | null>(null);
   
   // ページネーション用の状態
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [articlesPerPage] = useState<number>(5); // 1ページあたりの表示件数
   const [totalPages, setTotalPages] = useState<number>(1); // 総ページ数
+
+  // 投稿者IDによるフィルタリング機能を追加
+  const [filterUserId, setFilterUserId] = useState<number | null>(null);
 
   // useRefを活用した補助的な参照
   const isMountedRef = useRef<boolean>(true);           // コンポーネントのマウント状態を追跡
@@ -60,6 +66,52 @@ const DemoBody: FC = () => {
     
     initialLoad();
   }, []); // 空の依存配列で初回マウント時のみ実行
+
+  // 初期データロード後にユーザー情報を取得
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+        
+        // JWT トークンをデコードしてユーザーIDを取得（簡易的な実装例）
+        // 注: 実際の環境では、適切なAPIエンドポイントを使用してください
+        const tokenParts = token.split('.');
+        if (tokenParts.length === 3) {
+          try {
+            const payload = JSON.parse(atob(tokenParts[1]));
+            if (payload && payload.sub) {
+              // JWTからユーザーIDを取得
+              setCurrentUser({ id: payload.sub });
+              console.log('ログインユーザーID:', payload.sub);
+              return;
+            }
+          } catch (e) {
+            console.error('トークンのデコードに失敗:', e);
+          }
+        }
+        
+        // トークンのデコードに失敗した場合やAPIがある場合は、APIを使用
+        // const response = await fetch('http://127.0.0.1:8000/api/v1/users/me', {
+        //   headers: { 'Authorization': `Bearer ${token.trim()}` }
+        // });
+        
+        // if (response.ok) {
+        //   const userData = await response.json();
+        //   setCurrentUser(userData);
+        // }
+        
+        // APIがない場合はとりあえずダミーデータを設定
+        // 注: 実際の開発では不適切なので、適切なAPIを使用してください
+        setCurrentUser({ id: 6 }); // 仮のユーザーID
+        
+      } catch (err) {
+        console.error('ユーザー情報の取得に失敗:', err);
+      }
+    };
+    
+    fetchCurrentUser();
+  }, []);
 
   // コンポーネントマウント時に記事を取得
   useEffect(() => {
@@ -219,6 +271,21 @@ const DemoBody: FC = () => {
     };
   }, [currentPage, articlesPerPage]);
 
+  useEffect(() => {
+    // ユーザー情報が取得できたらフィルター設定
+    if (currentUser) {
+      setFilterUserId(currentUser.id);
+    }
+  }, [currentUser]); // currentUserが変わったときに実行
+
+  // フィルタリング適用関数
+  const filteredArticles = useMemo(() => {
+    if (filterUserId === null) {
+      return articles; // フィルターなし
+    }
+    return articles.filter(article => article.user_id === filterUserId);
+  }, [articles, filterUserId]);
+
   // ページ番号クリック時の処理
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -242,11 +309,47 @@ const DemoBody: FC = () => {
           <p className="text-red-500">{error}</p>
         </div>
       )}
+
+      {/* フィルターコントロール */}
+      <div className="mb-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setFilterUserId(null)}
+            className={`px-4 py-2 rounded ${filterUserId === null 
+              ? 'bg-indigo-600 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          >
+            すべての記事
+          </button>
+          
+          {/* ログインユーザーの記事フィルター */}
+          {currentUser && (
+            <button
+              onClick={() => setFilterUserId(currentUser.id)}
+              className={`px-4 py-2 rounded ${filterUserId === currentUser.id
+                ? 'bg-indigo-600 text-white' 
+                : 'bg-green-100 text-green-800 hover:bg-green-200'}`}
+            >
+              自分の記事
+            </button>
+          )}
+          
+          {/* よく投稿するユーザーのクイックフィルター */}
+          <button
+            onClick={() => setFilterUserId(6)}
+            className={`px-4 py-2 rounded ${filterUserId === 6
+              ? 'bg-indigo-600 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          >
+            ユーザーID: 6の記事
+          </button>
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {articles.map((article) => (
+        {filteredArticles.map((article, index) => (
           <div key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <Link href={`/articles/${article.id}`}>
+            <Link href={`/articles/${article.id || index + 1}`}>
               <div className="p-6 cursor-pointer">
                 <h2 className="text-xl font-semibold mb-2 text-gray-800 hover:text-blue-600">
                   {article.title}
