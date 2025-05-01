@@ -1,8 +1,26 @@
+'use client';
+
 import { FC } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import DemoBody from "@/app/demopage/demobody/page";
 
 const HeaderComp: FC = () => {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    console.log("ログアウトボタンがクリックされました");
+    
+    // LocalStorageからトークンを削除
+    localStorage.removeItem('authToken');
+    
+    // axioshヘッダーから認証情報を削除（必要に応じて）
+    // axios.defaults.headers.common['Authorization'] = '';
+    
+    // ログアウト後にログイン画面やホーム画面に遷移
+    router.push('/logout');
+  };
+
   return (
     <>
       <div className="bg-white lg:pb-12">
@@ -16,7 +34,7 @@ const HeaderComp: FC = () => {
             </a>
 
             <nav className="hidden gap-12 lg:flex">
-            <Link
+              <Link
                 href="/"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
@@ -50,18 +68,21 @@ const HeaderComp: FC = () => {
                 className="w-full rounded-lg border border-gray-300 px-10 py-3 text-sm text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
               />
             </div>
-              <button
-                type="submit"
-                className="text-black px-4 py-1 bg-gray-400 hover:bg-gray-300 rounded"
-              >
-                検索
-              </button>
-              <button
-                type="submit"
-                className="text-black px-4 py-1 bg-blue-500 hover:bg-blue-400 rounded"
-              >
-                ログアウト
-              </button>
+            <button
+              type="submit"
+              className="text-black px-4 py-1 bg-gray-400 hover:bg-gray-300 rounded"
+            >
+              検索
+            </button>
+            
+            {/* ログアウトボタン - Linkを使わずに直接ボタンでハンドリング */}
+            <button
+              type="button"
+              className="text-black px-4 py-1 bg-blue-500 hover:bg-blue-400 rounded"
+              onClick={handleLogout}
+            >
+              ログアウト
+            </button>
           </header>
         </div>
       </div>
