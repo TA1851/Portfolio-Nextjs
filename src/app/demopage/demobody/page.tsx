@@ -65,17 +65,21 @@ const DemoBody: FC = () => {
         setLoading(false);
       }
     };
-    
     fetchAllArticles();
   }, []); // 空の依存配列で初回マウント時のみ実行
 
-  // 1ページに表示する記事数
+  // 1ページに表示する記事数（ページネーション機能）
   const getCurrentPageArticles = () => {
+    // 配列が空かどうかをチェックし、取得した値を使用して、現在のページに表示する記事の範囲を計算
     if (!articles.length) return [];
-    
+    // 現在のページ番号(currentPage)と1ページあたりの表示件数(articlesPerPage)をpagination状態から取得
     const { currentPage, articlesPerPage } = pagination;
+    // 現在のページの最後の記事のインデックスを示します（ページ番号×表示件数）
     const indexOfLastArticle = currentPage * articlesPerPage;
+    // 現在のページの最初の記事のインデックスを示します（最後の記事のインデックス - 表示件数）
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+    // 最後に、articles.sliceメソッドを使用して、計算された範囲の記事だけを抽出して返します。
+    // この方法により、バックエンドから取得したすべての記事から、現在のページに表示すべき部分だけを効率的に選択できます。
     return articles.slice(indexOfFirstArticle, indexOfLastArticle);
   };
 
@@ -90,7 +94,6 @@ const DemoBody: FC = () => {
   // クライアントサイドでのみ利用されるページネーション表示
   const paginationControls = () => {
     if (!clientSideRendered || articles.length === 0) return null;
-    
     return (
       <div className="flex justify-center mt-8">
         <ul className="flex">
@@ -116,7 +119,6 @@ const DemoBody: FC = () => {
   return (
     <div className="bg-gray-500 container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">記事一覧</h1>
-      
       {loading ? (
         <div className="text-center py-10">
           <p className="text-gray-600">記事を読み込み中...</p>
@@ -147,7 +149,6 @@ const DemoBody: FC = () => {
               ))}
             </div>
           )}
-          
           {paginationControls()}
         </>
       )}
