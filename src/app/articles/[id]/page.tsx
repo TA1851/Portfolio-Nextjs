@@ -28,7 +28,7 @@ const ArticleDetailPage: FC = () => {
         console.log('パラメータ全体:', params);
         console.log('params.id の値:', params.id, '型:', typeof params.id);
 
-        // 2. ルートパラメータの取得方法を変更
+        // 2. ルートパラメータの取得方法を変更（パラメータの正確な取得）
         const { id } = params;
         console.log('分割代入で取得したID:', id, '型:', typeof id);
 
