@@ -1,10 +1,11 @@
 'use client';
 
 import { FC, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useParams } from 'next/navigation';
 
-interface Article {
+// 記事詳細の型定義
+interface ArticleDetail {
   id: number;
   title: string;
   body: string;
@@ -15,21 +16,41 @@ interface Article {
 
 const ArticleDetailPage: FC = () => {
   const params = useParams();
-  const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [article, setArticle] = useState<ArticleDetail | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 記事データの取得
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const articleId = params.id;
-        if (!articleId) {
-          setError('記事IDが見つかりません');
+        // 1. パラメータ取得をさらに詳細にデバッグ
+        console.log('パラメータ全体:', params);
+        console.log('params.id の値:', params.id, '型:', typeof params.id);
+
+        // 2. ルートパラメータの取得方法を変更
+        const { id } = params;
+        console.log('分割代入で取得したID:', id, '型:', typeof id);
+
+        // 3. 条件チェックを修正
+        if (id === undefined || id === null || id === '' || id === 'undefined' || id === 'null') {
+          console.error('無効な記事ID:', id);
+          setError('無効な記事IDです');
           setLoading(false);
           return;
         }
 
-        // ローカルストレージからトークンを取得
+        const articleId = String(id);
+
+        // 数値かどうか確認（APIが数値IDを期待している場合）
+        if (isNaN(Number(articleId))) {
+          console.error('数値ではない記事ID:', articleId);
+          setError('無効な記事IDフォーマットです');
+          setLoading(false);
+          return;
+        }
+
+        // トークンの取得
         const token = localStorage.getItem('authToken');
         if (!token) {
           setError('認証情報がありません。再度ログインしてください。');
@@ -37,16 +58,23 @@ const ArticleDetailPage: FC = () => {
           return;
         }
 
-        // APIから記事詳細を取得
+        // 記事データの取得
+        console.log(`記事ID: ${articleId} の詳細を取得します`);
         const response = await fetch(`http://127.0.0.1:8000/api/v1/articles/${articleId}`, {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
         });
 
+        // エラーハンドリング
         if (!response.ok) {
           if (response.status === 404) {
             setError('記事が見つかりません');
+          } else if (response.status === 422) {
+            // エラーの詳細を取得
+            const errorData = await response.text();
+            console.error('APIエラー詳細:', errorData);
+            setError('記事の取得に失敗しました（無効なID形式）');
           } else {
             throw new Error(`APIエラー: ${response.status}`);
           }
@@ -54,13 +82,14 @@ const ArticleDetailPage: FC = () => {
           return;
         }
 
+        // 正常なレスポンスの処理
         const data = await response.json();
-        console.log('APIから取得した記事データ:', data);
+        console.log('取得した記事詳細:', data);
         setArticle(data);
+        setLoading(false);
       } catch (err) {
-        console.error('記事詳細の取得に失敗しました', err);
-        setError('記事の読み込みに失敗しました');
-      } finally {
+        console.error('記事詳細の取得に失敗:', err);
+        setError('記事詳細の取得に失敗しました');
         setLoading(false);
       }
     };
@@ -71,35 +100,26 @@ const ArticleDetailPage: FC = () => {
   return (
     <div className="bg-gray-100 min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {loading && (
+        {loading ? (
           <div className="text-center py-10">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-500 border-r-transparent align-[-0.125em]" role="status">
-              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                Loading...
-              </span>
-            </div>
-            <p className="mt-4 text-gray-600">記事を読み込み中...</p>
+            <p className="text-gray-600">記事を読み込み中...</p>
           </div>
-        )}
-
-        {error && (
+        ) : error ? (
           <div className="text-center py-10">
             <p className="text-red-500">{error}</p>
-            <Link href="/demopage" className="mt-4 inline-block text-indigo-600 hover:text-indigo-800">
+            <Link href="/demopage" className="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
               記事一覧に戻る
             </Link>
           </div>
-        )}
-
-        {!loading && !error && article && (
+        ) : article ? (
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">{article.title}</h1>
+            <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
             
-            <div className="text-sm text-gray-500 mb-8">
+            <div className="mb-6 text-sm text-gray-500 flex justify-between">
+              <span>投稿者ID: {article.user_id}</span>
               {article.created_at && (
-                <p>投稿日: {new Date(article.created_at).toLocaleDateString('ja-JP')}</p>
+                <span>投稿日: {new Date(article.created_at).toLocaleDateString('ja-JP')}</span>
               )}
-              <p className="text-gray-800">投稿者ID: {article.user_id}</p>
             </div>
             
             <div className="prose prose-lg max-w-none">
@@ -122,6 +142,13 @@ const ArticleDetailPage: FC = () => {
                 記事一覧に戻る
               </Link>
             </div>
+          </div>
+        ) : (
+          <div className="text-center py-10">
+            <p className="text-gray-600">記事情報が取得できませんでした</p>
+            <Link href="/demopage" className="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
+              記事一覧に戻る
+            </Link>
           </div>
         )}
       </div>

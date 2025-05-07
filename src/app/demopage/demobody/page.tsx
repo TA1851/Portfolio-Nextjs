@@ -3,6 +3,7 @@
 import { FC, useEffect, useState } from "react";
 import Link from "next/link";
 
+
 // 記事データの型定義
 interface Article {
   title: string;
@@ -16,6 +17,7 @@ interface PaginationState {
   currentPage: number;
   articlesPerPage: number;
 }
+
 
 const DemoBody: FC = () => {
   // 状態管理
@@ -133,18 +135,29 @@ const DemoBody: FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {getCurrentPageArticles().map((article, index) => (
                 <div key={article.id || index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                  <Link href={`/articles/${article.id}`}>
-                    <div className="p-6">
-                      <h2 className="text-xl font-semibold mb-2 text-gray-800 hover:text-blue-600">{article.title}</h2>
-                      <p className="text-gray-600 text-sm line-clamp-3">{article.body?.substring(0, 150)}...</p>
-                      <div className="mt-4 flex justify-between items-center">
-                        <span className="text-sm text-gray-500">投稿者ID: {article.user_id}</span>
-                        <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                          続きを読む
-                        </span>
-                      </div>
+                  <div className="p-6">
+                    <h2 className="text-xl font-semibold mb-2 text-gray-800">
+                      <Link href={`/articles/${article.id}`} className="hover:text-blue-600">
+                        {article.title}
+                      </Link>
+                    </h2>
+                    <p className="text-gray-600 text-sm line-clamp-3">{article.body?.substring(0, 150)}...</p>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-sm text-gray-500">投稿者ID: {article.user_id}</span>
+                      <Link
+                        href={article.id ? `/articles/${article.id}` : '#'}
+                        className={`inline-block ${!article.id ? 'cursor-not-allowed opacity-50' : 'hover:bg-blue-200'} bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded`}
+                        onClick={(e) => {
+                          if (!article.id) {
+                            e.preventDefault();
+                            console.warn('記事IDが存在しません');
+                          }
+                        }}
+                      >
+                        続きを読む
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 </div>
               ))}
             </div>
