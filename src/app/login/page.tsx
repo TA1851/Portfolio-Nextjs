@@ -91,7 +91,7 @@ const LoginComp: FC = () => {
             md:p-8"
           >
             <div>
-              <label htmlFor="email"
+              <label htmlFor="email-field"
                 className="
                   mb-2
                   inline-block
@@ -102,6 +102,7 @@ const LoginComp: FC = () => {
                   Email
                 </label>
               <input
+                id="email-field"
                 name="email"
                 type="email"
                 className="
@@ -116,7 +117,7 @@ const LoginComp: FC = () => {
             </div>
 
             <div>
-              <label htmlFor="password"
+              <label htmlFor="password-field"
                 className="
                   mb-2
                   inline-block
@@ -127,6 +128,7 @@ const LoginComp: FC = () => {
                   Password
                 </label>
               <input
+                id="password-field"
                 name="password"
                 type="password"
                 className="

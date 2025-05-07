@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useRef, useState, useMemo } from "react";
+import { FC, useEffect, useState } from "react";
 import Link from "next/link";
 
 // 記事データの型定義
@@ -11,32 +11,33 @@ interface Article {
   id?: number; // バックエンドから返されなければフロントで生成する可能性を考慮
 }
 
+// ページネーション用の状態定義
+interface PaginationState {
+  currentPage: number;
+  articlesPerPage: number;
+}
+
 const DemoBody: FC = () => {
   // 状態管理
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [clientSideRendered, setClientSideRendered] = useState(false);
 
-  // 現在のログインユーザー情報の状態を追加
-  const [currentUser, setCurrentUser] = useState<{id: number, name?: string} | null>(null);
-  
-  // ページネーション用の状態
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [articlesPerPage] = useState<number>(5); // 1ページあたりの表示件数
-  const [totalPages, setTotalPages] = useState<number>(1); // 総ページ数
+  // ページネーション用の状態（1ページあたりの表示件数）
+  const [pagination, setPagination] = useState<PaginationState>({
+    currentPage: 1,
+    articlesPerPage: 9
+  });
 
-  // 投稿者IDによるフィルタリング機能を追加
-  const [filterUserId, setFilterUserId] = useState<number | null>(null);
-
-  // useRefを活用した補助的な参照
-  const isMountedRef = useRef<boolean>(true);           // コンポーネントのマウント状態を追跡
-  const abortControllerRef = useRef<AbortController | null>(null); // APIリクエストの制御用
-  const cachedArticlesRef = useRef<Article[]>([]);      // 記事データのキャッシュ
-  const lastFetchTimeRef = useRef<number>(0);           // 最後のデータ取得時刻
+  // コンポーネントがマウントされたことを確認
+  useEffect(() => {
+    setClientSideRendered(true);
+  }, []);
 
   // 初期データロード
   useEffect(() => {
-    const initialLoad = async () => {
+    const fetchAllArticles = async () => {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) {
@@ -44,356 +45,111 @@ const DemoBody: FC = () => {
           setLoading(false);
           return;
         }
-        
-        // 初期データロード（簡略化したバージョン）
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/articles?page=1&limit=${articlesPerPage}`, {
-          headers: { 'Authorization': `Bearer ${token.trim()}` }
+
+        // 全記事を取得するシンプルなAPI呼び出し
+        const response = await fetch('http://127.0.0.1:8000/api/v1/articles', {
+          headers: {
+            'Authorization': `Bearer ${token.trim()}`
+          }
         });
-        
         if (!response.ok) {
-          throw new Error(`初期ロードエラー: ${response.status}`);
+          throw new Error(`APIエラー: ${response.status}`);
         }
-        
         const data = await response.json();
+        console.log('取得した記事データ:', data);
         setArticles(Array.isArray(data) ? data : []);
         setLoading(false);
       } catch (error) {
-        console.error('初期ロードエラー:', error);
-        setError('データの初期ロードに失敗しました。');
+        console.error('記事取得エラー:', error);
+        setError('記事の読み込みに失敗しました。');
         setLoading(false);
       }
     };
     
-    initialLoad();
+    fetchAllArticles();
   }, []); // 空の依存配列で初回マウント時のみ実行
 
-  // 初期データロード後にユーザー情報を取得
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-        
-        // JWT トークンをデコードしてユーザーIDを取得（簡易的な実装例）
-        // 注: 実際の環境では、適切なAPIエンドポイントを使用してください
-        const tokenParts = token.split('.');
-        if (tokenParts.length === 3) {
-          try {
-            const payload = JSON.parse(atob(tokenParts[1]));
-            if (payload && payload.sub) {
-              // JWTからユーザーIDを取得
-              setCurrentUser({ id: payload.sub });
-              console.log('ログインユーザーID:', payload.sub);
-              return;
-            }
-          } catch (e) {
-            console.error('トークンのデコードに失敗:', e);
-          }
-        }
-        
-        // トークンのデコードに失敗した場合やAPIがある場合は、APIを使用
-        // const response = await fetch('http://127.0.0.1:8000/api/v1/users/me', {
-        //   headers: { 'Authorization': `Bearer ${token.trim()}` }
-        // });
-        
-        // if (response.ok) {
-        //   const userData = await response.json();
-        //   setCurrentUser(userData);
-        // }
-        
-        // APIがない場合はとりあえずダミーデータを設定
-        // 注: 実際の開発では不適切なので、適切なAPIを使用してください
-        setCurrentUser({ id: 6 }); // 仮のユーザーID
-        
-      } catch (err) {
-        console.error('ユーザー情報の取得に失敗:', err);
-      }
-    };
+  // 1ページに表示する記事数
+  const getCurrentPageArticles = () => {
+    if (!articles.length) return [];
     
-    fetchCurrentUser();
-  }, []);
+    const { currentPage, articlesPerPage } = pagination;
+    const indexOfLastArticle = currentPage * articlesPerPage;
+    const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+    return articles.slice(indexOfFirstArticle, indexOfLastArticle);
+  };
 
-  // コンポーネントマウント時に記事を取得
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        // 重複リクエスト防止: 前回のリクエストをキャンセル
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort();
-        }
-        
-        // 新しいAbortControllerを作成
-        abortControllerRef.current = new AbortController();
-        const signal = abortControllerRef.current.signal;
+  // ページ変更ハンドラ
+  const handlePageChange = (pageNumber: number) => {
+    setPagination(prev => ({
+      ...prev,
+      currentPage: pageNumber
+    }));
+  };
 
-        // キャッシュ戦略: 30秒以内に取得したデータがあれば再利用
-        const now = Date.now();
-        if (cachedArticlesRef.current.length > 0 && now - lastFetchTimeRef.current < 30000) {
-          console.log('キャッシュされた記事データを使用します');
-          setArticles(cachedArticlesRef.current);
-          setLoading(false);
-          return;
-        }
-
-        // ローカルストレージからトークンを取得
-        const token = localStorage.getItem('authToken');
-        console.log('認証トークン:', token); // デバッグ用
-        
-        if (!token) {
-          setError('認証情報がありません。再度ログインしてください。');
-          setLoading(false);
-          return;
-        }
-
-        // APIリクエストの前にログを追加
-        console.log('APIリクエスト開始:', new Date().toISOString());
-
-        // タイムアウト処理の追加
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('APIリクエストがタイムアウトしました')), 10000)
-        );
-
-        try {
-          console.time('API処理');
-          // Promise.raceでタイムアウトを実装
-          const response = await Promise.race([
-            fetch(`http://127.0.0.1:8000/api/v1/articles?page=${currentPage}&limit=${articlesPerPage}`, {
-              headers: {
-                'Authorization': `Bearer ${token.trim()}`
-              },
-              signal
-            }),
-            timeoutPromise
-          ]) as Response;
-          console.timeLog('API処理', 'レスポンス取得');
-
-          // レスポンスの詳細を確認
-          console.log('API応答ステータス:', response.status);
-          console.log('API応答ヘッダー:', Object.fromEntries(response.headers.entries()));
-
-          // レスポンスボディも確認
-          const data = await response.json();
-          console.log('API応答データ構造:', JSON.stringify(data));
-          console.timeEnd('API処理');
-          console.log('API応答データ:', data);
-          
-          if (response.status === 401) {
-            // 401エラーの場合は認証切れとしてトークンを削除
-            localStorage.removeItem('authToken');
-            setError('認証の有効期限が切れました。再度ログインしてください。');
-            setLoading(false);
-            return;
-          }
-          
-          if (!response.ok) {
-            throw new Error(`APIエラー: ${response.status}`);
-          }
-
-          // APIから取得したデータを処理
-          // コンポーネントがマウントされていることを確認してから状態を更新
-          if (isMountedRef.current) {
-            // APIレスポンスが配列形式の場合
-            if (Array.isArray(data)) {
-              // データをキャッシュと状態の両方に保存
-              cachedArticlesRef.current = data;
-              lastFetchTimeRef.current = Date.now();
-              
-              // ページネーションの計算
-              setArticles(data);
-              setTotalPages(Math.ceil(data.length / articlesPerPage));
-            } 
-            // APIレスポンスがオブジェクト形式で、itemsプロパティがある場合
-            else if (data && typeof data === 'object' && 'items' in data) {
-              setArticles(data.items);
-              setTotalPages(data.total_pages || Math.ceil(data.items.length / articlesPerPage));
-            }
-            // 予期しないデータ形式の場合
-            else {
-              setArticles([]);
-              setError('予期しないデータ形式を受信しました');
-            }
-            setLoading(false);
-          }
-        } catch (err) {
-          // AbortError（リクエストのキャンセル）は正常な動作なのでエラーとして扱わない
-          if (err instanceof Error && err.name === 'AbortError') {
-            console.log('リクエストがキャンセルされました');
-            return;
-          }
-          
-          // エラーの詳細を出力
-          console.error('記事の取得に失敗しました', err);
-          
-          // エラーオブジェクトの詳細な情報を確認
-          if (err instanceof Error) {
-            console.error('エラー名:', err.name);
-            console.error('エラーメッセージ:', err.message);
-            console.error('スタックトレース:', err.stack);
-          }
-          
-          if (isMountedRef.current) {
-            setError(`記事の取得に失敗しました: ${err instanceof Error ? err.message : '不明なエラー'}`);
-            setLoading(false);
-          }
-        }
-      } catch (err) {
-        // AbortError（リクエストのキャンセル）は正常な動作なのでエラーとして扱わない
-        if (err instanceof Error && err.name === 'AbortError') {
-          console.log('リクエストがキャンセルされました');
-          return;
-        }
-        
-        // エラーの詳細を出力
-        console.error('記事の取得に失敗しました', err);
-        
-        // エラーオブジェクトの詳細な情報を確認
-        if (err instanceof Error) {
-          console.error('エラー名:', err.name);
-          console.error('エラーメッセージ:', err.message);
-          console.error('スタックトレース:', err.stack);
-        }
-        
-        if (isMountedRef.current) {
-          setError(`記事の取得に失敗しました: ${err instanceof Error ? err.message : '不明なエラー'}`);
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchArticles();
-
-    // クリーンアップ関数
-    return () => {
-      isMountedRef.current = false; // コンポーネントのアンマウント状態を記録
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort(); // リクエストをキャンセル
-      }
-    };
-  }, [currentPage, articlesPerPage]);
-
-  useEffect(() => {
-    // ユーザー情報が取得できたらフィルター設定
-    if (currentUser) {
-      setFilterUserId(currentUser.id);
-    }
-  }, [currentUser]); // currentUserが変わったときに実行
-
-  // フィルタリング適用関数
-  const filteredArticles = useMemo(() => {
-    if (filterUserId === null) {
-      return articles; // フィルターなし
-    }
-    return articles.filter(article => article.user_id === filterUserId);
-  }, [articles, filterUserId]);
-
-  // ページ番号クリック時の処理
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  // クライアントサイドでのみ利用されるページネーション表示
+  const paginationControls = () => {
+    if (!clientSideRendered || articles.length === 0) return null;
+    
+    return (
+      <div className="flex justify-center mt-8">
+        <ul className="flex">
+          {Array.from({ length: Math.ceil(articles.length / pagination.articlesPerPage) }).map((_, index) => (
+            <li key={index}>
+              <button
+                onClick={() => handlePageChange(index + 1)}
+                className={`mx-1 px-3 py-1 rounded ${
+                  pagination.currentPage === index + 1
+                    ? 'bg-indigo-500 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {index + 1}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
 
   return (
-    <div className="bg-gray-100 min-h-screen mx-auto max-w-screen-3xl py-8 px-4">
-      <h1 className="mt-1 py-5 text-3xl font-bold text-center text-gray-800">記事一覧</h1>
+    <div className="bg-gray-500 container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">記事一覧</h1>
       
-      {loading && (
+      {loading ? (
         <div className="text-center py-10">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-500 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-              Loading...
-            </span>
-          </div>
-          <p className="mt-4 text-gray-600">記事を読み込み中...</p>
+          <p className="text-gray-600">記事を読み込み中...</p>
         </div>
-      )}
-      
-      {error && (
+      ) : error ? (
         <div className="text-center py-10">
           <p className="text-red-500">{error}</p>
         </div>
-      )}
-
-      {/* フィルターコントロール */}
-      <div className="mb-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setFilterUserId(null)}
-            className={`px-4 py-2 rounded ${filterUserId === null 
-              ? 'bg-indigo-600 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-          >
-            すべての記事
-          </button>
-          
-          {/* ログインユーザーの記事フィルター */}
-          {currentUser && (
-            <button
-              onClick={() => setFilterUserId(currentUser.id)}
-              className={`px-4 py-2 rounded ${filterUserId === currentUser.id
-                ? 'bg-indigo-600 text-white' 
-                : 'bg-green-100 text-green-800 hover:bg-green-200'}`}
-            >
-              自分の記事
-            </button>
+      ) : (
+        <>
+          {clientSideRendered && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {getCurrentPageArticles().map((article, index) => (
+                <div key={article.id || index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                  <Link href={`/articles/${article.id}`}>
+                    <div className="p-6">
+                      <h2 className="text-xl font-semibold mb-2 text-gray-800 hover:text-blue-600">{article.title}</h2>
+                      <p className="text-gray-600 text-sm line-clamp-3">{article.body?.substring(0, 150)}...</p>
+                      <div className="mt-4 flex justify-between items-center">
+                        <span className="text-sm text-gray-500">投稿者ID: {article.user_id}</span>
+                        <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                          続きを読む
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
           )}
           
-          {/* よく投稿するユーザーのクイックフィルター */}
-          <button
-            onClick={() => setFilterUserId(6)}
-            className={`px-4 py-2 rounded ${filterUserId === 6
-              ? 'bg-indigo-600 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-          >
-            ユーザーID: 6の記事
-          </button>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredArticles.map((article, index) => (
-          <div key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <Link href={`/articles/${article.id || index + 1}`}>
-              <div className="p-6 cursor-pointer">
-                <h2 className="text-xl font-semibold mb-2 text-gray-800 hover:text-blue-600">
-                  {article.title}
-                </h2>
-                <p className="text-gray-600 text-sm line-clamp-3">
-                  {article.body?.substring(0, 150) || '内容がありません'}...
-                </p>
-                <div className="mt-4 text-right">
-                  <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                    続きを読む
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </div>
-        ))}
-      </div>
-      
-      {articles.length === 0 && !loading && !error && (
-        <div className="text-center py-10">
-          <p className="text-gray-600">記事がありません。</p>
-        </div>
-      )}
-      
-      {/* ページネーションコントロール */}
-      {articles.length > 0 && (
-        <div className="flex justify-center mt-8">
-          <ul className="flex">
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <li key={index}>
-                <button
-                  onClick={() => paginate(index + 1)}
-                  className={`mx-1 px-3 py-1 rounded ${
-                    currentPage === index + 1
-                      ? 'bg-indigo-500 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+          {paginationControls()}
+        </>
       )}
     </div>
   );
