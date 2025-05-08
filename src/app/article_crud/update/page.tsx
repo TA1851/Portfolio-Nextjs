@@ -171,9 +171,12 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   
   return (
     <StyledPaper>
-      <Typography variant="h6" gutterBottom>
-        記事の{initialData ? '編集' : '編集'}
-      </Typography>
+      <Box className="mb-4">
+        <Typography variant="h6">
+          記事の{initialData ? '編集' : '作成'}
+        </Typography>
+      </Box>
+
       <Box component="form" noValidate autoComplete="off">
         <TextField
           label="タイトル"
@@ -218,12 +221,24 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           </Button>
           <Button
             variant="outlined"
-            color="default"
+            color="inherit"
             startIcon={<CancelIcon />}
             onClick={handleCancel}
             disabled={saving}
           >
             キャンセル
+          </Button>
+        </Box>
+        
+        {/* 下部にだけ会員専用ページに戻るボタンを残す */}
+        <Box mt={3} textAlign="center" className="border-t pt-4">
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => router.push('/demopage')}
+            className="mx-auto"
+          >
+            会員専用ページに戻る
           </Button>
         </Box>
       </Box>
