@@ -75,19 +75,19 @@ const HeaderComp: FC = () => {
                 ホーム
               </Link>
               <Link
-                href="/article/create"
+                href="/article_crud/create"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 記事を書く
               </Link>
               <Link
-                href="/article/update"
+                href="/article_crud/update"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 記事を編集する
               </Link>
               <Link
-                href="/article/delete"
+                href="/article_crud/delete"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 記事を削除する

@@ -266,7 +266,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   return (
     <StyledPaper elevation={0} className="max-w-4xl mx-auto">
       <Typography variant="h5" component="h1" className="mb-6 font-bold text-gray-800">
-        {initialData ? '記事を編集' : '記事を編集する'}
+        {initialData ? '記事を編集' : '新しい記事を作成'}
       </Typography>
       
       <Box className="space-y-6">
@@ -396,15 +396,25 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         
         {/* アクションボタン */}
         <Box className="flex justify-between pt-4 border-t border-gray-200">
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<SaveIcon />}
-            onClick={() => handleSubmit('draft')}
-            disabled={saving}
-          >
-            下書き保存
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => router.push('/demopage')} // デモページに戻る
+              disabled={saving}
+            >
+              キャンセル
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<SaveIcon />}
+              onClick={() => handleSubmit('draft')}
+              disabled={saving}
+            >
+              下書き保存
+            </Button>
+          </div>
           
           <Button
             variant="contained"

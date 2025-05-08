@@ -1,6 +1,5 @@
 'use client';
 
-// components/PostForm.tsx
 import React, { useState, ChangeEvent } from 'react';
 import { 
   TextField, 
@@ -266,7 +265,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   return (
     <StyledPaper elevation={0} className="max-w-4xl mx-auto">
       <Typography variant="h5" component="h1" className="mb-6 font-bold text-gray-800">
-        {initialData ? '記事を編集' : '新しい記事を作成'}
+        {initialData ? '記事を編集' : '記事を編集する'}
       </Typography>
       
       <Box className="space-y-6">
