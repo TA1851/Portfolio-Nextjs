@@ -4,26 +4,15 @@ import React, { useState, ChangeEvent } from 'react';
 import { 
   TextField, 
   Button, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
   Box,
-  Chip,
-  OutlinedInput,
   Typography,
-  FormHelperText,
-  IconButton,
-  Paper,
-  SelectChangeEvent
+  Paper
 } from '@mui/material';
-import ImageIcon from '@mui/icons-material/Image';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PublishIcon from '@mui/icons-material/Publish';
 import SaveIcon from '@mui/icons-material/Save';
+import PublishIcon from '@mui/icons-material/Publish';
+import CancelIcon from '@mui/icons-material/Cancel'; // キャンセルアイコンをインポート
 import { useRouter } from 'next/navigation';
 import { styled } from '@mui/material/styles';
-import Image from 'next/image';
 
 // カスタムスタイリングされたMUIコンポーネント
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -32,59 +21,25 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-// 利用可能なカテゴリのリスト（実際のプロジェクトではAPIから取得することもあります）
-const categories = [
-  'テクノロジー',
-  'プログラミング',
-  'デザイン',
-  'ビジネス',
-  'マーケティング',
-  'ライフスタイル',
-  'その他'
-];
-
-// 画像データの型定義
-interface FeaturedImage {
-  file?: File;
-  preview: string;
-}
-
-// フォームデータの型定義
+// フォームデータの型定義（簡素化）
 interface PostFormData {
   title: string;
   content: string;
-  summary: string;
-  categories: string[];
-  featuredImage: FeaturedImage | null;
   publishStatus: 'draft' | 'published';
 }
 
-// エラーの型定義
+// エラーの型定義（簡素化）
 interface FormErrors {
   title?: string;
   content?: string;
-  summary?: string;
-  categories?: string;
 }
 
-// 初期データの型定義
-interface PostData extends Omit<PostFormData, 'featuredImage'> {
+// 初期データの型定義（簡素化）
+interface PostData {
   id?: string;
-  featuredImage?: string | null;
-  publishedAt?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
+  title?: string;
+  content?: string;
+  publishStatus?: 'draft' | 'published';
 }
 
 // コンポーネントのpropsの型定義
@@ -93,13 +48,10 @@ interface PostFormProps {
 }
 
 const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
-  // フォームの状態管理
+  // フォームの状態管理（簡素化）
   const [formData, setFormData] = useState<PostFormData>({
     title: initialData?.title || '',
     content: initialData?.content || '',
-    summary: initialData?.summary || '',
-    categories: initialData?.categories || [],
-    featuredImage: initialData?.featuredImage ? { preview: initialData.featuredImage } : null,
     publishStatus: initialData?.publishStatus || 'draft',
   });
   
@@ -124,43 +76,21 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     }
   };
   
-  // カテゴリの選択ハンドラー
-  const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
-    const { value } = event.target;
-    setFormData({
-      ...formData,
-      categories: typeof value === 'string' ? value.split(',') : value,
-    });
-  };
-  
-  // 画像アップロードハンドラー
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files[0]) {
-      const file = files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData({
-          ...formData,
-          featuredImage: {
-            file,
-            preview: reader.result as string
-          }
-        });
-      };
-      reader.readAsDataURL(file);
+  // キャンセルハンドラー
+  const handleCancel = () => {
+    if (formData.title.trim() || formData.content.trim()) {
+      // 入力内容がある場合は確認ダイアログを表示
+      const confirmCancel = window.confirm('編集内容が保存されていません。キャンセルしますか？');
+      if (confirmCancel) {
+        router.push('/demopage');
+      }
+    } else {
+      // 入力内容がない場合は直接戻る
+      router.push('/demopage');
     }
   };
   
-  // 画像削除ハンドラー
-  const handleRemoveImage = () => {
-    setFormData({
-      ...formData,
-      featuredImage: null
-    });
-  };
-  
-  // フォーム送信時のバリデーション
+  // フォーム送信時のバリデーション（簡素化）
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     
@@ -172,19 +102,11 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       newErrors.content = '記事の内容を入力してください';
     }
     
-    if (!formData.summary.trim()) {
-      newErrors.summary = '記事の要約を入力してください';
-    }
-    
-    if (formData.categories.length === 0) {
-      newErrors.categories = '少なくとも1つのカテゴリを選択してください';
-    }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   
-  // 記事の保存または公開ハンドラー
+  // 記事の保存または公開ハンドラー（簡素化）
   const handleSubmit = async (action: 'draft' | 'publish') => {
     if (!validateForm()) return;
     
@@ -193,210 +115,91 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     try {
       const statusToSet = action === 'publish' ? 'published' : 'draft';
       
-      // APIリクエストデータを準備
+      // APIリクエストデータを準備（簡素化）
       const postData = {
-        ...formData,
-        publishStatus: statusToSet,
-        publishedAt: statusToSet === 'published' ? new Date().toISOString() : null
+        title: formData.title,
+        body: formData.content,  // APIの期待する形式に合わせて名前を変更
+        user_id: 1,  // または適切なユーザーID
+        status: statusToSet
       };
-      
-      // 画像ファイルがある場合、フォームデータとして送信
-      let data: globalThis.FormData | Record<string, unknown>;
-      if (formData.featuredImage?.file) {
-        const formDataObj = new FormData();
-        
-        // JSONデータをappendする
-        formDataObj.append('postData', JSON.stringify({
-          title: postData.title,
-          content: postData.content,
-          summary: postData.summary,
-          categories: postData.categories,
-          publishStatus: postData.publishStatus,
-          publishedAt: postData.publishedAt
-        }));
-        
-        // 画像ファイルをappendする
-        formDataObj.append('featuredImage', formData.featuredImage.file);
-        
-        data = formDataObj;
-      } else {
-        data = postData;
-      }
       
       // APIエンドポイント（新規作成または更新）
       const url = initialData?.id 
-        ? `/api/posts/${initialData.id}` 
-        : '/api/posts';
+        ? `http://127.0.0.1:8000/api/v1/articles/${initialData.id}` 
+        : 'http://127.0.0.1:8000/api/v1/articles';
       
       const method = initialData?.id ? 'PUT' : 'POST';
+
+      // トークン取得
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('認証情報がありません。再度ログインしてください。');
+        router.push('/login');
+        return;
+      }
       
       // 実際のAPI呼び出し
-      // 注: このコードは実際のAPIの仕様に合わせて調整する必要があります
       const response = await fetch(url, {
         method,
-        headers: formData.featuredImage?.file ? {} : {
+        headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: formData.featuredImage?.file ? data as globalThis.FormData : JSON.stringify(data),
+        body: JSON.stringify(postData),
       });
       
       if (!response.ok) {
-        throw new Error('記事の保存に失敗しました');
+        const errorText = await response.text();
+        console.error('API エラーレスポンス:', errorText);
+        throw new Error(`記事の保存に失敗しました (${response.status})`);
       }
       
       const result = await response.json();
+      console.log('API 成功レスポンス:', result);
       
       // 成功したら一覧ページに戻る
-      if (action === 'publish') {
-        router.push('/admin/posts');
-      } else {
-        // 下書き保存成功の場合
-        router.push(`/admin/posts/edit/${result.id}`);
-      }
+      alert('記事を正常に保存しました');
+      router.push('/demopage');
       
     } catch (error) {
       console.error('投稿エラー:', error);
-      alert('記事の保存に失敗しました。もう一度お試しください。');
+      alert(`記事の保存に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
     } finally {
       setSaving(false);
     }
   };
   
   return (
-    <StyledPaper elevation={0} className="max-w-4xl mx-auto">
-      <Typography variant="h5" component="h1" className="mb-6 font-bold text-gray-800">
-        {initialData ? '記事を編集' : '記事を編集する'}
+    <StyledPaper>
+      <Typography variant="h6" gutterBottom>
+        記事の{initialData ? '編集' : '編集'}
       </Typography>
-      
-      <Box className="space-y-6">
-        {/* タイトル */}
+      <Box component="form" noValidate autoComplete="off">
         <TextField
-          fullWidth
           label="タイトル"
           name="title"
           value={formData.title}
           onChange={handleChange}
           error={!!errors.title}
           helperText={errors.title}
-          placeholder="記事のタイトルを入力"
-          variant="outlined"
-          className="mb-4"
-        />
-        
-        {/* カテゴリ選択 */}
-        <FormControl fullWidth error={!!errors.categories}>
-          <InputLabel id="categories-label">カテゴリ</InputLabel>
-          <Select
-            labelId="categories-label"
-            id="categories"
-            multiple
-            name="categories"
-            value={formData.categories}
-            onChange={handleCategoryChange}
-            input={<OutlinedInput label="カテゴリ" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
-            MenuProps={MenuProps}
-          >
-            {categories.map((category) => (
-              <MenuItem
-                key={category}
-                value={category}
-              >
-                {category}
-              </MenuItem>
-            ))}
-          </Select>
-          {errors.categories && <FormHelperText>{errors.categories}</FormHelperText>}
-        </FormControl>
-        
-        {/* 要約 */}
-        <TextField
           fullWidth
-          label="要約"
-          name="summary"
-          value={formData.summary}
-          onChange={handleChange}
-          error={!!errors.summary}
-          helperText={errors.summary}
-          placeholder="記事の要約を入力（160文字以内）"
-          variant="outlined"
-          multiline
-          rows={2}
-          inputProps={{ maxLength: 160 }}
-          className="mb-4"
+          margin="normal"
         />
-        
-        {/* アイキャッチ画像アップロード */}
-        <Box className="border border-dashed border-gray-300 rounded-md p-4">
-          <Typography variant="body2" className="mb-2 text-gray-600">
-            アイキャッチ画像
-          </Typography>
-          {formData.featuredImage ? (
-            <Box className="relative">
-              <div className="relative w-full h-48 rounded-md overflow-hidden">
-                <Image 
-                  src={formData.featuredImage.preview} 
-                  alt="プレビュー" 
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, 800px"
-                  priority
-                />
-              </div>
-              <IconButton 
-                className="absolute top-2 right-2 bg-white"
-                onClick={handleRemoveImage}
-                size="small"
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          ) : (
-            <Box 
-              className="flex flex-col items-center justify-center h-32 bg-gray-50 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => document.getElementById('image-upload')?.click()}
-            >
-              <ImageIcon className="text-gray-400 mb-2" />
-              <Typography variant="body2" className="text-gray-500">
-                クリックして画像をアップロード
-              </Typography>
-              <input
-                type="file"
-                id="image-upload"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: 'none' }}
-              />
-            </Box>
-          )}
-        </Box>
-        
-        {/* 記事本文 */}
         <TextField
-          fullWidth
-          label="記事本文"
+          label="内容"
           name="content"
           value={formData.content}
           onChange={handleChange}
           error={!!errors.content}
           helperText={errors.content}
-          placeholder="記事の本文をMarkdown形式で入力してください"
-          variant="outlined"
+          fullWidth
           multiline
-          rows={12}
-          className="mb-4"
+          rows={4}
+          margin="normal"
         />
-        
-        {/* アクションボタン */}
-        <Box className="flex justify-between pt-4 border-t border-gray-200">
+        <Box mt={2} display="flex" justifyContent="space-between">
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             startIcon={<SaveIcon />}
             onClick={() => handleSubmit('draft')}
@@ -404,15 +207,23 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           >
             下書き保存
           </Button>
-          
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             startIcon={<PublishIcon />}
             onClick={() => handleSubmit('publish')}
             disabled={saving}
           >
-            {saving ? '処理中...' : '公開する'}
+            公開
+          </Button>
+          <Button
+            variant="outlined"
+            color="default"
+            startIcon={<CancelIcon />}
+            onClick={handleCancel}
+            disabled={saving}
+          >
+            キャンセル
           </Button>
         </Box>
       </Box>
