@@ -1,424 +1,357 @@
-'use client';
+"use client";
 
-// components/PostForm.tsx
-import React, { useState, ChangeEvent } from 'react';
-import { 
-  TextField, 
-  Button, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
-  Box,
-  Chip,
-  OutlinedInput,
-  Typography,
-  FormHelperText,
-  IconButton,
-  Paper,
-  SelectChangeEvent
-} from '@mui/material';
-import ImageIcon from '@mui/icons-material/Image';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PublishIcon from '@mui/icons-material/Publish';
-import SaveIcon from '@mui/icons-material/Save';
-import { useRouter } from 'next/navigation';
-import { styled } from '@mui/material/styles';
-import Image from 'next/image';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
-// カスタムスタイリングされたMUIコンポーネント
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-}));
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-// 利用可能なカテゴリのリスト（実際のプロジェクトではAPIから取得することもあります）
-const categories = [
-  'テクノロジー',
-  'プログラミング',
-  'デザイン',
-  'ビジネス',
-  'マーケティング',
-  'ライフスタイル',
-  'その他'
-];
-
-// 画像データの型定義
-interface FeaturedImage {
-  file?: File;
-  preview: string;
-}
-
-// フォームデータの型定義
-interface PostFormData {
+// 記事の型定義
+interface Article {
+  article_id: number;  // バックエンドのAPIに合わせて修正
+  id?: number;         // 互換性のために残す
   title: string;
-  content: string;
-  summary: string;
-  categories: string[];
-  featuredImage: FeaturedImage | null;
-  publishStatus: 'draft' | 'published';
+  body: string;
+  user_id: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
-// エラーの型定義
-interface FormErrors {
-  title?: string;
-  content?: string;
-  summary?: string;
-  categories?: string;
-}
+const API_URL = "http://127.0.0.1:8000/api/v1/articles";
 
-// 初期データの型定義
-interface PostData extends Omit<PostFormData, 'featuredImage'> {
-  id?: string;
-  featuredImage?: string | null;
-  publishedAt?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-// コンポーネントのpropsの型定義
-interface PostFormProps {
-  initialData?: PostData | null;
-}
-
-const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
-  // フォームの状態管理
-  const [formData, setFormData] = useState<PostFormData>({
-    title: initialData?.title || '',
-    content: initialData?.content || '',
-    summary: initialData?.summary || '',
-    categories: initialData?.categories || [],
-    featuredImage: initialData?.featuredImage ? { preview: initialData.featuredImage } : null,
-    publishStatus: initialData?.publishStatus || 'draft',
+export default function DeleteArticlePage() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
+  const authAxios = axios.create({
+    baseURL: "http://127.0.0.1:8000/api/v1",
+    // タイムアウト設定
+    timeout: 10000, 
+    // CORS関連の設定
+    withCredentials: false,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
   });
   
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [saving, setSaving] = useState<boolean>(false);
-  const router = useRouter();
-  
-  // 入力フィールドの変更ハンドラー
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+  // 認証状態を確認する関数
+  const checkAuthentication = async () => {
+    const storedToken = localStorage.getItem("authToken");
     
-    // エラーをクリア
-    if (errors[name as keyof FormErrors]) {
-      setErrors({
-        ...errors,
-        [name]: undefined
-      });
+    // トークン存在チェック
+    if (!storedToken) {
+      console.warn("認証トークンがありません。ログイン画面にリダイレクトします。");
+      router.push("/login");
+      return false;
     }
+    
+    // トークンの有効性を簡易チェック
+    if (storedToken === 'undefined' || storedToken === 'null') {
+      console.warn("不正なトークン形式です。ログイン画面にリダイレクトします。");
+      localStorage.removeItem("authToken");
+      router.push("/login");
+      return false;
+    }
+    
+    setToken(storedToken);
+    return true;
   };
+
+  // リクエストインターセプターの設定
+  const setupInterceptors = (storedToken: string) => {
+    // リクエストインターセプター
+    const requestInterceptor = authAxios.interceptors.request.use(
+      (config) => {
+        // リクエスト直前に最新のトークンを使用
+        const currentToken = localStorage.getItem("authToken") || storedToken;
+        
+        if (currentToken) {
+          console.log("リクエスト送信: トークンあり");
+          config.headers["Authorization"] = `Bearer ${currentToken.trim()}`;
+        } else {
+          console.warn("リクエスト送信: トークンなし");
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
   
-  // カテゴリの選択ハンドラー
-  const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
-    const { value } = event.target;
-    setFormData({
-      ...formData,
-      categories: typeof value === 'string' ? value.split(',') : value,
-    });
-  };
-  
-  // 画像アップロードハンドラー
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files[0]) {
-      const file = files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData({
-          ...formData,
-          featuredImage: {
-            file,
-            preview: reader.result as string
+    // レスポンスインターセプター
+    const responseInterceptor = authAxios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        // オリジナルリクエストの参照を保存
+        const originalRequest = error.config;
+        
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          console.log("401エラー検出: トークンリフレッシュを試行");
+          originalRequest._retry = true;
+          
+          try {
+            const newToken = await refreshToken();
+            console.log("トークンリフレッシュ成功");
+            
+            // 新しいトークンでリクエストを再試行
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            return authAxios(originalRequest);
+          } catch (refreshError) {
+            console.error("リフレッシュ失敗:", refreshError);
+            
+            // ログイン画面へリダイレクト
+            router.push("/login");
+            return Promise.reject(refreshError);
           }
-        });
+        }
+        return Promise.reject(error);
+      }
+    );
+  
+    return { requestInterceptor, responseInterceptor };
+  };
+
+  // クライアントサイドでのみ実行される初期化
+  useEffect(() => {
+    const initPage = async () => {
+      const storedToken = localStorage.getItem("authToken");
+      
+      // トークン存在チェック
+      if (!storedToken) {
+        console.warn("認証トークンがありません。ログイン画面にリダイレクトします。");
+        router.push("/login");
+        return;
+      }
+      
+      setToken(storedToken);
+      
+      // インターセプターを設定
+      const interceptors = setupInterceptors(storedToken);
+      
+      try {
+        // 記事データ取得
+        await fetchArticles();
+      } catch (error) {
+        console.error("初期化中にエラーが発生しました:", error);
+      }
+      
+      // クリーンアップ関数
+      return () => {
+        authAxios.interceptors.request.eject(interceptors.requestInterceptor);
+        authAxios.interceptors.response.eject(interceptors.responseInterceptor);
       };
-      reader.readAsDataURL(file);
+    };
+    
+    initPage();
+  }, []); // 空の依存配列
+
+  // トークンリフレッシュ関数 - FastAPI仕様に合わせて修正
+  const refreshToken = async () => {
+    try {
+      if (!token) {
+        throw new Error("認証トークンが見つかりません");
+      }
+
+      // リフレッシュAPIの形式に合わせて修正
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/v1/auth/refresh",
+        {}, 
+        {
+          headers: {
+            'Authorization': `Bearer ${token.trim()}`
+          }
+        }
+      );
+
+      // 応答からアクセストークンを取得
+      const newToken = response.data.access_token;
+      localStorage.setItem("authToken", newToken);
+      setToken(newToken);
+      return newToken;
+    } catch (error) {
+      console.error("トークンのリフレッシュに失敗しました:", error);
+      router.push("/login");
+      throw error;
     }
   };
-  
-  // 画像削除ハンドラー
-  const handleRemoveImage = () => {
-    setFormData({
-      ...formData,
-      featuredImage: null
-    });
-  };
-  
-  // フォーム送信時のバリデーション
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-    
-    if (!formData.title.trim()) {
-      newErrors.title = 'タイトルを入力してください';
-    }
-    
-    if (!formData.content.trim()) {
-      newErrors.content = '記事の内容を入力してください';
-    }
-    
-    if (!formData.summary.trim()) {
-      newErrors.summary = '記事の要約を入力してください';
-    }
-    
-    if (formData.categories.length === 0) {
-      newErrors.categories = '少なくとも1つのカテゴリを選択してください';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  
-  // 記事の保存または公開ハンドラー
-  const handleSubmit = async (action: 'draft' | 'publish') => {
-    if (!validateForm()) return;
-    
-    setSaving(true);
+
+  // 記事の取得
+  const fetchArticles = async () => {
+    setLoading(true);
+    setError("");
     
     try {
-      const statusToSet = action === 'publish' ? 'published' : 'draft';
+      console.log("記事データ取得開始");
       
-      // APIリクエストデータを準備
-      const postData = {
-        ...formData,
-        publishStatus: statusToSet,
-        publishedAt: statusToSet === 'published' ? new Date().toISOString() : null
-      };
-      
-      // 画像ファイルがある場合、フォームデータとして送信
-      let data: globalThis.FormData | Record<string, unknown>;
-      if (formData.featuredImage?.file) {
-        const formDataObj = new FormData();
-        
-        // JSONデータをappendする
-        formDataObj.append('postData', JSON.stringify({
-          title: postData.title,
-          content: postData.content,
-          summary: postData.summary,
-          categories: postData.categories,
-          publishStatus: postData.publishStatus,
-          publishedAt: postData.publishedAt
-        }));
-        
-        // 画像ファイルをappendする
-        formDataObj.append('featuredImage', formData.featuredImage.file);
-        
-        data = formDataObj;
-      } else {
-        data = postData;
+      // 認証トークンの状態を確認
+      const currentToken = localStorage.getItem("authToken");
+      if (!currentToken) {
+        console.error("認証トークンがありません");
+        throw new Error("認証情報がありません。再度ログインしてください。");
       }
       
-      // APIエンドポイント（新規作成または更新）
-      const url = initialData?.id 
-        ? `/api/posts/${initialData.id}` 
-        : '/api/posts';
-      
-      const method = initialData?.id ? 'PUT' : 'POST';
-      
-      // 実際のAPI呼び出し
-      // 注: このコードは実際のAPIの仕様に合わせて調整する必要があります
-      const response = await fetch(url, {
-        method,
-        headers: formData.featuredImage?.file ? {} : {
-          'Content-Type': 'application/json',
-        },
-        body: formData.featuredImage?.file ? data as globalThis.FormData : JSON.stringify(data),
+      // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
+      const response = await authAxios.get(API_URL, {
+        headers: {
+          'Authorization': `Bearer ${currentToken.trim()}`
+        }
       });
       
-      if (!response.ok) {
-        throw new Error('記事の保存に失敗しました');
-      }
+      console.log("記事データ取得成功:", response.status);
       
-      const result = await response.json();
-      
-      // 成功したら一覧ページに戻る
-      if (action === 'publish') {
-        router.push('/admin/posts');
+      if (Array.isArray(response.data)) {
+        console.log(`${response.data.length}件の記事を取得しました`);
+        setArticles(response.data);
       } else {
-        // 下書き保存成功の場合
-        router.push(`/admin/posts/edit/${result.id}`);
+        console.warn("APIレスポンスが配列ではありません:", response.data);
+        setArticles([]);
       }
       
-    } catch (error) {
-      console.error('投稿エラー:', error);
-      alert('記事の保存に失敗しました。もう一度お試しください。');
+      setError("");
+    } catch (error: any) {
+      console.error("記事の取得中にエラーが発生しました:", error);
+      
+      // エラーメッセージを詳細化
+      if (error.response?.status === 401) {
+        setError("認証が無効です。再度ログインしてください。");
+        // 1秒後にログイン画面へリダイレクト
+        setTimeout(() => router.push("/login"), 1000);
+      } else {
+        setError(`記事の取得に失敗しました: ${error.message || "不明なエラー"}`);
+      }
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
-  
-  return (
-    <StyledPaper elevation={0} className="max-w-4xl mx-auto">
-      <Typography variant="h5" component="h1" className="mb-6 font-bold text-gray-800">
-        {initialData ? '記事を削除' : '記事を削除する'}
-      </Typography>
-      
-      <Box className="space-y-6">
-        {/* タイトル */}
-        <TextField
-          fullWidth
-          label="タイトル"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          error={!!errors.title}
-          helperText={errors.title}
-          placeholder="記事のタイトルを入力"
-          variant="outlined"
-          className="mb-4"
-        />
-        
-        {/* カテゴリ選択 */}
-        <FormControl fullWidth error={!!errors.categories}>
-          <InputLabel id="categories-label">カテゴリ</InputLabel>
-          <Select
-            labelId="categories-label"
-            id="categories"
-            multiple
-            name="categories"
-            value={formData.categories}
-            onChange={handleCategoryChange}
-            input={<OutlinedInput label="カテゴリ" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
-            MenuProps={MenuProps}
-          >
-            {categories.map((category) => (
-              <MenuItem
-                key={category}
-                value={category}
-              >
-                {category}
-              </MenuItem>
-            ))}
-          </Select>
-          {errors.categories && <FormHelperText>{errors.categories}</FormHelperText>}
-        </FormControl>
-        
-        {/* 要約 */}
-        <TextField
-          fullWidth
-          label="要約"
-          name="summary"
-          value={formData.summary}
-          onChange={handleChange}
-          error={!!errors.summary}
-          helperText={errors.summary}
-          placeholder="記事の要約を入力（160文字以内）"
-          variant="outlined"
-          multiline
-          rows={2}
-          inputProps={{ maxLength: 160 }}
-          className="mb-4"
-        />
-        
-        {/* アイキャッチ画像アップロード */}
-        <Box className="border border-dashed border-gray-300 rounded-md p-4">
-          <Typography variant="body2" className="mb-2 text-gray-600">
-            アイキャッチ画像
-          </Typography>
-          {formData.featuredImage ? (
-            <Box className="relative">
-              <div className="relative w-full h-48 rounded-md overflow-hidden">
-                <Image 
-                  src={formData.featuredImage.preview} 
-                  alt="プレビュー" 
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, 800px"
-                  priority
-                />
-              </div>
-              <IconButton 
-                className="absolute top-2 right-2 bg-white"
-                onClick={handleRemoveImage}
-                size="small"
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          ) : (
-            <Box 
-              className="flex flex-col items-center justify-center h-32 bg-gray-50 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => document.getElementById('image-upload')?.click()}
-            >
-              <ImageIcon className="text-gray-400 mb-2" />
-              <Typography variant="body2" className="text-gray-500">
-                クリックして画像をアップロード
-              </Typography>
-              <input
-                type="file"
-                id="image-upload"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: 'none' }}
-              />
-            </Box>
-          )}
-        </Box>
-        
-        {/* 記事本文 */}
-        <TextField
-          fullWidth
-          label="記事本文"
-          name="content"
-          value={formData.content}
-          onChange={handleChange}
-          error={!!errors.content}
-          helperText={errors.content}
-          placeholder="記事の本文をMarkdown形式で入力してください"
-          variant="outlined"
-          multiline
-          rows={12}
-          className="mb-4"
-        />
-        
-        {/* アクションボタン */}
-        <Box className="flex justify-between pt-4 border-t border-gray-200">
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<SaveIcon />}
-            onClick={() => handleSubmit('draft')}
-            disabled={saving}
-          >
-            下書き保存
-          </Button>
-          
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<PublishIcon />}
-            onClick={() => handleSubmit('publish')}
-            disabled={saving}
-          >
-            {saving ? '処理中...' : '公開する'}
-          </Button>
-        </Box>
-      </Box>
-    </StyledPaper>
-  );
-};
 
-export default PostForm;
+  // 記事リスト更新用のヘルパー関数
+  const updateArticlesList = (deletedId: number) => {
+    setArticles(articles.filter(article => {
+      const currentId = article.article_id ?? article.id;
+      return currentId !== deletedId;
+    }));
+    
+    alert("記事が正常に削除されました");
+  };
+
+  // 記事の削除 - APIドキュメントに基づいた正確な実装
+  const handleDelete = async (articleId: number) => {
+    if (!articleId) {
+      console.error("削除対象の記事IDが不正です:", articleId);
+      setError("削除対象の記事IDが不正です。");
+      return;
+    }
+
+    if (!confirm("この記事を削除してもよろしいですか？")) {
+      return;
+    }
+    
+    try {
+      console.log(`記事ID ${articleId} の削除を開始します`);
+      
+      // APIドキュメントに従った正しいURL形式:
+      // DELETEメソッドで/api/v1/articlesにアクセスし、クエリパラメータとしてarticle_idを指定
+      const deleteUrl = `${API_URL}?article_id=${articleId}`;
+      console.log("正しい削除URL:", deleteUrl);
+      
+      const response = await authAxios.delete(deleteUrl);
+      console.log("削除成功:", response.status, response.data);
+      
+      updateArticlesList(articleId);
+    } catch (error: any) {
+      console.error("記事の削除中にエラーが発生しました:", error);
+      
+      if (error.response) {
+        console.error("エラーステータス:", error.response.status);
+        console.error("エラーデータ:", error.response.data);
+        
+        // 特定のエラーケースに対する処理
+        if (error.response.status === 404) {
+          setError("削除対象の記事が見つかりません。すでに削除された可能性があります。");
+        } else if (error.response.status === 403) {
+          setError("この記事を削除する権限がありません。");
+        } else {
+          setError(`記事の削除に失敗しました (${error.response.status}): ${error.response.data?.detail || ''}`);
+        }
+      } else {
+        setError("記事の削除に失敗しました。ネットワーク接続を確認してください。");
+      }
+    }
+  };
+
+  // クライアント側でのリロードを行うボタン
+  const handleRetry = () => {
+    // 再試行前に認証チェック
+    const currentToken = localStorage.getItem("authToken");
+    if (!currentToken) {
+      alert("認証情報がありません。ログイン画面に移動します。");
+      router.push("/login");
+      return;
+    }
+    
+    setError("");
+    fetchArticles();
+  };
+
+  if (loading) {
+    return <div className="p-4">記事を読み込み中...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <p className="text-red-500">{error}</p>
+        <button 
+          onClick={handleRetry}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          再試行
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">記事の削除</h1>
+      
+      {articles.length === 0 ? (
+        <p>記事が見つかりません。</p>
+      ) : (
+        <ul className="space-y-4">
+          {articles.map((article) => {
+            // article_idとidの両方を考慮して確実にIDを取得
+            const articleId = article.article_id ?? article.id;
+            
+            // IDが存在しない場合はスキップ
+            if (!articleId) {
+              console.warn("IDのない記事:", article);
+              return null;
+            }
+            
+            return (
+              <li key={articleId} className="border p-4 rounded">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-xl font-semibold">{article.title}</h2>
+                    <p className="text-gray-600">
+                      {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
+                    </p>
+                    <small className="text-gray-500">
+                      記事ID: {articleId} | 投稿者ID: {article.user_id}
+                    </small>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(articleId)}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    削除
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
