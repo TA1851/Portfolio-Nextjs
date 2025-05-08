@@ -59,7 +59,7 @@ export default function DeleteArticlePage() {
   };
 
   // リクエストインターセプターの設定
-  const setupInterceptors = (storedToken: string) => {
+  const setupInterceptors = (storedToken: string | null) => {
     // リクエストインターセプター
     const requestInterceptor = authAxios.interceptors.request.use(
       (config) => {
@@ -113,15 +113,12 @@ export default function DeleteArticlePage() {
   // クライアントサイドでのみ実行される初期化
   useEffect(() => {
     const initPage = async () => {
-      const storedToken = localStorage.getItem("authToken");
-      
-      // トークン存在チェック
-      if (!storedToken) {
-        console.warn("認証トークンがありません。ログイン画面にリダイレクトします。");
-        router.push("/login");
+      const isAuthenticated = await checkAuthentication();
+      if (!isAuthenticated) {
         return;
       }
       
+      const storedToken = localStorage.getItem("authToken");
       setToken(storedToken);
       
       // インターセプターを設定
@@ -207,16 +204,17 @@ export default function DeleteArticlePage() {
       }
       
       setError("");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("記事の取得中にエラーが発生しました:", error);
       
       // エラーメッセージを詳細化
-      if (error.response?.status === 401) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError("認証が無効です。再度ログインしてください。");
         // 1秒後にログイン画面へリダイレクト
         setTimeout(() => router.push("/login"), 1000);
       } else {
-        setError(`記事の取得に失敗しました: ${error.message || "不明なエラー"}`);
+        const errorMessage = axios.isAxiosError(error) ? error.message : error instanceof Error ? error.message : "不明なエラー";
+        setError(`記事の取得に失敗しました: ${errorMessage}`);
       }
     } finally {
       setLoading(false);
@@ -232,7 +230,6 @@ export default function DeleteArticlePage() {
     
     alert("記事が正常に削除されました");
   };
-
   // 記事の削除 - APIドキュメントに基づいた正確な実装
   const handleDelete = async (articleId: number) => {
     if (!articleId) {
@@ -257,10 +254,10 @@ export default function DeleteArticlePage() {
       console.log("削除成功:", response.status, response.data);
       
       updateArticlesList(articleId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("記事の削除中にエラーが発生しました:", error);
       
-      if (error.response) {
+      if (axios.isAxiosError(error) && error.response) {
         console.error("エラーステータス:", error.response.status);
         console.error("エラーデータ:", error.response.data);
         
@@ -312,10 +309,20 @@ export default function DeleteArticlePage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">記事の削除</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">記事の削除</h1>
+      </div>
       
       {articles.length === 0 ? (
-        <p>記事が見つかりません。</p>
+        <div className="text-center py-8">
+          <p>記事が見つかりません。</p>
+          <button
+            onClick={() => router.push('/demopage')}
+            className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+          >
+            会員専用ページに戻る
+          </button>
+        </div>
       ) : (
         <ul className="space-y-4">
           {articles.map((article) => {
@@ -352,6 +359,16 @@ export default function DeleteArticlePage() {
           })}
         </ul>
       )}
+      
+      {/* 下部にだけ戻るボタンを残す */}
+      <div className="mt-6 text-center">
+        <button
+          onClick={() => router.push('/demopage')}
+          className="px-6 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+        >
+          会員専用ページに戻る
+        </button>
+      </div>
     </div>
   );
 }
