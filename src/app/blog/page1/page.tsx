@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import Image from 'next/image';
 
 const Page1: FC = () => {
   return (
@@ -26,7 +27,11 @@ const Page1: FC = () => {
           <blockquote className="mb-6 border-l-4 pl-4 italic text-gray-500 sm:text-lg md:mb-8 md:pl-6">“This is a section of some simple filler text, also known as placeholder text. It shares some characteristics of a real written text but is random or otherwise generated.”</blockquote>
 
           <div className="relative mb-6 overflow-hidden rounded-lg bg-gray-100 shadow-lg md:mb-8">
-            <img src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&q=75&fit=crop&w=600&h=350" loading="lazy" alt="Photo by Minh Pham" className="h-full w-full object-cover object-center" />
+            <Image
+              src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&q=75&fit=crop&w=600&h=350"
+              loading="lazy" alt="Photo by Minh Pham"
+              className="h-full w-full object-cover object-center"
+            />
           </div>
 
           <h2 className="mb-2 text-xl font-semibold text-gray-800 sm:text-2xl md:mb-4">Features</h2>

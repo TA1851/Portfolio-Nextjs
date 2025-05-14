@@ -1,4 +1,6 @@
 import { FC } from "react";
+import Image from 'next/image';
+import Link from 'next/link';
 
 const BodyComp: FC = () => {
   return (
@@ -11,8 +13,15 @@ const BodyComp: FC = () => {
 
         <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-3 xl:gap-8">
 
-          <a href="/blog/page1" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Minh Pham" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+          <Link
+            href="/blog/page1"
+            className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&q=75&fit=crop&w=600"
+              loading="lazy" alt="Photo by Minh Pham"
+              className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
+            />
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
 
@@ -22,10 +31,17 @@ const BodyComp: FC = () => {
 
               <span className="font-semibold text-indigo-300">Read more</span>
             </div>
-          </a>
+          </Link>
 
-          <a href="/blog/page2" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Lorenzo Herrera" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+          <Link
+            href="/blog/page2"
+            className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&q=75&fit=crop&w=600"
+              loading="lazy" alt="Photo by Lorenzo Herrera"
+              className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
+            />
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
 
@@ -35,10 +51,16 @@ const BodyComp: FC = () => {
 
               <span className="font-semibold text-indigo-300">Read more</span>
             </div>
-          </a>
+          </Link>
 
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1542759564-7ccbb6ac450a?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Magicle" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+          <Link
+            href="#"
+            className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
+            <Image
+              src="https://images.unsplash.com/photo-1542759564-7ccbb6ac450a?auto=format&q=75&fit=crop&w=600"
+              loading="lazy" alt="Photo by Magicle"
+              className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
+            />
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
 
@@ -48,23 +70,17 @@ const BodyComp: FC = () => {
 
               <span className="font-semibold text-indigo-300">Read more</span>
             </div>
-          </a>
+          </Link>
 
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Martin Sanchez" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
-
-            <div className="relative mt-auto p-4">
-              <span className="block text-sm text-gray-200">January 27, 2021</span>
-              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">8 High performance Notebooks</h2>
-
-              <span className="font-semibold text-indigo-300">Read more</span>
-            </div>
-          </a>
-
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Martin Sanchez" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+          <Link
+            href="#"
+            className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600"
+              loading="lazy" alt="Photo by Martin Sanchez"
+              className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
+            />
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
 
@@ -74,10 +90,17 @@ const BodyComp: FC = () => {
 
               <span className="font-semibold text-indigo-300">Read more</span>
             </div>
-          </a>
+          </Link>
 
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Martin Sanchez" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+          <Link
+            href="#"
+            className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600"
+              loading="lazy" alt="Photo by Martin Sanchez"
+              className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
+            />
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
 
@@ -87,7 +110,27 @@ const BodyComp: FC = () => {
 
               <span className="font-semibold text-indigo-300">Read more</span>
             </div>
-          </a>
+          </Link>
+
+          <Link
+            href="#"
+            className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600"
+              loading="lazy" alt="Photo by Martin Sanchez"
+              className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
+            />
+
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
+
+            <div className="relative mt-auto p-4">
+              <span className="block text-sm text-gray-200">January 27, 2021</span>
+              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">8 High performance Notebooks</h2>
+
+              <span className="font-semibold text-indigo-300">Read more</span>
+            </div>
+          </Link>
           </div>
         </div>
       </div>
