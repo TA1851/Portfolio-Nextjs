@@ -4,15 +4,17 @@ import Link from "next/link";
 import { FC, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
+import { saveLog } from "@/utils/logger";
+
 
 const LoginComp: FC = () => {
-  const router = useRouter(); // useRouterを使用
+  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
 
   const onClickLogin = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): Promise<void> => {
-    event.preventDefault(); // ページリロードを防ぐ
+    event.preventDefault();
 
     console.log('ログインボタンがクリックされました。');
 
@@ -25,6 +27,7 @@ const LoginComp: FC = () => {
       // ログイン情報が空の場合
       if (!emailValue || !passwordValue) {
         alert('メールアドレスとパスワードを入力してください。');
+        saveLog('error', 'メールアドレスとパスワードが空です。');
         return;
       }
       // FormDataを使用する
@@ -42,14 +45,18 @@ const LoginComp: FC = () => {
         localStorage.setItem('authToken', response.data.access_token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
         console.log('ログインに成功しました:', response.data);
+        saveLog('info', 'ログインに成功しました。');
 
         router.push('/demopage'); // ページ遷移
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           console.error('ログインに失敗しました:', error.response.data);
+          saveLog('error', 'ログインに失敗しました。');
         } else {
           console.error('ログインに失敗しました:', error);
+          saveLog('error', 'ログインに失敗しました。');
         }
+
         router.push('/loginfail');
       }
     }
@@ -160,6 +167,11 @@ const LoginComp: FC = () => {
             >
               ログイン
             </button>
+            <div className="flex justify-center">
+              <a href="/logs" className="text-sm text-gray-500 hover:text-blue-500">
+                開発者向け: ログを表示
+              </a>
+            </div>
           </div>
           <p className="text-center mb-4">
             <Link href="/register"

@@ -4,6 +4,7 @@ import { FC } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DemoBody from "@/app/demopage/demobody/page";
+import { saveLog } from "@/utils/logger";
 
 const HeaderComp: FC = () => {
   // const router = useRouter();
@@ -45,13 +46,16 @@ const HeaderComp: FC = () => {
         // ログアウト成功
         localStorage.removeItem('authToken'); // トークンをローカルストレージから削除
         console.log('ログアウトしました');
+        saveLog('info', 'ログアウトしました');
         // ログイン画面にリダイレクト
         router.push('/logout');
       } else {
         console.error('ログアウトに失敗しました');
+        saveLog('error', 'ログアウトに失敗しました');
       }
     } catch (error) {
       console.error('ログアウト処理中にエラーが発生しました', error);
+      saveLog('error', 'ログアウト処理中にエラーが発生しました');
     }
   };
 
@@ -108,7 +112,6 @@ const HeaderComp: FC = () => {
             >
               検索
             </button>
-            
             {/* ログアウトボタン - Linkを使わずに直接ボタンでハンドリング */}
             <button
               type="button"

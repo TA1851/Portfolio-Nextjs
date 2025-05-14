@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FC, useEffect } from "react";
 
+
 const LogoutPage: FC = () => {
   // ページロード時にローカルストレージをクリア（二重処理だが安全のため）
   useEffect(() => {
