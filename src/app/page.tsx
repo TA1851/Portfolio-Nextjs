@@ -1,7 +1,7 @@
 import React from "react";
-import HeaderComp from "./component/header";
-import Footer from "./component/footer";
-import Body from "./component/body";
+import HeaderComp from "./demo/header";
+import Footer from "./demo/footer";
+import Body from "./demo/body";
 
 
 export default function Home() {

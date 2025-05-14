@@ -12,28 +12,28 @@ const HeaderComp: FC = () => {
               <svg width="95" height="94" viewBox="0 0 95 94" className="h-auto w-6 text-indigo-500" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path d="M96 0V47L48 94H0V47L48 0H96Z" />
               </svg>
-                Flowrift
+                Blog
             </a>
 
             <nav className="hidden gap-12 lg:flex">
-              <a
+              {/* <a
                 href="/detail"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 概要
-              </a>
-              <a
+              </a> */}
+              {/* <a
                 href="/plan"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 料金プラン
-              </a>
-              <a
+              </a> */}
+              {/* <a
                 href="/contact"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
               >
                 お問い合わせ
-              </a>
+              </a> */}
             </nav>
             <div className="-ml-8 hidden flex-col gap-2.5 sm:flex-row sm:justify-center lg:flex lg:justify-start">
               <Link
