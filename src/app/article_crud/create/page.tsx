@@ -209,7 +209,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             
             if (retryResponse.ok) {
               alert('記事を正常に保存しました');
-              router.push('/demopage');
+              router.push('/user');
               return;
             }
           }
@@ -248,7 +248,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         
         // 成功したら記事一覧ページに戻る
         alert('記事を正常に保存しました');
-        router.push('/demopage');
+        router.push('/user');
       } catch (error) {
         console.error('Error during API call:', error);
         alert('API呼び出し中にエラーが発生しました：' + (error instanceof Error ? error.message : String(error)));
@@ -289,7 +289,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           onChange={handleChange}
           error={!!errors.content}
           helperText={errors.content}
-          placeholder="記事の本文をMarkdown形式で入力してください"
+          placeholder="記事の本文を入力してください"
           variant="outlined"
           multiline
           rows={12}
@@ -301,7 +301,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             <Button
               variant="outlined"
               color="error"
-              onClick={() => router.push('/demopage')} // デモページに戻る
+              onClick={() => router.push('/user')} // デモページに戻る
               disabled={saving}
             >
               キャンセル

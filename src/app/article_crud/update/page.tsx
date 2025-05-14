@@ -10,9 +10,7 @@ import {
   CircularProgress,
   Select,
   MenuItem,
-  FormControl,
-  InputLabel,
-  FormHelperText
+  FormControl
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import PublishIcon from '@mui/icons-material/Publish';
@@ -119,7 +117,7 @@ const UpdateArticlePage: React.FC = () => {
           <Button 
             variant="contained" 
             color="primary" 
-            onClick={() => router.push('/demopage')} 
+            onClick={() => router.push('/user')} 
             className="mt-4"
           >
             会員専用ページに戻る
@@ -135,7 +133,7 @@ const UpdateArticlePage: React.FC = () => {
               <Button 
                 variant="contained" 
                 color="primary" 
-                onClick={() => router.push('/demopage')} 
+                onClick={() => router.push('/user')} 
                 className="mt-4"
               >
                 会員専用ページに戻る
@@ -218,11 +216,11 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       // 入力内容がある場合は確認ダイアログを表示
       const confirmCancel = window.confirm('編集内容が保存されていません。キャンセルしますか？');
       if (confirmCancel) {
-        router.push('/demopage');
+        router.push('/user');
       }
     } else {
       // 入力内容がない場合は直接戻る
-      router.push('/demopage');
+      router.push('/user');
     }
   };
   
@@ -299,7 +297,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       
       // 成功したら一覧ページに戻る
       alert('記事を正常に更新しました');
-      router.push('/demopage');
+      router.push('/user');
       
     } catch (error) {
       console.error('更新エラー:', error);
@@ -374,7 +372,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           <Button
             variant="outlined"
             color="primary"
-            onClick={() => router.push('/demopage')}
+            onClick={() => router.push('/user')}
             className="mx-auto"
           >
             会員専用ページに戻る

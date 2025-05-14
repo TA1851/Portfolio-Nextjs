@@ -85,7 +85,7 @@ const ArticleDetailPage: FC = () => {
         ) : error ? (
           <div className="text-center py-10">
             <p className="text-red-500">{error}</p>
-            <Link href="/demopage" className="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
+            <Link href="/user" className="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
               記事一覧に戻る
             </Link>
           </div>
@@ -106,7 +106,7 @@ const ArticleDetailPage: FC = () => {
             </div>
             
             <div className="mt-10 pt-6 border-t border-gray-200">
-              <Link href="/demopage" className="text-indigo-600 hover:text-indigo-800">
+              <Link href="/user" className="text-indigo-600 hover:text-indigo-800">
                 記事一覧に戻る
               </Link>
             </div>
@@ -114,7 +114,7 @@ const ArticleDetailPage: FC = () => {
         ) : (
           <div className="text-center py-10">
             <p className="text-gray-600">記事情報が取得できませんでした</p>
-            <Link href="/demopage" className="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
+            <Link href="/user" className="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
               記事一覧に戻る
             </Link>
           </div>
