@@ -317,7 +317,7 @@ export default function DeleteArticlePage() {
         <div className="text-center py-8">
           <p>記事が見つかりません。</p>
           <button
-            onClick={() => router.push('/demopage')}
+            onClick={() => router.push('/user')}
             className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
             会員専用ページに戻る
@@ -363,7 +363,7 @@ export default function DeleteArticlePage() {
       {/* 下部にだけ戻るボタンを残す */}
       <div className="mt-6 text-center">
         <button
-          onClick={() => router.push('/demopage')}
+          onClick={() => router.push('/user')}
           className="px-6 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
         >
           会員専用ページに戻る
