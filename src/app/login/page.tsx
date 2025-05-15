@@ -47,7 +47,7 @@ const LoginComp: FC = () => {
         console.log('ログインに成功しました:', response.data);
         saveLog('info', 'ログインに成功しました。');
 
-        router.push('/demopage'); // ページ遷移
+        router.push('/user'); // ページ遷移
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           console.error('ログインに失敗しました:', error.response.data);
