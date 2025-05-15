@@ -43,7 +43,7 @@ const Footer: FC = () => {
 
     </div>
 
-    <div className="py-8 text-center text-sm text-gray-400">© 2021 - Present Blog. All rights reserved.</div>
+    <div className="py-8 text-center text-sm text-gray-400">© 2025 - Present Blog. All rights reserved.</div>
   </footer>
 </div>
     </>

@@ -1,93 +1,54 @@
 import { FC } from "react";
+import Link from "next/link";
+
 
 const BodyComp: FC = () => {
   return (
     <>
       <div className="bg-white py-6 sm:py-8 lg:py-12">
         <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
-          <div className="mb-10 md:mb-16">
+            <div className="mb-10 md:mb-16">
             <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-6 lg:text-3xl">ブログを始める</h2>
-      </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-3 xl:gap-8">
-
-          <a href="/blog/page1" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Minh Pham" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
-
-            <div className="relative mt-auto p-4">
-              <span className="block text-sm text-gray-200">July 19, 2021</span>
-              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">New trends in Tech</h2>
-
-              <span className="font-semibold text-indigo-300">Read more</span>
             </div>
-          </a>
-
-          <a href="/blog/page2" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Lorenzo Herrera" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
-
-            <div className="relative mt-auto p-4">
-              <span className="block text-sm text-gray-200">April 07, 2021</span>
-              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">Working with legacy stacks</h2>
-
-              <span className="font-semibold text-indigo-300">Read more</span>
+            <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-3 xl:gap-8">
+              <div className="flex flex-col overflow-hidden rounded-lg border bg-white">
+                <div className="flex flex-1 flex-col p-4 sm:p-6">
+                  <h3 className="mb-2 text-lg font-semibold text-gray-800">
+                    <Link href="../blog/page1" className="transition duration-100 hover:text-indigo-500">
+                      ブログ始め方の基本ガイド
+                    </Link>
+                  </h3>
+                  <p className="text-gray-500 mb-8">ブログを始める際の準備から投稿までのステップを初心者にもわかりやすく解説します。</p>
+                  <div className="mt-auto flex items-end justify-between">
+                    <span className="text-sm text-gray-500">2023年6月12日</span>
+                    <span className="rounded-lg bg-gray-100 px-2 py-1 text-sm text-gray-700">初心者向け</span>
+                  </div>
+              </div>
             </div>
-          </a>
-
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1542759564-7ccbb6ac450a?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Magicle" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
-
-            <div className="relative mt-auto p-4">
-              <span className="block text-sm text-gray-200">March 15, 2021</span>
-              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">10 best smartphones for devs</h2>
-
-              <span className="font-semibold text-indigo-300">Read more</span>
+            <div className="flex flex-col overflow-hidden rounded-lg border bg-white">
+              <div className="flex flex-1 flex-col p-4 sm:p-6">
+                <h3 className="mb-2 text-lg font-semibold text-gray-800">
+                  <Link href="../blog/page2" className="transition duration-100 hover:text-indigo-500">ブログのSEO対策入門</Link>
+                </h3>
+                <p className="text-gray-500 mb-8">検索エンジンからアクセスを増やすための基本テクニックを紹介します。</p>
+                  <div className="mt-auto flex items-end justify-between">
+                    <span className="text-sm text-gray-500">2023年7月3日</span>
+                    <span className="rounded-lg bg-gray-100 px-2 py-1 text-sm text-gray-700">SEO</span>
+                  </div>
+              </div>
             </div>
-          </a>
-
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Martin Sanchez" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
-
-            <div className="relative mt-auto p-4">
-              <span className="block text-sm text-gray-200">January 27, 2021</span>
-              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">8 High performance Notebooks</h2>
-
-              <span className="font-semibold text-indigo-300">Read more</span>
+            <div className="flex flex-col overflow-hidden rounded-lg border bg-white">
+              <div className="flex flex-1 flex-col p-4 sm:p-6">
+                <h3 className="mb-2 text-lg font-semibold text-gray-800">
+                  <Link href="../blog/page3" className="transition duration-100 hover:text-indigo-500">読まれるブログの書き方</Link>
+                </h3>
+                <p className="text-gray-500 mb-8">読者を惹きつける記事の構成と文章テクニックについて解説します。</p>
+                  <div className="mt-auto flex items-end justify-between">
+                    <span className="text-sm text-gray-500">2023年7月18日</span>
+                    <span className="rounded-lg bg-gray-100 px-2 py-1 text-sm text-gray-700">ライティング</span>
+                  </div>
+              </div>
             </div>
-          </a>
-
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Martin Sanchez" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
-
-            <div className="relative mt-auto p-4">
-              <span className="block text-sm text-gray-200">January 27, 2021</span>
-              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">8 High performance Notebooks</h2>
-
-              <span className="font-semibold text-indigo-300">Read more</span>
-            </div>
-          </a>
-
-          <a href="#" className="group relative flex h-48 flex-col overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-64 xl:h-96">
-            <img src="https://images.unsplash.com/photo-1610465299996-30f240ac2b1c?auto=format&q=75&fit=crop&w=600" loading="lazy" alt="Photo by Martin Sanchez" className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent md:via-transparent"></div>
-
-            <div className="relative mt-auto p-4">
-              <span className="block text-sm text-gray-200">January 27, 2021</span>
-              <h2 className="mb-2 text-xl font-semibold text-white transition duration-100">8 High performance Notebooks</h2>
-
-              <span className="font-semibold text-indigo-300">Read more</span>
-            </div>
-          </a>
           </div>
         </div>
       </div>
