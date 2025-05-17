@@ -399,7 +399,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           }}
         />
         <TextField
-          label="`本文"
+          label="本文"
           name="content"
           value={formData.content}
           onChange={handleChange}
@@ -413,7 +413,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             style: { color: 'black' },
           }}
           InputProps={{
-            style: { color: 'gray' },
+            style: { color: 'GrayText' },
           }}
           FormHelperTextProps={{
             style: { color: '#ff9494' },
@@ -444,7 +444,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             startIcon={<CancelIcon />}
             onClick={handleCancel}
             disabled={saving}
-            sx={{ color: 'white', borderColor: 'white' }}
+            sx={{ color: 'red', borderColor: 'red' }}
           >
             キャンセル
           </Button>
