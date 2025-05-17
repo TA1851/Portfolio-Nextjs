@@ -1,22 +1,23 @@
 'use client';
 
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import { 
-  TextField, 
-  Button, 
-  Box,
-  Typography,
-  Paper,
-  CircularProgress,
-  Select,
-  MenuItem,
-  FormControl
-} from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import PublishIcon from '@mui/icons-material/Publish';
-import CancelIcon from '@mui/icons-material/Cancel';
 import { useRouter } from 'next/navigation';
 import { styled } from '@mui/material/styles';
+
+// Material UIコンポーネント
+import {
+  TextField, Button, Box, Typography, Paper, CircularProgress,
+  MenuItem, ButtonGroup, Popper, Grow, MenuList, ClickAwayListener
+} from '@mui/material';
+
+// Material UIアイコン
+import {
+  Save as SaveIcon,
+  Publish as PublishIcon,
+  Cancel as CancelIcon,
+  ArrowDropDown as ArrowDropDownIcon
+} from '@mui/icons-material';
+
 
 // カスタムスタイリングされたMUIコンポーネント
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -59,6 +60,8 @@ const UpdateArticlePage: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticleId, setSelectedArticleId] = useState<number | ''>('');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [open, setOpen] = useState(false);
+  const anchorRef = React.useRef<HTMLDivElement>(null);
   const router = useRouter();
   
   useEffect(() => {
@@ -101,18 +104,37 @@ const UpdateArticlePage: React.FC = () => {
     setSelectedArticle(selected);
   };
   
+  // ドロップダウンの開閉を処理する
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  // メニューアイテムがクリックされたときの処理
+  const handleMenuItemClick = (articleId: number) => {
+    handleArticleSelect(articleId);
+    setOpen(false);
+  };
+
+  // クリックアウェイ処理
+  const handleClose = (event: Event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+      return;
+    }
+    setOpen(false);
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 text-red">
       <Typography variant="h4" component="h1" className="mb-6">
         記事を編集する
       </Typography>
       
       {loading ? (
-        <Box display="flex" justifyContent="center" p={4}>
+        <Box className="flex justify-center p-4">
           <CircularProgress />
         </Box>
       ) : error ? (
-        <Box p={2} bgcolor="error.light" color="error.contrastText" borderRadius={1}>
+        <Box className="p-2 bg-red-100 text-red-800 rounded">
           <Typography>{error}</Typography>
           <Button 
             variant="contained" 
@@ -126,7 +148,7 @@ const UpdateArticlePage: React.FC = () => {
       ) : (
         <>
           {articles.length === 0 ? (
-            <Box p={4} textAlign="center">
+            <Box className="p-4 text-center">
               <Typography variant="h6" gutterBottom>
                 編集可能な記事がありません
               </Typography>
@@ -142,22 +164,61 @@ const UpdateArticlePage: React.FC = () => {
           ) : (
             <>
               <StyledPaper className="mb-6">
-                <Box p={2}>
-                  <FormControl fullWidth>
-                    <Select
-                      value={selectedArticleId}
-                      onChange={(e) => handleArticleSelect(e.target.value as number)}
-                      displayEmpty
-                      fullWidth
+                <Box className="p-2">
+                  {/* Select を SplitButton に置き換え */}
+                  <div>
+                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
+                      <Button 
+                        onClick={() => selectedArticleId && handleArticleSelect(selectedArticleId as number)}
+                      >
+                        {selectedArticle?.title || '記事を選択してください'}
+                      </Button>
+                      <Button
+                        size="small"
+                        aria-controls={open ? 'split-button-menu' : undefined}
+                        aria-expanded={open ? 'true' : undefined}
+                        aria-label="select article"
+                        aria-haspopup="menu"
+                        onClick={handleToggle}
+                      >
+                        <ArrowDropDownIcon />
+                      </Button>
+                    </ButtonGroup>
+                    <Popper
+                      sx={{ zIndex: 1 }}
+                      open={open}
+                      anchorEl={anchorRef.current}
+                      role={undefined}
+                      transition
+                      disablePortal
                     >
-                      <MenuItem value="" disabled>記事を選択してください</MenuItem>
-                      {articles.map((article) => (
-                        <MenuItem key={article.article_id} value={article.article_id}>
-                          {article.title}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                      {({ TransitionProps, placement }) => (
+                        <Grow
+                          {...TransitionProps}
+                          style={{
+                            transformOrigin:
+                              placement === 'bottom' ? 'center top' : 'center bottom',
+                          }}
+                        >
+                          <Paper>
+                            <ClickAwayListener onClickAway={handleClose}>
+                              <MenuList id="split-button-menu" autoFocusItem>
+                                {articles.map((article) => (
+                                  <MenuItem
+                                    key={article.article_id}
+                                    selected={article.article_id === selectedArticleId}
+                                    onClick={() => handleMenuItemClick(article.article_id)}
+                                  >
+                                    {article.title}
+                                  </MenuItem>
+                                ))}
+                              </MenuList>
+                            </ClickAwayListener>
+                          </Paper>
+                        </Grow>
+                      )}
+                    </Popper>
+                  </div>
                 </Box>
               </StyledPaper>
               
