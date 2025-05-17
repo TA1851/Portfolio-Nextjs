@@ -63,7 +63,7 @@ const UpdateArticlePage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const router = useRouter();
-  
+
   useEffect(() => {
     const fetchArticles = async () => {
       try {
@@ -73,17 +73,16 @@ const UpdateArticlePage: React.FC = () => {
           setLoading(false);
           return;
         }
-        
-        const response = await fetch('http://127.0.0.1:8000/api/v1/articles', {
+        // APIエンドポイント
+        const response = await fetch(
+          'http://127.0.0.1:8000/api/v1/articles', {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
         });
-        
         if (!response.ok) {
           throw new Error(`APIエラー: ${response.status}`);
         }
-        
         const data = await response.json();
         setArticles(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -93,17 +92,16 @@ const UpdateArticlePage: React.FC = () => {
         setLoading(false);
       }
     };
-    
     fetchArticles();
   }, []);
-  
   // 記事選択時のハンドラー
   const handleArticleSelect = (articleId: number) => {
-    const selected = articles.find(article => article.article_id === articleId) || null;
-    setSelectedArticleId(articleId);
-    setSelectedArticle(selected);
+    const selected = articles.find(
+      article => article.article_id === articleId
+      ) || null;
+      setSelectedArticleId(articleId);
+      setSelectedArticle(selected);
   };
-  
   // ドロップダウンの開閉を処理する
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -117,34 +115,43 @@ const UpdateArticlePage: React.FC = () => {
 
   // クリックアウェイ処理
   const handleClose = (event: Event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+    if (anchorRef.current && anchorRef.current.contains(
+      event.target as HTMLElement
+    )) {
       return;
     }
     setOpen(false);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-black">
-      <Typography variant="h4" component="h1" className="mb-6">
-        記事を編集する
-      </Typography>
-      
-      {loading ? (
-        <Box className="flex justify-center p-4">
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Box className="p-2 bg-red-100 text-red-800 rounded">
-          <Typography>{error}</Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => router.push('/user')} 
-            className="mt-4"
-          >
-            会員専用ページに戻る
-          </Button>
-        </Box>
+    <div className="
+      container mx-auto
+      px-4 py-8 bg-black"
+    >
+    <Typography
+      variant="h4" component="h1" className="mb-6"
+    >
+      記事を編集する
+    </Typography>
+
+    {loading ? (
+      <Box className="flex justify-center p-4">
+        <CircularProgress />
+      </Box>
+    ) : error ? (
+      <Box className="p-2 bg-red-100 text-red-800 rounded">
+        <Typography>
+          {error}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => router.push('/user')}
+          className="mt-4"
+        >
+          会員専用ページに戻る
+        </Button>
+      </Box>
       ) : (
         <>
           {articles.length === 0 ? (
@@ -223,28 +230,27 @@ const UpdateArticlePage: React.FC = () => {
                   </div>
                 </Box>
               </StyledPaper>
-              
               {selectedArticle && <PostForm initialData={selectedArticle} />}
             </>
-          )}
+            )}
         </>
       )}
     </div>
   );
 };
 
-const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
+const PostForm: React.FC<PostFormProps> = (
+  { initialData = null }
+  ) => {
   // フォームの状態管理（簡素化）
   const [formData, setFormData] = useState<PostFormData>({
     title: initialData?.title || '',
     content: initialData?.body || '',  // bodyフィールドを使用
     publishStatus: 'published',  // デフォルトは公開
   });
-  
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
   const router = useRouter();
-  
   // 初期データが変更されたらフォームデータを更新
   useEffect(() => {
     if (initialData) {
@@ -255,15 +261,17 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       });
     }
   }, [initialData]);
-  
+
   // 入力フィールドの変更ハンドラー
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement
+    >) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
     });
-    
     // エラーをクリア
     if (errors[name as keyof FormErrors]) {
       setErrors({
@@ -272,7 +280,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       });
     }
   };
-  
+
   // キャンセルハンドラー
   const handleCancel = () => {
     if (formData.title.trim() || formData.content.trim()) {
@@ -286,40 +294,34 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       router.push('/user');
     }
   };
-  
   // フォーム送信時のバリデーション
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
     if (!formData.title.trim()) {
       newErrors.title = 'タイトルを入力してください';
     }
-    
     if (!formData.content.trim()) {
       newErrors.content = '記事の内容を入力してください';
     }
-    
     if (!initialData?.article_id) {
       newErrors.articleId = '編集する記事が選択されていません';
     }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
   // 記事の保存または公開ハンドラー
-  const handleSubmit = async (action: 'draft' | 'publish') => {
-    if (!validateForm()) return;
-    if (!initialData?.article_id) {
-      alert('編集する記事が選択されていません');
-      return;
-    }
-    
+  const handleSubmit = async (
+    action: 'draft' | 'publish'
+  ) => {
+  if (!validateForm()) return;
+  if (!initialData?.article_id) {
+    alert('編集する記事が選択されていません');
+    return;
+  }
     setSaving(true);
-    
     try {
-      const statusToSet = action === 'publish' ? 'published' : 'draft';
-      
+      const statusToSet = action ===
+      'publish' ? 'published' : 'draft';
       // APIリクエストデータを準備
       const postData = {
         title: formData.title,
@@ -327,7 +329,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         user_id: initialData.user_id,
         status: statusToSet
       };
-      
       // トークン取得
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -335,10 +336,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         router.push('/login');
         return;
       }
-      
       // APIエンドポイント（クエリパラメータでarticle_idを指定）
-      const url = `http://127.0.0.1:8000/api/v1/articles?article_id=${initialData.article_id}`;
-      
+      const url =
+      `http://127.0.0.1:8000/api/v1/articles?article_id=${initialData.article_id}`;
       // 実際のAPI呼び出し
       const response = await fetch(url, {
         method: 'PUT',
@@ -348,20 +348,16 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         },
         body: JSON.stringify(postData),
       });
-      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API エラーレスポンス:', errorText);
         throw new Error(`記事の更新に失敗しました (${response.status})`);
       }
-      
       const result = await response.json();
       console.log('API 成功レスポンス:', result);
-      
       // 成功したら一覧ページに戻る
       alert('記事を正常に更新しました');
       router.push('/user');
-      
     } catch (error) {
       console.error('更新エラー:', error);
       alert(`記事の更新に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
@@ -369,7 +365,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       setSaving(false);
     }
   };
-  
+
   return (
     <StyledPaper>
       <Box className="mb-4">
@@ -377,8 +373,10 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           記事の編集
         </Typography>
       </Box>
-
-      <Box component="form" noValidate autoComplete="off">
+        <Box
+          component="form"
+          noValidate autoComplete="off"
+        >
         <TextField
           label="タイトル"
           name="title"
@@ -388,14 +386,16 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           helperText={errors.title}
           fullWidth
           margin="normal"
-          InputLabelProps={{
-            style: { color: 'black' },
-          }}
-          InputProps={{
-            style: { color: 'GrayText' },
-          }}
-          FormHelperTextProps={{
-            style: { color: '#ff9494' },
+          slotProps={{
+            inputLabel: {
+              style: { color: 'black' },
+            },
+            input: {
+              style: { color: 'GrayText' },
+            },
+            formHelperText: {
+              style: { color: '#ff9494' },
+            },
           }}
         />
         <TextField
@@ -409,14 +409,16 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           multiline
           rows={8}
           margin="normal"
-          InputLabelProps={{
-            style: { color: 'black' },
-          }}
-          InputProps={{
-            style: { color: 'GrayText' },
-          }}
-          FormHelperTextProps={{
-            style: { color: '#ff9494' },
+          slotProps={{
+            inputLabel: {
+              style: { color: 'black' },
+            },
+            input: {
+              style: { color: 'GrayText' },
+            },
+            formHelperText: {
+              style: { color: '#ff9494' },
+            },
           }}
         />
         <Box mt={2} display="flex" justifyContent="space-between">
@@ -449,7 +451,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             キャンセル
           </Button>
         </Box>
-        
         <Box mt={3} textAlign="center" className="border-t pt-4">
           <Button
             variant="outlined"
