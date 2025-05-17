@@ -24,6 +24,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+  backgroundColor: 'black',
 }));
 
 // 記事データの型定義
@@ -124,8 +125,8 @@ const UpdateArticlePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 text-red">
-      <Typography variant="h4" component="h1" className="mb-6">
+    <div className="container mx-auto px-4 py-8 bg-black">
+      <Typography variant="h4" component="h1" className="mb-6 text-white">
         記事を編集する
       </Typography>
       
@@ -167,9 +168,10 @@ const UpdateArticlePage: React.FC = () => {
                 <Box className="p-2">
                   {/* Select を SplitButton に置き換え */}
                   <div>
-                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
+                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button" sx={{ backgroundColor: '#1976d2', color: 'white' }}>
                       <Button 
                         onClick={() => selectedArticleId && handleArticleSelect(selectedArticleId as number)}
+                        sx={{ color: 'white', textAlign: 'left', fontSize: '1.4rem' }}
                       >
                         {selectedArticle?.title || '記事を選択してください'}
                       </Button>
@@ -180,6 +182,7 @@ const UpdateArticlePage: React.FC = () => {
                         aria-label="select article"
                         aria-haspopup="menu"
                         onClick={handleToggle}
+                        sx={{ color: 'white' }}
                       >
                         <ArrowDropDownIcon />
                       </Button>
@@ -386,6 +389,15 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           helperText={errors.title}
           fullWidth
           margin="normal"
+          InputLabelProps={{
+            style: { color: 'white' },
+          }}
+          InputProps={{
+            style: { color: 'white' },
+          }}
+          FormHelperTextProps={{
+            style: { color: '#ff9494' },
+          }}
         />
         <TextField
           label="内容"
@@ -398,6 +410,15 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           multiline
           rows={8}
           margin="normal"
+          InputLabelProps={{
+            style: { color: 'white' },
+          }}
+          InputProps={{
+            style: { color: 'white' },
+          }}
+          FormHelperTextProps={{
+            style: { color: '#ff9494' },
+          }}
         />
         <Box mt={2} display="flex" justifyContent="space-between">
           <Button
@@ -424,6 +445,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             startIcon={<CancelIcon />}
             onClick={handleCancel}
             disabled={saving}
+            sx={{ color: 'white', borderColor: 'white' }}
           >
             キャンセル
           </Button>
