@@ -23,8 +23,7 @@ import {
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-  backgroundColor: 'black',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
 }));
 
 // 記事データの型定義
@@ -126,7 +125,7 @@ const UpdateArticlePage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 bg-black">
-      <Typography variant="h4" component="h1" className="mb-6 text-white">
+      <Typography variant="h4" component="h1" className="mb-6">
         記事を編集する
       </Typography>
       
@@ -390,17 +389,17 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           fullWidth
           margin="normal"
           InputLabelProps={{
-            style: { color: 'white' },
+            style: { color: 'black' },
           }}
           InputProps={{
-            style: { color: 'white' },
+            style: { color: 'GrayText' },
           }}
           FormHelperTextProps={{
             style: { color: '#ff9494' },
           }}
         />
         <TextField
-          label="内容"
+          label="`本文"
           name="content"
           value={formData.content}
           onChange={handleChange}
@@ -411,10 +410,10 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           rows={8}
           margin="normal"
           InputLabelProps={{
-            style: { color: 'white' },
+            style: { color: 'black' },
           }}
           InputProps={{
-            style: { color: 'white' },
+            style: { color: 'gray' },
           }}
           FormHelperTextProps={{
             style: { color: '#ff9494' },
