@@ -1,30 +1,29 @@
 'use client';
 
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import { 
-  TextField, 
-  Button, 
-  Box,
-  Typography,
-  Paper,
-  CircularProgress,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  FormHelperText
-} from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import PublishIcon from '@mui/icons-material/Publish';
-import CancelIcon from '@mui/icons-material/Cancel';
 import { useRouter } from 'next/navigation';
 import { styled } from '@mui/material/styles';
+
+// Material UIコンポーネント
+import {
+  TextField, Button, Box, Typography, Paper, CircularProgress,
+  MenuItem, ButtonGroup, Popper, Grow, MenuList, ClickAwayListener
+} from '@mui/material';
+
+// Material UIアイコン
+import {
+  Save as SaveIcon,
+  Publish as PublishIcon,
+  Cancel as CancelIcon,
+  ArrowDropDown as ArrowDropDownIcon
+} from '@mui/icons-material';
+
 
 // カスタムスタイリングされたMUIコンポーネント
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
 }));
 
 // 記事データの型定義
@@ -61,8 +60,10 @@ const UpdateArticlePage: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticleId, setSelectedArticleId] = useState<number | ''>('');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [open, setOpen] = useState(false);
+  const anchorRef = React.useRef<HTMLDivElement>(null);
   const router = useRouter();
-  
+
   useEffect(() => {
     const fetchArticles = async () => {
       try {
@@ -72,17 +73,16 @@ const UpdateArticlePage: React.FC = () => {
           setLoading(false);
           return;
         }
-        
-        const response = await fetch('http://127.0.0.1:8000/api/v1/articles', {
+        // APIエンドポイント
+        const response = await fetch(
+          'http://127.0.0.1:8000/api/v1/articles', {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
         });
-        
         if (!response.ok) {
           throw new Error(`APIエラー: ${response.status}`);
         }
-        
         const data = await response.json();
         setArticles(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -92,50 +92,77 @@ const UpdateArticlePage: React.FC = () => {
         setLoading(false);
       }
     };
-    
     fetchArticles();
   }, []);
-  
   // 記事選択時のハンドラー
   const handleArticleSelect = (articleId: number) => {
-    const selected = articles.find(article => article.article_id === articleId) || null;
-    setSelectedArticleId(articleId);
-    setSelectedArticle(selected);
+    const selected = articles.find(
+      article => article.article_id === articleId
+      ) || null;
+      setSelectedArticleId(articleId);
+      setSelectedArticle(selected);
   };
-  
+  // ドロップダウンの開閉を処理する
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  // メニューアイテムがクリックされたときの処理
+  const handleMenuItemClick = (articleId: number) => {
+    handleArticleSelect(articleId);
+    setOpen(false);
+  };
+
+  // クリックアウェイ処理
+  const handleClose = (event: Event) => {
+    if (anchorRef.current && anchorRef.current.contains(
+      event.target as HTMLElement
+    )) {
+      return;
+    }
+    setOpen(false);
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Typography variant="h4" component="h1" className="mb-6">
-        記事を編集する
-      </Typography>
-      
-      {loading ? (
-        <Box display="flex" justifyContent="center" p={4}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Box p={2} bgcolor="error.light" color="error.contrastText" borderRadius={1}>
-          <Typography>{error}</Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => router.push('/demopage')} 
-            className="mt-4"
-          >
-            会員専用ページに戻る
-          </Button>
-        </Box>
+    <div className="
+      container mx-auto
+      px-4 py-8 bg-black"
+    >
+    <Typography
+      variant="h4" component="h1" className="mb-6"
+    >
+      記事を編集する
+    </Typography>
+
+    {loading ? (
+      <Box className="flex justify-center p-4">
+        <CircularProgress />
+      </Box>
+    ) : error ? (
+      <Box className="p-2 bg-red-100 text-red-800 rounded">
+        <Typography>
+          {error}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => router.push('/user')}
+          className="mt-4"
+        >
+          会員専用ページに戻る
+        </Button>
+      </Box>
       ) : (
         <>
           {articles.length === 0 ? (
-            <Box p={4} textAlign="center">
+            <Box className="p-4 text-center">
               <Typography variant="h6" gutterBottom>
                 編集可能な記事がありません
               </Typography>
               <Button 
                 variant="contained" 
                 color="primary" 
-                onClick={() => router.push('/demopage')} 
+                onClick={() => router.push('/user')} 
                 className="mt-4"
               >
                 会員専用ページに戻る
@@ -144,46 +171,86 @@ const UpdateArticlePage: React.FC = () => {
           ) : (
             <>
               <StyledPaper className="mb-6">
-                <Box p={2}>
-                  <FormControl fullWidth>
-                    <Select
-                      value={selectedArticleId}
-                      onChange={(e) => handleArticleSelect(e.target.value as number)}
-                      displayEmpty
-                      fullWidth
+                <Box className="p-2">
+                  {/* Select を SplitButton に置き換え */}
+                  <div>
+                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button" sx={{ backgroundColor: '#1976d2', color: 'white' }}>
+                      <Button 
+                        onClick={() => selectedArticleId && handleArticleSelect(selectedArticleId as number)}
+                        sx={{ color: 'white', textAlign: 'left', fontSize: '1.4rem' }}
+                      >
+                        {selectedArticle?.title || '記事を選択してください'}
+                      </Button>
+                      <Button
+                        size="small"
+                        aria-controls={open ? 'split-button-menu' : undefined}
+                        aria-expanded={open ? 'true' : undefined}
+                        aria-label="select article"
+                        aria-haspopup="menu"
+                        onClick={handleToggle}
+                        sx={{ color: 'white' }}
+                      >
+                        <ArrowDropDownIcon />
+                      </Button>
+                    </ButtonGroup>
+                    <Popper
+                      sx={{ zIndex: 1 }}
+                      open={open}
+                      anchorEl={anchorRef.current}
+                      role={undefined}
+                      transition
+                      disablePortal
                     >
-                      <MenuItem value="" disabled>記事を選択してください</MenuItem>
-                      {articles.map((article) => (
-                        <MenuItem key={article.article_id} value={article.article_id}>
-                          {article.title}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                      {({ TransitionProps, placement }) => (
+                        <Grow
+                          {...TransitionProps}
+                          style={{
+                            transformOrigin:
+                              placement === 'bottom' ? 'center top' : 'center bottom',
+                          }}
+                        >
+                          <Paper>
+                            <ClickAwayListener onClickAway={handleClose}>
+                              <MenuList id="split-button-menu" autoFocusItem>
+                                {articles.map((article) => (
+                                  <MenuItem
+                                    key={article.article_id}
+                                    selected={article.article_id === selectedArticleId}
+                                    onClick={() => handleMenuItemClick(article.article_id)}
+                                  >
+                                    {article.title}
+                                  </MenuItem>
+                                ))}
+                              </MenuList>
+                            </ClickAwayListener>
+                          </Paper>
+                        </Grow>
+                      )}
+                    </Popper>
+                  </div>
                 </Box>
               </StyledPaper>
-              
               {selectedArticle && <PostForm initialData={selectedArticle} />}
             </>
-          )}
+            )}
         </>
       )}
     </div>
   );
 };
 
-const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
+const PostForm: React.FC<PostFormProps> = (
+  { initialData = null }
+  ) => {
   // フォームの状態管理（簡素化）
   const [formData, setFormData] = useState<PostFormData>({
     title: initialData?.title || '',
     content: initialData?.body || '',  // bodyフィールドを使用
     publishStatus: 'published',  // デフォルトは公開
   });
-  
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
   const router = useRouter();
-  
   // 初期データが変更されたらフォームデータを更新
   useEffect(() => {
     if (initialData) {
@@ -194,15 +261,17 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       });
     }
   }, [initialData]);
-  
+
   // 入力フィールドの変更ハンドラー
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement
+    >) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
     });
-    
     // エラーをクリア
     if (errors[name as keyof FormErrors]) {
       setErrors({
@@ -211,54 +280,48 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       });
     }
   };
-  
+
   // キャンセルハンドラー
   const handleCancel = () => {
     if (formData.title.trim() || formData.content.trim()) {
       // 入力内容がある場合は確認ダイアログを表示
       const confirmCancel = window.confirm('編集内容が保存されていません。キャンセルしますか？');
       if (confirmCancel) {
-        router.push('/demopage');
+        router.push('/user');
       }
     } else {
       // 入力内容がない場合は直接戻る
-      router.push('/demopage');
+      router.push('/user');
     }
   };
-  
   // フォーム送信時のバリデーション
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
     if (!formData.title.trim()) {
       newErrors.title = 'タイトルを入力してください';
     }
-    
     if (!formData.content.trim()) {
       newErrors.content = '記事の内容を入力してください';
     }
-    
     if (!initialData?.article_id) {
       newErrors.articleId = '編集する記事が選択されていません';
     }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
   // 記事の保存または公開ハンドラー
-  const handleSubmit = async (action: 'draft' | 'publish') => {
-    if (!validateForm()) return;
-    if (!initialData?.article_id) {
-      alert('編集する記事が選択されていません');
-      return;
-    }
-    
+  const handleSubmit = async (
+    action: 'draft' | 'publish'
+  ) => {
+  if (!validateForm()) return;
+  if (!initialData?.article_id) {
+    alert('編集する記事が選択されていません');
+    return;
+  }
     setSaving(true);
-    
     try {
-      const statusToSet = action === 'publish' ? 'published' : 'draft';
-      
+      const statusToSet = action ===
+      'publish' ? 'published' : 'draft';
       // APIリクエストデータを準備
       const postData = {
         title: formData.title,
@@ -266,7 +329,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         user_id: initialData.user_id,
         status: statusToSet
       };
-      
       // トークン取得
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -274,10 +336,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         router.push('/login');
         return;
       }
-      
       // APIエンドポイント（クエリパラメータでarticle_idを指定）
-      const url = `http://127.0.0.1:8000/api/v1/articles?article_id=${initialData.article_id}`;
-      
+      const url =
+      `http://127.0.0.1:8000/api/v1/articles?article_id=${initialData.article_id}`;
       // 実際のAPI呼び出し
       const response = await fetch(url, {
         method: 'PUT',
@@ -287,20 +348,16 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         },
         body: JSON.stringify(postData),
       });
-      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API エラーレスポンス:', errorText);
         throw new Error(`記事の更新に失敗しました (${response.status})`);
       }
-      
       const result = await response.json();
       console.log('API 成功レスポンス:', result);
-      
       // 成功したら一覧ページに戻る
       alert('記事を正常に更新しました');
-      router.push('/demopage');
-      
+      router.push('/user');
     } catch (error) {
       console.error('更新エラー:', error);
       alert(`記事の更新に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
@@ -308,7 +365,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       setSaving(false);
     }
   };
-  
+
   return (
     <StyledPaper>
       <Box className="mb-4">
@@ -316,8 +373,10 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           記事の編集
         </Typography>
       </Box>
-
-      <Box component="form" noValidate autoComplete="off">
+        <Box
+          component="form"
+          noValidate autoComplete="off"
+        >
         <TextField
           label="タイトル"
           name="title"
@@ -327,9 +386,20 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           helperText={errors.title}
           fullWidth
           margin="normal"
+          slotProps={{
+            inputLabel: {
+              style: { color: 'black' },
+            },
+            input: {
+              style: { color: 'GrayText' },
+            },
+            formHelperText: {
+              style: { color: '#ff9494' },
+            },
+          }}
         />
         <TextField
-          label="内容"
+          label="本文"
           name="content"
           value={formData.content}
           onChange={handleChange}
@@ -339,6 +409,17 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           multiline
           rows={8}
           margin="normal"
+          slotProps={{
+            inputLabel: {
+              style: { color: 'black' },
+            },
+            input: {
+              style: { color: 'GrayText' },
+            },
+            formHelperText: {
+              style: { color: '#ff9494' },
+            },
+          }}
         />
         <Box mt={2} display="flex" justifyContent="space-between">
           <Button
@@ -365,16 +446,16 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             startIcon={<CancelIcon />}
             onClick={handleCancel}
             disabled={saving}
+            sx={{ color: 'red', borderColor: 'red' }}
           >
             キャンセル
           </Button>
         </Box>
-        
         <Box mt={3} textAlign="center" className="border-t pt-4">
           <Button
             variant="outlined"
             color="primary"
-            onClick={() => router.push('/demopage')}
+            onClick={() => router.push('/user')}
             className="mx-auto"
           >
             会員専用ページに戻る

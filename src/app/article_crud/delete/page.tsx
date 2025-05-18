@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 // 記事の型定義
 interface Article {
@@ -317,7 +321,7 @@ export default function DeleteArticlePage() {
         <div className="text-center py-8">
           <p>記事が見つかりません。</p>
           <button
-            onClick={() => router.push('/demopage')}
+            onClick={() => router.push('/user')}
             className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
             会員専用ページに戻る
@@ -347,12 +351,20 @@ export default function DeleteArticlePage() {
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
-                  <button
+                  {/* <button
                     onClick={() => handleDelete(articleId)}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
                     削除
-                  </button>
+                  </button> */}
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => handleDelete(articleId)}
+                  >
+                    削除する
+                  </Button>
                 </div>
               </li>
             );
@@ -363,7 +375,7 @@ export default function DeleteArticlePage() {
       {/* 下部にだけ戻るボタンを残す */}
       <div className="mt-6 text-center">
         <button
-          onClick={() => router.push('/demopage')}
+          onClick={() => router.push('/user')}
           className="px-6 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
         >
           会員専用ページに戻る
