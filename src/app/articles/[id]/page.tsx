@@ -89,7 +89,11 @@ const ArticleDetailPage: FC = () => {
         <div className="
           text-center py-10"
         >
-          <p className="text-gray-600">記事を読み込み中...</p>
+          <p className="
+            text-gray-600
+          ">
+            記事を読み込み中...
+          </p>
         </div>
       ) : error ? (
         <div className="
@@ -164,7 +168,11 @@ const ArticleDetailPage: FC = () => {
         <div className="
           text-center py-10"
         >
-          <p className="text-gray-600">記事情報が取得できませんでした</p>
+          <p className="
+            text-gray-600
+          ">
+            記事情報が取得できませんでした
+          </p>
           <Link
             href="/user"
             className="
