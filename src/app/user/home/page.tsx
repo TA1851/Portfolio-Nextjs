@@ -42,7 +42,8 @@ const DemoBody: FC = () => {
 
         // 全記事を取得するシンプルなAPI呼び出し
         const response = await fetch(
-          'http://127.0.0.1:8000/api/v1/articles', {
+          // 'http://127.0.0.1:8000/api/v1/articles', {
+          'https://blog-api-main.onrender.com/api/v1/articles', {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }

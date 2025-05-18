@@ -5,24 +5,28 @@ import Link from "next/link";
 const HeaderComp: FC = () => {
   return (
     <>
-      <div className="
-        bg-white 
+      <div
+      className="
+        bg-white
         lg:pb-12
       ">
-        <div className="
-          mx-auto 
+        <div
+        className="
+          mx-auto
           max-w-screen-2xl 
           px-4 
           md:px-8
         ">
-          <header className="
+          <header
+          className="
             flex 
             items-center 
             justify-between 
             py-4 
             md:py-8
           ">
-            <div className="
+            <div
+            className="
               inline-flex 
               items-center 
               gap-2.5 
@@ -48,14 +52,15 @@ const HeaderComp: FC = () => {
               Blog
             </div>
 
-            <nav className="
+            <nav
+            className="
               hidden 
               gap-12 
               lg:flex
             ">
             </nav>
-            
-            <div className="
+            <div
+            className="
               -ml-8 
               hidden 
               flex-col 
@@ -114,7 +119,6 @@ const HeaderComp: FC = () => {
                 新規登録
               </Link>
             </div>
-            
             <button
               type="button"
               className="
@@ -161,5 +165,4 @@ const HeaderComp: FC = () => {
     </>
   );
 };
-
 export default HeaderComp;

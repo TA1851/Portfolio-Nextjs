@@ -3,21 +3,25 @@ import { FC } from 'react';
 const Footer: FC = () => {
   return (
     <>
-      <div className="
+      <div
+      className="
         bg-white pt-4
         sm:pt-10 lg:pt-12
       ">
-        <footer className="
+        <footer
+        className="
           mx-auto max-w-screen-2xl
           px-4 md:px-8
         ">
-          <div className="
+          <div
+          className="
             flex flex-col
             items-center border-t
             pt-6
           ">
           </div>
-          <div className="
+          <div
+          className="
             py-8 text-center
             text-sm text-gray-400
           ">

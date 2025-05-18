@@ -5,46 +5,62 @@ import Image from 'next/image';
 const DetailPage: FC = () => {
   return (
     <>
-      <div className="
+      <div
+      className="
         bg-white pb-6 
         sm:pb-8 lg:pb-12
       ">
-        <div className="
+        <div
+        className="
           mx-auto max-w-screen-2xl 
           px-4 md:px-8
         ">
-          <header className="
+          <header
+          className="
             mb-8 flex 
             items-center justify-between 
             py-4 md:mb-12 
             md:py-8 xl:mb-16
           ">
-            <Link href="/" className="
+            <Link href="/"
+            className="
               inline-flex items-center 
               gap-2.5 text-2xl 
               font-bold text-black 
               md:text-3xl
             " aria-label="logo">
-              <svg width="95" height="94" viewBox="0 0 95 94" className="
+              <svg
+              width="95"
+              height="94"
+              viewBox="0 0 95 94"
+              className="
                 h-auto w-6 
                 text-indigo-500
-              " fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M96 0V47L48 94H0V47L48 0H96Z" />
+                "
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg
+              ">
+                <path
+                  d="M96 0V47L48 94H0V47L48 0H96Z"
+                />
               </svg>
 
               Flowrift
             </Link>
-            <nav className="
+            <nav
+            className="
               hidden gap-12 
               lg:flex
             ">
-              <Link href="#" className="
+              <Link href="#"
+              className="
                 text-lg font-semibold 
                 text-indigo-500
               ">
                 Home
               </Link>
-              <Link href="#" className="
+              <Link href="#"
+              className="
                 text-lg font-semibold 
                 text-gray-600 transition 
                 duration-100 hover:text-indigo-500 
@@ -52,7 +68,8 @@ const DetailPage: FC = () => {
               ">
                 Features
               </Link>
-              <Link href="#" className="
+              <Link href="#"
+              className="
                 text-lg font-semibold 
                 text-gray-600 transition 
                 duration-100 hover:text-indigo-500 
@@ -60,7 +77,8 @@ const DetailPage: FC = () => {
               ">
                 Pricing
               </Link>
-              <Link href="#" className="
+              <Link href="#"
+              className="
                 text-lg font-semibold 
                 text-gray-600 transition 
                 duration-100 hover:text-indigo-500 
@@ -69,7 +87,8 @@ const DetailPage: FC = () => {
                 About
               </Link>
             </nav>
-            <Link href="#" className="
+            <Link href="#"
+            className="
               hidden rounded-lg 
               bg-gray-200 px-8 
               py-3 text-center 
@@ -107,18 +126,21 @@ const DetailPage: FC = () => {
             </button>
           </header>
 
-          <section className="
+          <section
+          className="
             flex flex-col justify-between 
             gap-6 sm:gap-10 
             md:gap-16 lg:flex-row
           ">
-            <div className="
+            <div
+            className="
               flex flex-col justify-center 
               sm:text-center lg:py-12 
               lg:text-left xl:w-5/12 
               xl:py-24
             ">
-              <p className="
+              <p
+              className="
                 mb-4 font-semibold 
                 text-indigo-500 md:mb-6 
                 md:text-lg xl:text-xl
@@ -126,7 +148,8 @@ const DetailPage: FC = () => {
                 Very proud to introduce
               </p>
 
-              <h1 className="
+              <h1
+              className="
                 mb-8 text-4xl 
                 font-bold text-black 
                 sm:text-5xl md:mb-12 
@@ -134,7 +157,8 @@ const DetailPage: FC = () => {
               ">
                 Revolutionary way to build the web
               </h1>
-              <p className="
+              <p
+              className="
                 mb-8 leading-relaxed 
                 text-gray-500 md:mb-12 
                 lg:w-4/5 xl:text-lg
@@ -142,7 +166,8 @@ const DetailPage: FC = () => {
                 This is a section of some simple filler text, also known as placeholder text.
                 It shares some characteristics of a real written text but is random.
               </p>
-              <div className="
+              <div
+              className="
                 flex flex-col gap-2.5 
                 sm:flex-row sm:justify-center 
                 lg:justify-start
@@ -177,7 +202,8 @@ const DetailPage: FC = () => {
                 </Link>
               </div>
             </div>
-            <div className="
+            <div
+            className="
               h-48 overflow-hidden 
               rounded-lg bg-gray-100 
               shadow-lg lg:h-auto 
@@ -199,18 +225,22 @@ const DetailPage: FC = () => {
           </section>
         </div>
       </div>
-      <div className="
+      <div
+      className="
         bg-white py-6 
         sm:py-8 lg:py-12
       ">
-        <div className="
+        <div
+        className="
           mx-auto max-w-screen-2xl 
           px-4 md:px-8
         ">
-          <div className="
+            <div
+            className="
             mb-10 md:mb-16
-          ">
-            <h2 className="
+            ">
+            <h2
+            className="
               mb-4 text-center 
               text-2xl font-bold 
               text-gray-800 md:mb-6 
@@ -218,7 +248,8 @@ const DetailPage: FC = () => {
             ">
               Our competitive advantage
             </h2>
-            <p className="
+            <p
+            className="
               mx-auto max-w-screen-md 
               text-center text-gray-500 
               md:text-lg
@@ -228,17 +259,20 @@ const DetailPage: FC = () => {
               It shares some characteristics of a real written text
               but is random or otherwise generated.
             </p>
-          </div>
-          <div className="
+            </div>
+          <div
+          className="
             grid gap-8 
             sm:grid-cols-2 md:gap-12 
             xl:grid-cols-3 xl:gap-16
           ">
-            <div className="
+            <div
+            className="
               flex gap-4 
               md:gap-6
             ">
-              <div className="
+              <div
+              className="
                 flex h-12 w-12 
                 shrink-0 items-center 
                 justify-center rounded-lg 
@@ -256,19 +290,22 @@ const DetailPage: FC = () => {
               </div>
 
               <div>
-                <h3 className="
+                <h3
+                className="
                   mb-2 text-lg 
                   font-semibold md:text-xl
                 ">
                   Growth
                 </h3>
-                <p className="
+                <p
+                className="
                   mb-2 text-gray-500
                 ">
                   Filler text is dummy text which has no meaning
                   however looks very similar to real text.
                 </p>
-                <Link href="#" className="
+                <Link href="#"
+                className="
                   font-bold text-indigo-500 
                   transition duration-100 
                   hover:text-indigo-600 active:text-indigo-700
@@ -277,11 +314,13 @@ const DetailPage: FC = () => {
                 </Link>
               </div>
             </div>
-            <div className="
+            <div
+            className="
               flex gap-4 
               md:gap-6
             ">
-              <div className="
+              <div
+              className="
                 flex h-12 w-12 
                 shrink-0 items-center 
                 justify-center rounded-lg 
@@ -300,19 +339,22 @@ const DetailPage: FC = () => {
                 </svg>
               </div>
               <div>
-                <h3 className="
-                  mb-2 text-lg 
+                <h3
+                className="
+                  mb-2 text-lg
                   font-semibold md:text-xl
                 ">
                   Security
                 </h3>
-                <p className="
+                <p
+                className="
                   mb-2 text-gray-500
                 ">
                   Filler text is dummy text which has no meaning
                   however looks very similar to real text.
                 </p>
-                <Link href="#" className="
+                <Link href="#"
+                className="
                   font-bold text-indigo-500 
                   transition duration-100 
                   hover:text-indigo-600 active:text-indigo-700
@@ -321,11 +363,13 @@ const DetailPage: FC = () => {
                 </Link>
               </div>
             </div>
-            <div className="
+            <div
+            className="
               flex gap-4 
               md:gap-6
             ">
-              <div className="
+              <div
+              className="
                 flex h-12 w-12 
                 shrink-0 items-center 
                 justify-center rounded-lg 
@@ -346,7 +390,8 @@ const DetailPage: FC = () => {
               </div>
 
               <div>
-                <h3 className="
+                <h3
+                className="
                   mb-2 text-lg 
                   font-semibold md:text-xl
                 ">
@@ -467,7 +512,8 @@ const DetailPage: FC = () => {
               flex gap-4 
               md:gap-6
             ">
-              <div className="
+              <div
+              className="
                 flex h-12 w-12 
                 shrink-0 items-center 
                 justify-center rounded-lg 
@@ -475,7 +521,8 @@ const DetailPage: FC = () => {
                 shadow-lg md:h-14 
                 md:w-14 md:rounded-xl
               ">
-                <svg xmlns="http://www.w3.org/2000/svg" className="
+                <svg xmlns="http://www.w3.org/2000/svg"
+                className="
                   h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -490,21 +537,23 @@ const DetailPage: FC = () => {
                   />
                 </svg>
               </div>
-
               <div>
-                <h3 className="
+                <h3
+                className="
                   mb-2 text-lg 
                   font-semibold md:text-xl
                 ">
                   Dark Mode
                 </h3>
-                <p className="
+                <p
+                className="
                   mb-2 text-gray-500
                 ">
                   Filler text is dummy text which has no meaning
                   however looks very similar to real text.
                 </p>
-                <Link href="#" className="
+                <Link href="#"
+                className="
                   font-bold text-indigo-500 
                   transition duration-100 
                   hover:text-indigo-600 active:text-indigo-700
@@ -516,15 +565,18 @@ const DetailPage: FC = () => {
           </div>
         </div>
       </div>
-      <div className="
+      <div
+      className="
         bg-white py-6 
         sm:py-8 lg:py-12
       ">
-        <div className="
+        <div
+        className="
           mx-auto max-w-screen-2xl 
           px-4 md:px-8
         ">
-          <h2 className="
+          <h2
+          className="
             mb-4 text-center 
             text-2xl font-bold 
             text-gray-800 md:mb-8 
@@ -532,18 +584,21 @@ const DetailPage: FC = () => {
           ">
             Trusted by the best
           </h2>
-          <div className="
+          <div
+          className="
             grid grid-cols-2 
             gap-6 rounded-lg 
             bg-gray-100 p-6 
             sm:h-40 sm:content-evenly 
             md:grid-cols-4
           ">
-            <div className="
+            <div
+            className="
               flex justify-center 
               text-gray-400
             ">
-              <svg className="
+              <svg
+              className="
                 h-6 w-auto 
                 sm:h-8 lg:h-10"
                 width="154" height="39"
@@ -630,11 +685,13 @@ const DetailPage: FC = () => {
                 <path d="M0 31L24 7V31H0Z" />
               </svg>
             </div>
-            <div className="
+            <div
+            className="
               flex justify-center 
               text-gray-400
             ">
-              <svg className="
+              <svg
+              className="
                 h-6 w-auto 
                 sm:h-8 lg:h-10"
                 width="186" height="39" viewBox="0 0 186 39"
@@ -659,11 +716,13 @@ const DetailPage: FC = () => {
                 />
               </svg>
             </div>
-            <div className="
+            <div
+            className="
               flex justify-center 
               text-gray-400
             ">
-              <svg className="
+              <svg
+              className="
                 h-6 w-auto 
                 sm:h-8 lg:h-10"
                 width="173" height="39"
@@ -676,7 +735,8 @@ const DetailPage: FC = () => {
             </div>
           </div>
 
-          <div className="
+          <div
+          className="
             border-t border-gray-800 
             py-8 text-center 
             text-sm text-gray-400
