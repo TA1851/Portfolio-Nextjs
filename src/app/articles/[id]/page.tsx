@@ -42,7 +42,8 @@ const ArticleDetailPage: FC = () => {
 
         console.log(`記事ID: ${id} の詳細を取得します`);
         const response = await fetch(
-          `http://127.0.0.1:8000/api/v1/articles/${id}`, {
+          // `http://127.0.0.1:8000/api/v1/articles/${id}`
+          `https://blog-api-main.onrender.com/api/v1/articles/${id}`, {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
