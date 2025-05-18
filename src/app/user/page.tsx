@@ -7,19 +7,6 @@ import DemoBody from "@/app/user/home/page";
 import { saveLog } from "@/utils/logger";
 
 const HeaderComp: FC = () => {
-  // const router = useRouter();
-
-  // const handleLogout = () => {
-  //   // console.log("ログアウトボタンがクリックされました");
-    
-  //   // LocalStorageからトークンを削除
-  //   localStorage.removeItem('authToken');
-    
-  //   // axioshヘッダーから認証情報を削除（必要に応じて）
-  //   // axios.defaults.headers.common['Authorization'] = '';
-    
-  //   // ログアウト後にログイン画面やホーム画面に遷移
-  //   router.push('/logout');
   const router = useRouter();
 
   // ログアウト処理関数
@@ -28,20 +15,18 @@ const HeaderComp: FC = () => {
       // ローカルストレージからトークンを取得
       const token = localStorage.getItem('authToken');
       console.log(`トークン：${token}`);
-      
       if (!token) {
         console.error('トークンがありません');
         return;
       }
-      
       // APIにログアウトリクエストを送信
-      const response = await fetch('http://127.0.0.1:8000/api/v1/logout', {
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/v1/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
       if (response.ok) {
         // ログアウト成功
         localStorage.removeItem('authToken'); // トークンをローカルストレージから削除
@@ -61,17 +46,44 @@ const HeaderComp: FC = () => {
 
   return (
     <>
-      <div className="bg-white lg:pb-12">
-        <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
-          <header className="flex items-center justify-between py-4 md:py-8">
-            <a href="#" className="inline-flex items-center gap-2.5 text-2xl font-bold text-black md:text-3xl" aria-label="logo">
-              <svg width="95" height="94" viewBox="0 0 95 94" className="h-auto w-6 text-indigo-500" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <div className="
+        bg-white lg:pb-12
+      ">
+        <div className="
+          mx-auto max-w-screen-2xl
+          px-4 md:px-8
+        ">
+          <header className="
+              flex items-center
+              justify-between
+              py-4 md:py-8
+            ">
+            <a href="#"
+            className="
+              inline-flex items-center
+              gap-2.5 text-2xl
+              font-bold text-black
+              md:text-3xl
+              " aria-label="logo"
+            >
+              <svg
+                width="95" height="94"
+                viewBox="0 0 95 94"
+                className="
+                  h-auto w-6
+                  text-indigo-500"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg
+                ">
                 <path d="M96 0V47L48 94H0V47L48 0H96Z" />
               </svg>
               会員専用ページ
             </a>
 
-            <nav className="hidden gap-12 lg:flex">
+            <nav className="
+              hidden
+              gap-12 lg:flex
+            ">
               {/* <Link
                 href="/"
                 className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
@@ -80,21 +92,36 @@ const HeaderComp: FC = () => {
               </Link> */}
               <Link
                 href="/article_crud/create"
-                className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
-              >
-                記事を書く
+                className="
+                  text-lg font-semibold
+                  text-gray-600
+                  transition duration-100
+                  hover:text-indigo-500
+                  active:text-indigo-700
+                ">
+                  記事を書く
               </Link>
               <Link
                 href="/article_crud/update"
-                className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
-              >
-                記事を編集する
+                className="
+                  text-lg font-semibold
+                  text-gray-600 transition
+                  duration-100
+                  hover:text-indigo-500
+                  active:text-indigo-700
+                ">
+                  記事を編集する
               </Link>
               <Link
                 href="/article_crud/delete"
-                className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
-              >
-                記事を削除する
+                className="
+                  text-lg font-semibold
+                  text-gray-600
+                  transition duration-100
+                  hover:text-indigo-500
+                  active:text-indigo-700
+                ">
+                  記事を削除する
               </Link>
             </nav>
 
@@ -103,19 +130,35 @@ const HeaderComp: FC = () => {
               <input
                 type="text"
                 placeholder="検索"
-                className="w-full rounded-lg border border-gray-300 px-10 py-3 text-sm text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
+                className="
+                  w-full rounded-lg
+                  border border-gray-300
+                  px-10 py-3
+                  text-sm text-gray-800
+                  outline-none ring-indigo-300
+                  transition duration-100
+                  focus:ring"
               />
             </div>
             <button
               type="submit"
-              className="text-black px-4 py-1 bg-gray-400 hover:bg-gray-300 rounded"
-            >
-              検索
+              className="
+                text-black
+                px-4 py-1
+                bg-gray-400
+                hover:bg-gray-300 rounded
+              ">
+                検索
             </button>
             {/* ログアウトボタン - Linkを使わずに直接ボタンでハンドリング */}
             <button
               type="button"
-              className="text-black px-4 py-1 bg-blue-500 hover:bg-blue-400 rounded"
+              className="
+                text-black
+                px-4 py-1
+                bg-blue-500
+                hover:bg-blue-400
+                rounded"
               onClick={handleLogout}
             >
               ログアウト
@@ -127,5 +170,4 @@ const HeaderComp: FC = () => {
     </>
   );
 };
-
 export default HeaderComp;

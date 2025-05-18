@@ -41,7 +41,8 @@ const DemoBody: FC = () => {
         }
 
         // 全記事を取得するシンプルなAPI呼び出し
-        const response = await fetch('http://127.0.0.1:8000/api/v1/articles', {
+        const response = await fetch(
+          'http://127.0.0.1:8000/api/v1/articles', {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
@@ -60,9 +61,9 @@ const DemoBody: FC = () => {
             totalCount: data.length,
             firstItem: data[0],
             ids: data.map(item => item.article_id),
-            hasNullIds: data.some(item => item.article_id === null || item.article_id === undefined)
+            hasNullIds: data.some(item =>
+              item.article_id === null || item.article_id === undefined)
           });
-          
           // IDがnullや未定義の記事を特定 (article_idに修正)
           data.forEach((article, index) => {
             if (!article.article_id) {
@@ -70,18 +71,21 @@ const DemoBody: FC = () => {
             }
           });
         }
-
         // IDの型変換を確実に行う (article_idに修正)
-        const processedData = Array.isArray(data) 
+        const processedData = Array.isArray(data)
           ? data.map(article => {
               // IDの有無とタイプを詳細にチェック (article_idに修正)
               const hasId = 'article_id' in article && article.article_id !== null;
-              console.log(`記事「${article.title}」: ID ${hasId ? article.article_id : 'なし'}, タイプ ${typeof article.article_id}`);
-              
+              console.log(
+                `記事「${article.title}」:
+                ID ${hasId ? article.article_id : 'なし'},
+                タイプ ${typeof article.article_id}`);
               return {
                 ...article,
                 // 明示的に存在チェック - 0や空文字も有効なIDとして処理 (article_idに修正)
-                article_id: hasId ? Number(article.article_id) : undefined
+                article_id: hasId ? Number(
+                  article.article_id
+                ) : undefined
               };
             })
           : [];
@@ -115,7 +119,8 @@ const DemoBody: FC = () => {
   };
 
   // 修正: 明示的なナビゲーション関数 (article_idに修正)
-  const navigateToArticle = (articleId?: number, e?: React.MouseEvent) => {
+  const navigateToArticle = (
+    articleId?: number, e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -125,12 +130,10 @@ const DemoBody: FC = () => {
       console.warn('記事IDが存在しません');
       return;
     }
-    
     try {
       console.log(`記事ID: ${articleId} の詳細ページへ遷移します`);
       const articlePath = `/articles/${articleId}`;
       console.log(`遷移先: ${articlePath}`);
-      
       // router.pushの代わりにwindow.locationを使用
       window.location.href = articlePath;
     } catch (error) {
@@ -140,33 +143,89 @@ const DemoBody: FC = () => {
 
   // レンダリング部分の追加
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">記事一覧</h1>
-      
+    <div className="
+      container mx-auto
+      px-4 py-8
+    ">
+      <h1 className="
+      text-2xl
+      font-bold mb-6
+    ">
+      記事一覧
+    </h1>
       {loading ? (
-        <div className="text-center py-10">
-          <p className="text-gray-600">記事を読み込み中...</p>
+        <div className="
+          text-center
+          py-10
+        ">
+          <p className="
+            text-gray-600
+          ">
+            記事を読み込み中...
+          </p>
         </div>
       ) : error ? (
-        <div className="text-center py-10">
-          <p className="text-red-500">{error}</p>
+        <div className="
+          text-center py-10
+        ">
+          <p className="
+            text-red-500
+          ">
+            {error}
+          </p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {getCurrentPageArticles().map((article, index) => (
-              <div 
+          <div className="
+          grid grid-cols-1
+          md:grid-cols-2
+          lg:grid-cols-3
+          gap-6 mb-8">
+            {getCurrentPageArticles().map(
+              (article, index) => (
+              <div
                 key={article.article_id || index} 
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                onClick={() => article.article_id && navigateToArticle(article.article_id)}
+                className="
+                  bg-white rounded-lg
+                  shadow-md overflow-hidden
+                  hover:shadow-lg transition-shadow
+                  duration-300 cursor-pointer
+                  "
+                onClick={(
+                ) => article.article_id && navigateToArticle(
+                  article.article_id
+                )}
               >
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-2 text-gray-800 hover:text-blue-600">{article.title}</h2>
-                  <p className="text-gray-600 text-sm line-clamp-3">{article.body?.substring(0, 150)}...</p>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="text-sm text-gray-500">投稿者ID: {article.user_id}</span>
+                  <h2 className="
+                    text-xl font-semibold
+                    mb-2 text-gray-800
+                    hover:text-blue-600
+                  ">
+                    {article.title}
+                  </h2>
+                  <p className="
+                    text-gray-600 text-sm
+                    line-clamp-3
+                  ">
+                    {article.body?.substring(0, 150)}...
+                  </p>
+                  <div className="
+                    mt-4 flex
+                    justify-between
+                    items-center
+                  ">
+                    <span className="
+                      text-sm text-gray-500
+                    ">
+                      投稿者ID: {article.user_id}
+                    </span>
                     <button
-                      className={`inline-block ${!article.article_id ? 'cursor-not-allowed opacity-50' : 'hover:bg-blue-200'} bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded`}
+                      className={
+                        `inline-block ${!article.article_id ?
+                          'cursor-not-allowed opacity-50' :
+                          'hover:bg-blue-200'
+                        } bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded`}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (article.article_id) {
@@ -183,11 +242,16 @@ const DemoBody: FC = () => {
               </div>
             ))}
           </div>
-          
           {/* ページネーションコントロール */}
-          <div className="flex justify-center mt-8">
+          <div className="
+            flex
+            justify-center mt-8
+          ">
             <ul className="flex">
-              {Array.from({ length: Math.ceil(articles.length / pagination.articlesPerPage) }).map((_, index) => (
+              {Array.from(
+                { length: Math.ceil(
+                  articles.length / pagination.articlesPerPage
+                ) }).map((_, index) => (
                 <li key={index}>
                   <button
                     onClick={() => handlePageChange(index + 1)}
@@ -208,5 +272,4 @@ const DemoBody: FC = () => {
     </div>
   );
 };
-
 export default DemoBody;
