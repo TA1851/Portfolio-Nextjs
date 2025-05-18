@@ -38,7 +38,8 @@ const LoginComp: FC = () => {
 
         console.log('送信データ:', {username: emailValue, password: passwordValue});
         const response = await axios.post(
-          'http://127.0.0.1:8000/api/v1/login',
+          // 'http://127.0.0.1:8000/api/v1/login',
+          'https://blog-api-main.onrender.com/api/v1/login',
           formData
         );
 
