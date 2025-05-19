@@ -56,11 +56,11 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     content: initialData?.content || initialData?.body || '',
     publishStatus: initialData?.publishStatus || 'draft',
   });
-  
+
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
   const router = useRouter();
-  
+
   // 入力フィールドの変更ハンドラー
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -68,7 +68,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       ...formData,
       [name]: value
     });
-    
+
     // エラーをクリア
     if (errors[name as keyof FormErrors]) {
       setErrors({
@@ -77,7 +77,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       });
     }
   };
-  
+
   // フォーム送信時のバリデーション
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -90,35 +90,35 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   // トークンのリフレッシュを試みる
   const refreshToken = async () => {
     try {
       const currentToken = localStorage.getItem('authToken');
       if (!currentToken) return null;
-      
+
       // リフレッシュAPI呼び出し（APIの仕様に合わせて調整）
-      const refreshResponse = await fetch('http://127.0.0.1:8000/api/v1/auth/refresh', {
+      const refreshResponse = await fetch('https://blog-api-main.onrender.com/api/v1/auth/refresh', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
         }
       });
-      
+
       if (!refreshResponse.ok) {
         console.error('トークンリフレッシュ失敗:', refreshResponse.status);
         return null;
       }
-      
+
       const refreshData = await refreshResponse.json();
       const newToken = refreshData.access_token;
-      
+
       if (newToken) {
         localStorage.setItem('authToken', newToken);
         console.log('トークンを更新しました');
         return newToken;
       }
-      
+
       return null;
     } catch (error) {
       console.error('リフレッシュエラー:', error);
@@ -136,13 +136,13 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   // 記事の保存または公開ハンドラー
   const handleSubmit = async (action: 'draft' | 'publish') => {
     if (!validateForm()) return;
-    
+
     setSaving(true);
-    
+
     try {
       // トークン取得と検証を強化
       let cleanToken = ''; // cleanTokenをより広いスコープで宣言
-      
+
       // ユーザーIDを追加（FastAPIのデフォルト実装では通常必要）
       const postData = {
         title: formData.title,
@@ -150,14 +150,14 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         user_id: 6, // テストで成功したuser_idを指定
         publish_status: action === 'publish' ? 'published' : 'draft',
       };
-      
+
       console.log('送信データ:', postData);
-      
+
       try {
         // トークン取得とログ出力
         const token = localStorage.getItem('authToken');
         console.log('Token in storage:', token); // トークン全体を出力（開発環境のみ）
-        
+
         // トークンの存在確認
         if (!token) {
           console.error('トークンがありません');
@@ -165,14 +165,14 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           router.push('/login');
           return;
         }
-      
+
         // JWT判定（簡易的な確認）
         const isJWT = token.split('.').length === 3;
         console.log('トークン形式:', isJWT ? 'JWT形式' : '通常文字列');
-        
+
         // トークンをクリーン化（不要な空白削除）
         cleanToken = token.trim();
-        
+
         // トークンの正当性を確認
         if (cleanToken === 'undefined' || cleanToken === 'null' || cleanToken === '') {
           console.error('無効なトークン:', cleanToken);
@@ -181,9 +181,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           router.push('/login');
           return;
         }
-        
+
         // APIリクエスト送信
-        const response = await fetch('http://127.0.0.1:8000/api/v1/articles', {
+        const response = await fetch('https://blog-api-main.onrender.com/v1/api/articles', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -191,15 +191,15 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           },
           body: JSON.stringify(postData)
         });
-        
+
         console.log('レスポンスステータス:', response.status); // デバッグログ追加
-        
+
         // 401エラー発生時に一度リフレッシュを試す
         if (response.status === 401) {
           const newToken = await refreshToken();
           if (newToken) {
             // 新しいトークンで再試行
-            const retryResponse = await fetch('http://127.0.0.1:8000/api/v1/articles', {
+            const retryResponse = await fetch('https://blog-api-main.onrender.com/api/v1/articles', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
               },
               body: JSON.stringify(postData)
             });
-            
+
             if (retryResponse.ok) {
               alert('記事を正常に保存しました');
               router.push('/user');
@@ -217,11 +217,11 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           handleAuthError();
           return; // 処理を中断
         }
-        
+
         // レスポンスのテキストを取得（JSONでもそうでなくても）
         const responseText = await response.text();
         console.log('レスポンスボディ:', responseText); // デバッグログ追加
-        
+
         if (!response.ok) {
           // レスポンスボディをJSONとして解析しようとする
           let errorData = null;
@@ -231,11 +231,11 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             console.error('JSONパースエラー:', e);
             errorData = responseText; // JSONではない場合はテキストのまま
           }
-          
+
           console.error('APIエラー:', response.status, errorData);
           throw new Error(`記事の保存に失敗しました (${response.status}): ${typeof errorData === 'object' ? JSON.stringify(errorData) : errorData}`);
         }
-        
+
         // 正常なレスポンスをJSONとしてパース
         let result;
         try {
@@ -244,9 +244,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           console.warn('成功レスポンスのJSONパースエラー:', e);
           result = { message: '記事が作成されましたが、レスポンスの解析に失敗しました' };
         }
-        
+
         console.log('作成成功:', result);
-        
+
         // 成功したら記事一覧ページに戻る
         alert('記事を正常に保存しました');
         router.push('/user');
@@ -263,11 +263,21 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   };
 
   return (
-    <StyledPaper elevation={0} className="max-w-4xl mx-auto">
-      <Typography variant="h5" component="h1" className="mb-6 font-bold text-gray-800">
+    <StyledPaper elevation={0}
+    className="
+      max-w-4xl mx-auto
+    ">
+      <Typography variant="h5" component="h1"
+      className="
+        mb-6 font-bold
+        text-gray-800
+      ">
         {initialData?.id ? '記事を編集' : '新しい記事を作成'}
       </Typography>
-      <Box className="space-y-6">
+      <Box
+      className="
+        space-y-6
+      ">
         {/* タイトル */}
         <TextField
           fullWidth
@@ -297,8 +307,16 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           className="mb-4"
         />
         {/* アクションボタン */}
-        <Box className="flex justify-between pt-4 border-t border-gray-200">
-          <div className="flex gap-2">
+        <Box
+        className="
+          flex justify-between
+          pt-4 border-t
+          border-gray-200
+        ">
+          <div
+          className="
+            flex gap-2
+          ">
             <Button
               variant="outlined"
               color="error"
@@ -331,14 +349,15 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     </StyledPaper>
   );
 };
-
 // エクスポートするページコンポーネント
 const CreatePostPage: React.FC = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="
+      container mx-auto
+      px-4 py-8
+    ">
       <PostForm />
     </div>
   );
 };
-
 export default CreatePostPage;
