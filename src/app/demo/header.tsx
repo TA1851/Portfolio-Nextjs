@@ -1,4 +1,4 @@
-'user client';
+'use client';
 
 import { FC, useState } from "react";
 import Link from "next/link";
