@@ -183,7 +183,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         }
 
         // APIリクエスト送信
-        const response = await fetch('https://blog-api-main.onrender.com/v1/api/articles', {
+        const response = await fetch('https://blog-api-main.onrender.com/api/v1/articles', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
