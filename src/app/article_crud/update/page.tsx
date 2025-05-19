@@ -75,7 +75,7 @@ const UpdateArticlePage: React.FC = () => {
         }
         // APIエンドポイント
         const response = await fetch(
-          'http://127.0.0.1:8000/api/v1/articles', {
+          'http:', {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
@@ -170,13 +170,25 @@ const UpdateArticlePage: React.FC = () => {
             </Box>
           ) : (
             <>
-              <StyledPaper className="mb-6">
-                <Box className="p-2">
+              <StyledPaper
+              className="
+                mb-6
+                ">
+                <Box
+                className="
+                  p-2
+                ">
                   {/* Select を SplitButton に置き換え */}
                   <div>
-                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button" sx={{ backgroundColor: '#1976d2', color: 'white' }}>
-                      <Button 
-                        onClick={() => selectedArticleId && handleArticleSelect(selectedArticleId as number)}
+                    <ButtonGroup
+                      variant="contained"
+                      ref={anchorRef} aria-label="split button"
+                      sx={{ backgroundColor: '#1976d2', color: 'white' }}
+                    >
+                      <Button
+                        onClick={() => selectedArticleId && handleArticleSelect(
+                          selectedArticleId as number
+                        )}
                         sx={{ color: 'white', textAlign: 'left', fontSize: '1.4rem' }}
                       >
                         {selectedArticle?.title || '記事を選択してください'}
@@ -338,7 +350,7 @@ const PostForm: React.FC<PostFormProps> = (
       }
       // APIエンドポイント（クエリパラメータでarticle_idを指定）
       const url =
-      `http://127.0.0.1:8000/api/v1/articles?article_id=${initialData.article_id}`;
+      `https://blog-api-main.onrender.com/api/v1/articles?article_id=${initialData.article_id}`;
       // 実際のAPI呼び出し
       const response = await fetch(url, {
         method: 'PUT',
