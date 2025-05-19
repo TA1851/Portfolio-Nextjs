@@ -33,11 +33,11 @@ const BodyComp: FC = () => {
                 flex flex-col overflow-hidden
                 rounded-lg border bg-white
               ">
-                <Link href="#" className="
+                {/* <Link href="#" className="
                   group relative block h-48
                   overflow-hidden bg-gray-100
                 ">
-                </Link>
+                </Link> */}
                 <div className="
                   flex flex-1 flex-col
                   p-4 sm:p-6
@@ -46,7 +46,7 @@ const BodyComp: FC = () => {
                     mb-2 text-lg font-semibold
                     text-gray-800
                   ">
-                    <Link href="#" className="
+                    <Link href="../blog/page1/" className="
                       transition duration-100
                       hover:text-indigo-500
                     ">
@@ -81,12 +81,12 @@ const BodyComp: FC = () => {
                 flex flex-col overflow-hidden
                 rounded-lg border bg-white
               ">
-                <Link href="#"
+                {/* <Link href="#"
                 className="
                   group relative block h-48
                   overflow-hidden bg-gray-100
                 ">
-                </Link>
+                </Link> */}
                 <div
                 className="
                   flex flex-1 flex-col
@@ -97,7 +97,7 @@ const BodyComp: FC = () => {
                     mb-2 text-lg font-semibold
                     text-gray-800
                   ">
-                    <Link href="#"
+                    <Link href="../blog/page2"
                     className="
                       transition duration-100
                       hover:text-indigo-500
@@ -137,12 +137,12 @@ const BodyComp: FC = () => {
                 flex flex-col overflow-hidden
                 rounded-lg border bg-white
               ">
-                <Link href="#"
+                {/* <Link href="../blog/page2"
                 className="
                   group relative block h-48
                   overflow-hidden bg-gray-100
                 ">
-                </Link>
+                </Link> */}
                 <div
                 className="
                   flex flex-1 flex-col
@@ -153,7 +153,7 @@ const BodyComp: FC = () => {
                     mb-2 text-lg font-semibold
                     text-gray-800
                   ">
-                    <Link href="#"
+                    <Link href="../blog/page3"
                     className="
                       transition duration-100
                       hover:text-indigo-500
