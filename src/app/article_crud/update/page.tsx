@@ -355,7 +355,7 @@ const PostForm: React.FC<PostFormProps> = (
       }
       // APIエンドポイント（クエリパラメータでarticle_idを指定）
       const url =
-      'https://blog-api-main.onrender.com/api/v1/articles?article_id=`${initialData.article_id}`';
+      `https://blog-api-main.onrender.com/api/v1/articles?article_id=${initialData.article_id}`;
       // 実際のAPI呼び出し
       const response = await fetch(url, {
         method: 'PUT',
