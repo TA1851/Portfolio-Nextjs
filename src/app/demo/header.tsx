@@ -1,8 +1,14 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import Link from "next/link";
 
 
 const HeaderComp: FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <>
       <div
@@ -121,6 +127,7 @@ const HeaderComp: FC = () => {
             </div>
             <button
               type="button"
+              onClick={toggleMenu}
               className="
                 inline-flex 
                 items-center 
@@ -157,9 +164,64 @@ const HeaderComp: FC = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              Menu
             </button>
           </header>
+          
+          {/* モバイルメニュー */}
+          {isMenuOpen && (
+            <div className="lg:hidden py-4 px-2 bg-white border-t">
+              <div className="flex flex-col space-y-4">
+                <Link
+                  href="/login"
+                  className="
+                    block
+                    rounded-lg 
+                    px-4 
+                    py-3 
+                    text-center 
+                    text-sm 
+                    font-semibold 
+                    text-gray-500 
+                    outline-none 
+                    ring-indigo-300 
+                    transition 
+                    duration-100 
+                    hover:text-indigo-500 
+                    focus-visible:ring 
+                    active:text-indigo-600 
+                    md:text-base
+                  "
+                >
+                  ログイン
+                </Link>
+
+                <Link
+                  href="/register"
+                  className="
+                    block
+                    rounded-lg 
+                    bg-indigo-500 
+                    px-8 
+                    py-3 
+                    text-center 
+                    text-sm 
+                    font-semibold 
+                    text-white 
+                    outline-none 
+                    ring-indigo-300 
+                    transition 
+                    duration-100 
+                    hover:bg-indigo-600 
+                    focus-visible:ring 
+                    active:bg-indigo-700 
+                    md:text-base
+                  "
+                >
+                  新規登録
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
