@@ -127,7 +127,7 @@ const HeaderComp: FC = () => {
             </nav>
 
             {/* 検索ボックス */}
-            <div className="relative">
+            {/* <div className="relative">
               <input
                 type="text"
                 placeholder="検索"
@@ -150,7 +150,7 @@ const HeaderComp: FC = () => {
                 hover:bg-gray-300 rounded
               ">
                 検索
-            </button>
+            </button> */}
             {/* ログアウトボタン - Linkを使わずに直接ボタンでハンドリング */}
             <button
               type="button"
