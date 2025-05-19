@@ -62,7 +62,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   const router = useRouter();
 
   // 入力フィールドの変更ハンドラー
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -98,7 +100,8 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       if (!currentToken) return null;
 
       // リフレッシュAPI呼び出し（APIの仕様に合わせて調整）
-      const refreshResponse = await fetch('https://blog-api-main.onrender.com/api/v1/auth/refresh', {
+      const refreshResponse = await fetch(
+        'https://blog-api-main.onrender.com/api/v1/auth/refresh', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
@@ -174,7 +177,8 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         cleanToken = token.trim();
 
         // トークンの正当性を確認
-        if (cleanToken === 'undefined' || cleanToken === 'null' || cleanToken === '') {
+        if (
+          cleanToken === 'undefined' || cleanToken === 'null' || cleanToken === '') {
           console.error('無効なトークン:', cleanToken);
           localStorage.removeItem('authToken');
           alert('認証情報が無効です。再度ログインしてください。');
@@ -183,7 +187,8 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         }
 
         // APIリクエスト送信
-        const response = await fetch('https://blog-api-main.onrender.com/api/v1/articles', {
+        const response = await fetch(
+          'https://blog-api-main.onrender.com/api/v1/articles', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -199,7 +204,8 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           const newToken = await refreshToken();
           if (newToken) {
             // 新しいトークンで再試行
-            const retryResponse = await fetch('https://blog-api-main.onrender.com/api/v1/articles', {
+            const retryResponse = await fetch(
+              'https://blog-api-main.onrender.com/api/v1/articles', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -233,7 +239,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           }
 
           console.error('APIエラー:', response.status, errorData);
-          throw new Error(`記事の保存に失敗しました (${response.status}): ${typeof errorData === 'object' ? JSON.stringify(errorData) : errorData}`);
+          throw new Error(
+            `記事の保存に失敗しました(${response.status}):
+            ${typeof errorData === 'object' ? JSON.stringify(errorData) : errorData}`);
         }
 
         // 正常なレスポンスをJSONとしてパース
