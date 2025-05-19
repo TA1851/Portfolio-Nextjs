@@ -73,9 +73,9 @@ const UpdateArticlePage: React.FC = () => {
           setLoading(false);
           return;
         }
-        // APIエンドポイント
+        // APIエンドポイントを完全なURLに修正
         const response = await fetch(
-          'http:', {
+          'https://blog-api-main.onrender.com/api/v1/articles', {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
@@ -155,11 +155,16 @@ const UpdateArticlePage: React.FC = () => {
       ) : (
         <>
           {articles.length === 0 ? (
-            <Box className="p-4 text-center">
-              <Typography variant="h6" gutterBottom>
+            <Box
+            className="
+              p-4 text-center
+            ">
+              <Typography
+                variant="h6" gutterBottom
+              >
                 編集可能な記事がありません
               </Typography>
-              <Button 
+              <Button
                 variant="contained" 
                 color="primary" 
                 onClick={() => router.push('/user')} 
@@ -350,7 +355,7 @@ const PostForm: React.FC<PostFormProps> = (
       }
       // APIエンドポイント（クエリパラメータでarticle_idを指定）
       const url =
-      `https://blog-api-main.onrender.com/api/v1/articles?article_id=${initialData.article_id}`;
+      'https://blog-api-main.onrender.com/api/v1/articles?article_id=`${initialData.article_id}`';
       // 実際のAPI呼び出し
       const response = await fetch(url, {
         method: 'PUT',
