@@ -19,7 +19,7 @@ interface Article {
   updated_at?: string;
 }
 
-const API_URL = "http://127.0.0.1:8000/api/v1/articles";
+const API_URL = "https://blog-api-main.onrender.com/api/v1/articles";
 
 export default function DeleteArticlePage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -28,9 +28,9 @@ export default function DeleteArticlePage() {
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
   const authAxios = axios.create({
-    baseURL: "http://127.0.0.1:8000/api/v1",
+    baseURL: "https://blog-api-main.onrender.com/api/v1",
     // タイムアウト設定
-    timeout: 10000, 
+    timeout: 10000,
     // CORS関連の設定
     withCredentials: false,
     headers: {
@@ -38,18 +38,18 @@ export default function DeleteArticlePage() {
       'Content-Type': 'application/json'
     }
   });
-  
+
   // 認証状態を確認する関数
   const checkAuthentication = async () => {
     const storedToken = localStorage.getItem("authToken");
-    
+
     // トークン存在チェック
     if (!storedToken) {
       console.warn("認証トークンがありません。ログイン画面にリダイレクトします。");
       router.push("/login");
       return false;
     }
-    
+
     // トークンの有効性を簡易チェック
     if (storedToken === 'undefined' || storedToken === 'null') {
       console.warn("不正なトークン形式です。ログイン画面にリダイレクトします。");
@@ -57,7 +57,7 @@ export default function DeleteArticlePage() {
       router.push("/login");
       return false;
     }
-    
+
     setToken(storedToken);
     return true;
   };
@@ -68,8 +68,9 @@ export default function DeleteArticlePage() {
     const requestInterceptor = authAxios.interceptors.request.use(
       (config) => {
         // リクエスト直前に最新のトークンを使用
-        const currentToken = localStorage.getItem("authToken") || storedToken;
-        
+        const currentToken = localStorage.getItem(
+          "authToken") || storedToken;
+
         if (currentToken) {
           console.log("リクエスト送信: トークンあり");
           config.headers["Authorization"] = `Bearer ${currentToken.trim()}`;
@@ -80,28 +81,28 @@ export default function DeleteArticlePage() {
       },
       (error) => Promise.reject(error)
     );
-  
+
     // レスポンスインターセプター
     const responseInterceptor = authAxios.interceptors.response.use(
       (response) => response,
       async (error) => {
         // オリジナルリクエストの参照を保存
         const originalRequest = error.config;
-        
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           console.log("401エラー検出: トークンリフレッシュを試行");
           originalRequest._retry = true;
-          
+
           try {
             const newToken = await refreshToken();
             console.log("トークンリフレッシュ成功");
-            
+
             // 新しいトークンでリクエストを再試行
             originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
             return authAxios(originalRequest);
           } catch (refreshError) {
             console.error("リフレッシュ失敗:", refreshError);
-            
+
             // ログイン画面へリダイレクト
             router.push("/login");
             return Promise.reject(refreshError);
@@ -110,7 +111,7 @@ export default function DeleteArticlePage() {
         return Promise.reject(error);
       }
     );
-  
+
     return { requestInterceptor, responseInterceptor };
   };
 
@@ -121,27 +122,31 @@ export default function DeleteArticlePage() {
       if (!isAuthenticated) {
         return;
       }
-      
+
       const storedToken = localStorage.getItem("authToken");
       setToken(storedToken);
-      
+
       // インターセプターを設定
       const interceptors = setupInterceptors(storedToken);
-      
+
       try {
         // 記事データ取得
         await fetchArticles();
       } catch (error) {
         console.error("初期化中にエラーが発生しました:", error);
       }
-      
+
       // クリーンアップ関数
       return () => {
-        authAxios.interceptors.request.eject(interceptors.requestInterceptor);
-        authAxios.interceptors.response.eject(interceptors.responseInterceptor);
+        authAxios.interceptors.request.eject(
+          interceptors.requestInterceptor
+        );
+        authAxios.interceptors.response.eject(
+          interceptors.responseInterceptor
+        );
       };
     };
-    
+
     initPage();
   }, []); // 空の依存配列
 
@@ -154,8 +159,8 @@ export default function DeleteArticlePage() {
 
       // リフレッシュAPIの形式に合わせて修正
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/v1/auth/refresh",
-        {}, 
+        "https://blog-api-main.onrender.com/api/v1/auth/refresh",
+        {},
         {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
@@ -179,26 +184,26 @@ export default function DeleteArticlePage() {
   const fetchArticles = async () => {
     setLoading(true);
     setError("");
-    
+
     try {
       console.log("記事データ取得開始");
-      
+
       // 認証トークンの状態を確認
       const currentToken = localStorage.getItem("authToken");
       if (!currentToken) {
         console.error("認証トークンがありません");
         throw new Error("認証情報がありません。再度ログインしてください。");
       }
-      
+
       // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
       const response = await authAxios.get(API_URL, {
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
         }
       });
-      
+
       console.log("記事データ取得成功:", response.status);
-      
+
       if (Array.isArray(response.data)) {
         console.log(`${response.data.length}件の記事を取得しました`);
         setArticles(response.data);
@@ -206,18 +211,19 @@ export default function DeleteArticlePage() {
         console.warn("APIレスポンスが配列ではありません:", response.data);
         setArticles([]);
       }
-      
+
       setError("");
     } catch (error: unknown) {
       console.error("記事の取得中にエラーが発生しました:", error);
-      
+
       // エラーメッセージを詳細化
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError("認証が無効です。再度ログインしてください。");
         // 1秒後にログイン画面へリダイレクト
         setTimeout(() => router.push("/login"), 1000);
       } else {
-        const errorMessage = axios.isAxiosError(error) ? error.message : error instanceof Error ? error.message : "不明なエラー";
+        const errorMessage = axios.isAxiosError(error) ? error.message :
+        error instanceof Error ? error.message : "不明なエラー";
         setError(`記事の取得に失敗しました: ${errorMessage}`);
       }
     } finally {
@@ -231,7 +237,7 @@ export default function DeleteArticlePage() {
       const currentId = article.article_id ?? article.id;
       return currentId !== deletedId;
     }));
-    
+
     alert("記事が正常に削除されました");
   };
   // 記事の削除 - APIドキュメントに基づいた正確な実装
@@ -245,33 +251,35 @@ export default function DeleteArticlePage() {
     if (!confirm("この記事を削除してもよろしいですか？")) {
       return;
     }
-    
+
     try {
       console.log(`記事ID ${articleId} の削除を開始します`);
-      
+
       // APIドキュメントに従った正しいURL形式:
       // DELETEメソッドで/api/v1/articlesにアクセスし、クエリパラメータとしてarticle_idを指定
       const deleteUrl = `${API_URL}?article_id=${articleId}`;
       console.log("正しい削除URL:", deleteUrl);
-      
+
       const response = await authAxios.delete(deleteUrl);
       console.log("削除成功:", response.status, response.data);
-      
+
       updateArticlesList(articleId);
     } catch (error: unknown) {
       console.error("記事の削除中にエラーが発生しました:", error);
-      
+
       if (axios.isAxiosError(error) && error.response) {
         console.error("エラーステータス:", error.response.status);
         console.error("エラーデータ:", error.response.data);
-        
+
         // 特定のエラーケースに対する処理
         if (error.response.status === 404) {
           setError("削除対象の記事が見つかりません。すでに削除された可能性があります。");
         } else if (error.response.status === 403) {
           setError("この記事を削除する権限がありません。");
         } else {
-          setError(`記事の削除に失敗しました (${error.response.status}): ${error.response.data?.detail || ''}`);
+          setError(
+            `記事の削除に失敗しました (${error.response.status}):
+            ${error.response.data?.detail || ''}`);
         }
       } else {
         setError("記事の削除に失敗しました。ネットワーク接続を確認してください。");
@@ -288,66 +296,123 @@ export default function DeleteArticlePage() {
       router.push("/login");
       return;
     }
-    
+
     setError("");
     fetchArticles();
   };
 
   if (loading) {
-    return <div className="p-4">記事を読み込み中...</div>;
+    return <div
+    className="
+      p-4
+    ">
+      記事を読み込み中...
+    </div>;
   }
 
   if (error) {
     return (
-      <div className="p-4">
-        <p className="text-red-500">{error}</p>
-        <button 
+      <div
+      className="
+        p-4
+      ">
+        <p
+        className="
+          text-red-500
+        ">
+          {error}
+        </p>
+        <button
           onClick={handleRetry}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          再試行
+          className="
+            mt-2 px-4
+            py-2 bg-blue-500
+            text-white rounded
+          ">
+            再試行
         </button>
       </div>
     );
   }
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">記事の削除</h1>
+    <div
+    className="
+      p-4
+    ">
+      <div
+      className="
+        flex justify-between
+        items-center mb-4
+      ">
+        <h1
+        className="
+          text-2xl font-bold
+        ">
+          記事の削除
+        </h1>
       </div>
-      
       {articles.length === 0 ? (
-        <div className="text-center py-8">
-          <p>記事が見つかりません。</p>
+        <div
+        className="
+          text-center py-8
+        ">
+          <p>
+            記事が見つかりません。
+          </p>
           <button
             onClick={() => router.push('/user')}
-            className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            会員専用ページに戻る
+            className="
+              mt-4 px-4
+              py-2 bg-gray-200
+              text-gray-800 rounded
+              hover:bg-gray-300
+            ">
+              会員専用ページに戻る
           </button>
         </div>
       ) : (
-        <ul className="space-y-4">
+        <ul
+        className="
+          space-y-4
+        ">
           {articles.map((article) => {
             // article_idとidの両方を考慮して確実にIDを取得
             const articleId = article.article_id ?? article.id;
-            
             // IDが存在しない場合はスキップ
             if (!articleId) {
               console.warn("IDのない記事:", article);
               return null;
             }
-            
             return (
-              <li key={articleId} className="border p-4 rounded">
-                <div className="flex justify-between items-center">
+              <li key={articleId}
+              className="
+                border p-4
+                rounded
+              ">
+                <div
+                className="
+                  flex justify-between
+                  items-center
+                ">
                   <div>
-                    <h2 className="text-xl font-semibold">{article.title}</h2>
-                    <p className="text-gray-600">
-                      {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
+                    <h2
+                    className="
+                      text-xl font-semibold
+                    ">
+                      {article.title}
+                    </h2>
+                    <p
+                    className="
+                      text-gray-600
+                    ">
+                      {article.body ?
+                      article.body.substring(0, 100) + "..." : "本文なし"}
                     </p>
-                    <small className="text-gray-500">
+                    <small
+                    className="
+                      text-gray-500
+                    ">
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
@@ -371,12 +436,16 @@ export default function DeleteArticlePage() {
           })}
         </ul>
       )}
-      
       {/* 下部にだけ戻るボタンを残す */}
       <div className="mt-6 text-center">
         <button
           onClick={() => router.push('/user')}
-          className="px-6 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+          className="
+            px-6 py-2
+            bg-gray-200 text-gray-800
+            rounded
+            hover:bg-gray-300
+            transition-colors"
         >
           会員専用ページに戻る
         </button>
