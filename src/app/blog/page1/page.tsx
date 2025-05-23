@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import Link from 'next/link';
 
 const Page1: FC = () => {
   return (
@@ -16,9 +17,6 @@ const Page1: FC = () => {
         </h1>
       </header>
       <div className="prose">
-        <p className="text-black mb-4">
-          ブログを始める際の準備から投稿までのステップを初心者にもわかりやすく解説します。
-        </p>
         <h2 className="
           text-black text-xl
           font-bold mb-4"
@@ -49,6 +47,24 @@ const Page1: FC = () => {
           >
             投稿日: 2023年10月15日
           </div>
+      </div>
+      
+      {/* ホームに戻るボタン */}
+      <div className="
+        mt-8 text-center
+      ">
+        <Link href="/"
+        className="
+          inline-block
+          px-4 py-2
+          bg-gray-100
+          text-blue-600
+          rounded
+          hover:bg-gray-200
+          transition-colors
+        ">
+          ホームに戻る
+        </Link>
       </div>
       </article>
     </>

@@ -2,12 +2,12 @@
 
 import { FC, useEffect, useState } from "react";
 
-// 記事データの型定義 - 既に正しい
+// 記事データの型定義
 interface Article {
   title: string;
   body: string;
   user_id: number;
-  article_id: number;  // 正しい形式
+  article_id: number;
 }
 
 // ページネーション用の状態定義
@@ -185,7 +185,7 @@ const DemoBody: FC = () => {
             {getCurrentPageArticles().map(
               (article, index) => (
               <div
-                key={article.article_id || index} 
+                key={article.article_id || index}
                 className="
                   bg-white rounded-lg
                   shadow-md overflow-hidden
