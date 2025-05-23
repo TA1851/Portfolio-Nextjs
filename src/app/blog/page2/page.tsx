@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 
 const Page1: FC = () => {
+  const publishedDate = "2023年10月15日";
   return (
     <>
       <article className="
@@ -55,7 +56,7 @@ const Page1: FC = () => {
         text-gray-500 text-sm
         text-right mr-3"
         >
-          投稿日: 2023年10月15日
+          投稿日: {publishedDate}
         </div>
         {/* ホームに戻るボタン */}
       <div className="
