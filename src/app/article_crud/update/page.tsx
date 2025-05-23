@@ -34,14 +34,14 @@ interface Article {
   user_id: number;
 }
 
-// フォームデータの型定義（簡素化）
+// フォームデータの型定義
 interface PostFormData {
   title: string;
   content: string;
   publishStatus: 'draft' | 'published';
 }
 
-// エラーの型定義（簡素化）
+// エラーの型定義
 interface FormErrors {
   title?: string;
   content?: string;
@@ -73,9 +73,10 @@ const UpdateArticlePage: React.FC = () => {
           setLoading(false);
           return;
         }
-        // APIエンドポイントを完全なURLに修正
+        // 環境変数を使用してAPIエンドポイントを取得
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const response = await fetch(
-          'https://blog-api-main.onrender.com/api/v1/articles', {
+          `${apiUrl}/articles`, {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
@@ -165,9 +166,9 @@ const UpdateArticlePage: React.FC = () => {
                 編集可能な記事がありません
               </Typography>
               <Button
-                variant="contained" 
-                color="primary" 
-                onClick={() => router.push('/user')} 
+                variant="contained"
+                color="primary"
+                onClick={() => router.push('/user')}
                 className="mt-4"
               >
                 会員専用ページに戻る
@@ -183,7 +184,6 @@ const UpdateArticlePage: React.FC = () => {
                 className="
                   p-2
                 ">
-                  {/* Select を SplitButton に置き換え */}
                   <div>
                     <ButtonGroup
                       variant="contained"
@@ -259,11 +259,11 @@ const UpdateArticlePage: React.FC = () => {
 const PostForm: React.FC<PostFormProps> = (
   { initialData = null }
   ) => {
-  // フォームの状態管理（簡素化）
+  // フォームの状態管理
   const [formData, setFormData] = useState<PostFormData>({
     title: initialData?.title || '',
-    content: initialData?.body || '',  // bodyフィールドを使用
-    publishStatus: 'published',  // デフォルトは公開
+    content: initialData?.body || '',
+    publishStatus: 'published',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
@@ -302,7 +302,9 @@ const PostForm: React.FC<PostFormProps> = (
   const handleCancel = () => {
     if (formData.title.trim() || formData.content.trim()) {
       // 入力内容がある場合は確認ダイアログを表示
-      const confirmCancel = window.confirm('編集内容が保存されていません。キャンセルしますか？');
+      const confirmCancel = window.confirm(
+        '編集内容が保存されていません。キャンセルしますか？'
+      );
       if (confirmCancel) {
         router.push('/user');
       }
@@ -353,9 +355,10 @@ const PostForm: React.FC<PostFormProps> = (
         router.push('/login');
         return;
       }
-      // APIエンドポイント（クエリパラメータでarticle_idを指定）
+      // 環境変数を使用してAPIエンドポイントを取得
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const url =
-      `https://blog-api-main.onrender.com/api/v1/articles?article_id=${initialData.article_id}`;
+      `${apiUrl}/articles?article_id=${initialData.article_id}`;
       // 実際のAPI呼び出し
       const response = await fetch(url, {
         method: 'PUT',
@@ -377,7 +380,10 @@ const PostForm: React.FC<PostFormProps> = (
       router.push('/user');
     } catch (error) {
       console.error('更新エラー:', error);
-      alert(`記事の更新に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
+      alert(
+        `記事の更新に失敗しました:
+        ${error instanceof Error ? error.message : '不明なエラー'}`
+      );
     } finally {
       setSaving(false);
     }
@@ -482,5 +488,4 @@ const PostForm: React.FC<PostFormProps> = (
     </StyledPaper>
   );
 };
-
 export default UpdateArticlePage;

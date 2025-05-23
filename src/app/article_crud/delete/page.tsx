@@ -18,8 +18,9 @@ interface Article {
   created_at?: string;
   updated_at?: string;
 }
-
-const API_URL = "https://blog-api-main.onrender.com/api/v1/articles";
+// 環境変数からAPI_URLを取得
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const article_URL = `${API_URL}/articles`;
 
 export default function DeleteArticlePage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -28,7 +29,7 @@ export default function DeleteArticlePage() {
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
   const authAxios = axios.create({
-    baseURL: "https://blog-api-main.onrender.com/api/v1",
+    baseURL: API_URL,
     // タイムアウト設定
     timeout: 10000,
     // CORS関連の設定
@@ -150,16 +151,17 @@ export default function DeleteArticlePage() {
     initPage();
   }, []); // 空の依存配列
 
-  // トークンリフレッシュ関数 - FastAPI仕様に合わせて修正
+  // トークンリフレッシュ関数
   const refreshToken = async () => {
     try {
       if (!token) {
         throw new Error("認証トークンが見つかりません");
       }
 
-      // リフレッシュAPIの形式に合わせて修正
+      // 環境変数からAPIエンドポイントを取得
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await axios.post(
-        "https://blog-api-main.onrender.com/api/v1/auth/refresh",
+        `${apiUrl}/refresh`,
         {},
         {
           headers: {
@@ -196,7 +198,7 @@ export default function DeleteArticlePage() {
       }
 
       // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
-      const response = await authAxios.get(API_URL, {
+      const response = await authAxios.get(article_URL, {
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
         }
@@ -240,7 +242,7 @@ export default function DeleteArticlePage() {
 
     alert("記事が正常に削除されました");
   };
-  // 記事の削除 - APIドキュメントに基づいた正確な実装
+  // 記事の削除
   const handleDelete = async (articleId: number) => {
     if (!articleId) {
       console.error("削除対象の記事IDが不正です:", articleId);
@@ -254,9 +256,6 @@ export default function DeleteArticlePage() {
 
     try {
       console.log(`記事ID ${articleId} の削除を開始します`);
-
-      // APIドキュメントに従った正しいURL形式:
-      // DELETEメソッドで/api/v1/articlesにアクセスし、クエリパラメータとしてarticle_idを指定
       const deleteUrl = `${API_URL}?article_id=${articleId}`;
       console.log("正しい削除URL:", deleteUrl);
 
@@ -416,12 +415,6 @@ export default function DeleteArticlePage() {
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
-                  {/* <button
-                    onClick={() => handleDelete(articleId)}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    削除
-                  </button> */}
                   <Button
                     variant="outlined"
                     color="error"
@@ -436,7 +429,6 @@ export default function DeleteArticlePage() {
           })}
         </ul>
       )}
-      {/* 下部にだけ戻るボタンを残す */}
       <div className="mt-6 text-center">
         <button
           onClick={() => router.push('/user')}

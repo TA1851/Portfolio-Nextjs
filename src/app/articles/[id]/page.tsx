@@ -41,9 +41,10 @@ const ArticleDetailPage: FC = () => {
         }
 
         console.log(`記事ID: ${id} の詳細を取得します`);
+        // 環境変数からAPIのURLを取得
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const response = await fetch(
-          // `http://127.0.0.1:8000/api/v1/articles/${id}`
-          `https://blog-api-main.onrender.com/api/v1/articles/${id}`, {
+          `${apiUrl}/articles/${id}`, {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
