@@ -19,10 +19,12 @@ const HeaderComp: FC = () => {
         console.error('トークンがありません');
         return;
       }
-      // APIにログアウトリクエストを送信
+      // 環境変数からAPIエンドポイントを取得する
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      console.log('API URL:', apiUrl);
+
       const response = await fetch(
-        // 'http://127.0.0.1:8000/api/v1/logout',
-        'https://blog-api-main.onrender.com/api/v1/logout', {
+        `${apiUrl}/logout`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

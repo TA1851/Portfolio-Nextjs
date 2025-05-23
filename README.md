@@ -37,7 +37,7 @@ npx create-next-app@latest --ts
 cd gihyo-book
 ```
 
-## モックの作成(画面の作成)
+## モックの作成
 [flowriftを使って作成する](https://flowrift.com/c/banner)
 
 ### ログイン画面
@@ -71,4 +71,6 @@ cd gihyo-book
 
 ### 会員専用ページ画面
 
-![会員専用ページ](./img)
+![会員専用ページ](./img/スクリーンショット%202025-05-23%2015.53.23.png)
+
+

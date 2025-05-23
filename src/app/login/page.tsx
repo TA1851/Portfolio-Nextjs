@@ -37,9 +37,12 @@ const LoginComp: FC = () => {
         formData.append('password', passwordValue);
 
         console.log('送信データ:', {username: emailValue, password: passwordValue});
+        // 環境変数からAPIエンドポイントを取得する
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        console.log('API URL:', apiUrl);
+
         const response = await axios.post(
-          // 'http://127.0.0.1:8000/api/v1/login',
-          'https://blog-api-main.onrender.com/api/v1/login',
+          `${apiUrl}/login`,
           formData
         );
 
@@ -190,5 +193,4 @@ const LoginComp: FC = () => {
     </>
   );
 };
-
 export default LoginComp;
