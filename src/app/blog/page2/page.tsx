@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 
 const Page1: FC = () => {
-  const publishedDate = "2023年10月15日";
+  const publishedDate = "2024年11月25日";
   return (
     <>
       <article className="

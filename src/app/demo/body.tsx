@@ -3,6 +3,9 @@ import Link from "next/link";
 
 
 const BodyComp: FC = () => {
+  const publishedDate_Page1 = "2023年10月15日";
+  const publishedDate_Page2 = "2024年11月25日";
+  const publishedDate_Page3 = "2025年3月5日";
   return (
     <>
       <div className="
@@ -65,7 +68,7 @@ const BodyComp: FC = () => {
                     <span className="
                       text-sm text-gray-500
                     ">
-                      2023年6月12日
+                      {publishedDate_Page1}
                     </span>
                     <span
                     className="
@@ -120,7 +123,7 @@ const BodyComp: FC = () => {
                     className="
                       text-sm text-gray-500
                     ">
-                      2023年7月3日
+                      {publishedDate_Page2}
                     </span>
                     <span
                     className="
@@ -176,7 +179,7 @@ const BodyComp: FC = () => {
                     className="
                       text-sm text-gray-500
                     ">
-                      2023年7月18日
+                      {publishedDate_Page3}
                     </span>
                     <span
                     className="
