@@ -6,12 +6,15 @@ const BodyComp: FC = () => {
   const publishedDate_Page1 = "2023年10月15日";
   const publishedDate_Page2 = "2024年11月25日";
   const publishedDate_Page3 = "2025年3月5日";
+  const publishedDate_Page4 = "2025年4月10日";
+  const publishedDate_Page5 = "2025年4月25日";
+  const publishedDate_Page6 = "2025年5月15日";
   return (
     <>
       <div className="
         bg-white py-6
-        sm:py-8 lg:py-12"
-      >
+        sm:py-8 lg:py-12
+      ">
         <div className="
           mx-auto max-w-screen-2xl
           px-4 md:px-8
@@ -187,6 +190,160 @@ const BodyComp: FC = () => {
                       py-1 text-sm text-gray-700
                     ">
                       ライティング
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* 新たに追加する記事カード */}
+              <div
+              className="
+                flex flex-col overflow-hidden
+                rounded-lg border bg-white
+              ">
+                <div
+                className="
+                  flex flex-1 flex-col
+                  p-4 sm:p-6
+                ">
+                  <h3
+                  className="
+                    mb-2 text-lg font-semibold
+                    text-gray-800
+                  ">
+                    <Link href="../blog/page4"
+                    className="
+                      transition duration-100
+                      hover:text-indigo-500
+                    ">
+                      ブログ収益化の始め方
+                    </Link>
+                  </h3>
+                  <p
+                  className="
+                    text-gray-500 mb-8
+                  ">
+                    ブログで収入を得るための様々な方法と実践的なアドバイスを紹介します。
+                  </p>
+                  <div
+                  className="
+                    mt-auto flex items-end
+                    justify-between
+                  ">
+                    <span
+                    className="
+                      text-sm text-gray-500
+                    ">
+                      {publishedDate_Page4}
+                    </span>
+                    <span
+                    className="
+                      rounded-lg bg-gray-100 px-2
+                      py-1 text-sm text-gray-700
+                    ">
+                      マネタイズ
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div
+              className="
+                flex flex-col overflow-hidden
+                rounded-lg border bg-white
+              ">
+                <div
+                className="
+                  flex flex-1 flex-col
+                  p-4 sm:p-6
+                ">
+                  <h3
+                  className="
+                    mb-2 text-lg font-semibold
+                    text-gray-800
+                  ">
+                    <Link href="../blog/page5"
+                    className="
+                      transition duration-100
+                      hover:text-indigo-500
+                    ">
+                      SNSとブログの連携術
+                    </Link>
+                  </h3>
+                  <p
+                  className="
+                    text-gray-500 mb-8
+                  ">
+                    TwitterやInstagramなどのSNSを活用してブログのアクセスを増やす方法を解説します。
+                  </p>
+                  <div
+                  className="
+                    mt-auto flex items-end
+                    justify-between
+                  ">
+                    <span
+                    className="
+                      text-sm text-gray-500
+                    ">
+                      {publishedDate_Page5}
+                    </span>
+                    <span
+                    className="
+                      rounded-lg bg-gray-100 px-2
+                      py-1 text-sm text-gray-700
+                    ">
+                      集客
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div
+              className="
+                flex flex-col overflow-hidden
+                rounded-lg border bg-white
+              ">
+                <div
+                className="
+                  flex flex-1 flex-col
+                  p-4 sm:p-6
+                ">
+                  <h3
+                  className="
+                    mb-2 text-lg font-semibold
+                    text-gray-800
+                  ">
+                    <Link href="../blog/page6"
+                    className="
+                      transition duration-100
+                      hover:text-indigo-500
+                    ">
+                      ブログ継続のコツと習慣化
+                    </Link>
+                  </h3>
+                  <p
+                  className="
+                    text-gray-500 mb-8
+                  ">
+                    長期間ブログを続けるためのモチベーション維持法と効率的な執筆習慣について紹介します。
+                  </p>
+                  <div
+                  className="
+                    mt-auto flex items-end
+                    justify-between
+                  ">
+                    <span
+                    className="
+                      text-sm text-gray-500
+                    ">
+                      {publishedDate_Page6}
+                    </span>
+                    <span
+                    className="
+                      rounded-lg bg-gray-100 px-2
+                      py-1 text-sm text-gray-700
+                    ">
+                      継続術
                     </span>
                   </div>
                 </div>

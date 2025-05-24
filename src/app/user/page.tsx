@@ -3,8 +3,7 @@
 import { FC } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import DemoBody from "@/app/user/home/page";
-import { saveLog } from "@/utils/logger";
+// import { saveLog } from "@/utils/logger";
 
 const HeaderComp: FC = () => {
   const router = useRouter();
@@ -34,16 +33,16 @@ const HeaderComp: FC = () => {
         // ログアウト成功
         localStorage.removeItem('authToken'); // トークンをローカルストレージから削除
         console.log('ログアウトしました');
-        saveLog('info', 'ログアウトしました');
+        // saveLog('info', 'ログアウトしました');
         // ログイン画面にリダイレクト
         router.push('/logout');
       } else {
         console.error('ログアウトに失敗しました');
-        saveLog('error', 'ログアウトに失敗しました');
+        // saveLog('error', 'ログアウトに失敗しました');
       }
     } catch (error) {
       console.error('ログアウト処理中にエラーが発生しました', error);
-      saveLog('error', 'ログアウト処理中にエラーが発生しました');
+      // saveLog('error', 'ログアウト処理中にエラーが発生しました');
     }
   };
 
@@ -169,7 +168,10 @@ const HeaderComp: FC = () => {
           </header>
         </div>
       </div>
-      <DemoBody></DemoBody>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">会員専用コンテンツ</h1>
+        <p>ようこそ！ここにコンテンツを表示します。</p>
+      </div>
     </>
   );
 };
