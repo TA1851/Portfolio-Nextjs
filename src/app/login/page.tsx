@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FC, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
-import { saveLog } from "@/utils/logger";
+import { saveLog } from "..//../utils/logger";
 
 
 const LoginComp: FC = () => {
