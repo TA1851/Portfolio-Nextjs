@@ -391,7 +391,10 @@ export default function DeleteArticlePage() {
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
-                  <div>
+                  <div
+                    className="
+                      ml-3 mt-3
+                    ">
                     {/* Fixed Delete Button */}
                     <Button
                       variant="outlined"
