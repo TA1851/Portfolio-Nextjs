@@ -127,7 +127,7 @@ const UpdateArticlePage: React.FC = () => {
   return (
     <div className="
       container mx-auto
-      px-4 py-8 bg-black"
+      px-4 py-8 bg-white"
     >
     <Typography
       variant="h4" component="h1" className="mb-6"
