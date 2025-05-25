@@ -412,38 +412,27 @@ export default function DeleteArticlePage() {
           })}
         </ul>
       )}
-      {/* <div className="mt-6 text-center"> */}
-        {/* <button
+      <div
+        className="
+          flex justify-center
+          text-center items-center
+          min-h-screen
+        ">
+        <Button
+          variant="outlined"
+          color="primary"
           onClick={() => router.push('/user')}
-          className="
-            px-6 py-2
-            bg-gray-200 text-gray-800
-            rounded
-            hover:bg-gray-300
-            transition-colors"
-          style={{
+          sx={{
             width: '170px', // ボタンの幅を統一
             height: '40px', // ボタンの高さを統一
             fontSize: '0.85rem', // フォントサイズを統一
+            padding: '6px 12px', // 内側の余白を統一
+            borderWidth: '2px', // ボーダーの太さを統一
           }}
         >
           会員専用ページに戻る
-        </button> */}
-      {/* </div> */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => router.push('/user')}
-        sx={{
-          width: '170px', // ボタンの幅を統一
-          height: '40px', // ボタンの高さを統一
-          fontSize: '0.85rem', // フォントサイズを統一
-          padding: '6px 12px', // 内側の余白を統一
-          borderWidth: '2px', // ボーダーの太さを統一
-        }}
-      >
-        会員専用ページに戻る
-      </Button>
+        </Button>
+      </div>
     </div>
   );
 }
