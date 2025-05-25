@@ -392,9 +392,9 @@ export default function DeleteArticlePage() {
                     </small>
                   </div>
                   <div
-                    style={{
-                      margin: '-67px', // 上にずらす
-                    }}
+                    // style={{
+                    //   margin: '-67px', // 上にずらす
+                    // }}
                   >
                     {/* Fixed Delete Button */}
                     <Button
