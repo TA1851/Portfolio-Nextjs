@@ -507,13 +507,24 @@ const PostForm: React.FC<PostFormProps> = (
             },
           }}
         />
-        <Box mt={2} display="flex" justifyContent="space-between">
+        <Box
+          mt={2}
+          display="flex"
+          justifyContent={{ xs: 'center', sm: 'space-between' }} // モバイルでは中央揃え
+          flexDirection={{ xs: 'column', sm: 'row' }} // モバイルでは縦並び
+          gap={{ xs: 2, sm: 0 }} // モバイルではボタン間にスペースを追加
+        >
           <Button
             variant="contained"
             color="primary"
             startIcon={<SaveIcon />}
             onClick={() => handleSubmit('draft')}
             disabled={saving}
+            sx={{
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
           >
             下書き保存
           </Button>
@@ -523,6 +534,11 @@ const PostForm: React.FC<PostFormProps> = (
             startIcon={<PublishIcon />}
             onClick={() => handleSubmit('publish')}
             disabled={saving}
+            sx={{
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
           >
             公開
           </Button>
@@ -532,7 +548,13 @@ const PostForm: React.FC<PostFormProps> = (
             startIcon={<CancelIcon />}
             onClick={handleCancel}
             disabled={saving}
-            sx={{ color: 'red', borderColor: 'red' }}
+            sx={{
+              color: 'red',
+              borderColor: 'red',
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
           >
             キャンセル
           </Button>
