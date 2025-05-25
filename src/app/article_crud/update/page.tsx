@@ -510,7 +510,7 @@ const PostForm: React.FC<PostFormProps> = (
         <Box
           mt={2}
           display="flex"
-          justifyContent={{ xs: 'center', sm: 'space-between' }} // モバイルでは中央揃え
+          justifyContent={{ xs: 'center', sm: 'space-between', lg: 'flex-end' }} // 1400px以上で右寄せ
           flexDirection={{ xs: 'column', sm: 'row' }} // モバイルでは縦並び
           gap={{ xs: 2, sm: 0 }} // モバイルではボタン間にスペースを追加
         >
