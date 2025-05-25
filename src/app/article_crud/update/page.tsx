@@ -7,7 +7,7 @@ import { styled } from '@mui/material/styles';
 // Material UIコンポーネント
 import {
   TextField, Button, Box, Typography, Paper, CircularProgress,
-  MenuItem, Popper, Grow, MenuList, ClickAwayListener
+  MenuItem, Popper, Grow, MenuList, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
 
 // Material UIアイコン
@@ -330,6 +330,7 @@ const PostForm: React.FC<PostFormProps> = (
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState<{ action: 'draft' | 'publish' | null }>({ action: null });
   const router = useRouter();
   // 初期データが変更されたらフォームデータを更新
   useEffect(() => {
@@ -361,21 +362,16 @@ const PostForm: React.FC<PostFormProps> = (
     }
   };
 
-  // キャンセルハンドラー
-  const handleCancel = () => {
-    if (formData.title.trim() || formData.content.trim()) {
-      // 入力内容がある場合は確認ダイアログを表示
-      const confirmCancel = window.confirm(
-        '編集内容が保存されていません。キャンセルしますか？'
-      );
-      if (confirmCancel) {
-        router.push('/user');
-      }
-    } else {
-      // 入力内容がない場合は直接戻る
-      router.push('/user');
-    }
+  // モーダルを開く
+  const handleOpenDialog = (action: 'draft' | 'publish') => {
+    setOpenDialog({ action });
   };
+
+  // モーダルを閉じる
+  const handleCloseDialog = () => {
+    setOpenDialog({ action: null });
+  };
+
   // フォーム送信時のバリデーション
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -449,6 +445,7 @@ const PostForm: React.FC<PostFormProps> = (
       );
     } finally {
       setSaving(false);
+      handleCloseDialog();
     }
   };
 
@@ -518,7 +515,7 @@ const PostForm: React.FC<PostFormProps> = (
             variant="contained"
             color="primary"
             startIcon={<SaveIcon />}
-            onClick={() => handleSubmit('draft')}
+            onClick={() => handleOpenDialog('draft')}
             disabled={saving}
             sx={{
               width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
@@ -532,7 +529,7 @@ const PostForm: React.FC<PostFormProps> = (
             variant="contained"
             color="secondary"
             startIcon={<PublishIcon />}
-            onClick={() => handleSubmit('publish')}
+            onClick={() => handleOpenDialog('publish')}
             disabled={saving}
             sx={{
               width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
@@ -546,7 +543,7 @@ const PostForm: React.FC<PostFormProps> = (
             variant="outlined"
             color="inherit"
             startIcon={<CancelIcon />}
-            onClick={handleCancel}
+            onClick={handleCloseDialog}
             disabled={saving}
             sx={{
               color: 'red',
@@ -570,6 +567,32 @@ const PostForm: React.FC<PostFormProps> = (
           </Button>
         </Box>
       </Box>
+
+      {/* 確認モーダル */}
+      <Dialog open={!!openDialog.action} onClose={handleCloseDialog}>
+        <DialogTitle>
+          {openDialog.action === 'publish' ? '記事を公開しますか？' : '下書きを保存しますか？'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {openDialog.action === 'publish'
+              ? 'この記事を公開すると、すべてのユーザーが閲覧可能になります。'
+              : 'この記事を下書きとして保存します。'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="inherit">
+            キャンセル
+          </Button>
+          <Button
+            onClick={() => handleSubmit(openDialog.action!)}
+            color="primary"
+            variant="contained"
+          >
+            確認
+          </Button>
+        </DialogActions>
+      </Dialog>
     </StyledPaper>
   );
 };
