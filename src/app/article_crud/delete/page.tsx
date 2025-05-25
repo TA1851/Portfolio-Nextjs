@@ -371,56 +371,40 @@ export default function DeleteArticlePage() {
           </button>
         </div>
       ) : (
-        <ul
-        className="
-          space-y-4
-        ">
+        <ul className="space-y-4">
           {articles.map((article) => {
-            // article_idとidの両方を考慮して確実にIDを取得
             const articleId = article.article_id ?? article.id;
-            // IDが存在しない場合はスキップ
             if (!articleId) {
               console.warn("IDのない記事:", article);
               return null;
             }
             return (
-              <li key={articleId}
-              className="
-                border p-4
-                rounded
-              ">
-                <div
-                className="
-                  flex justify-between
-                  items-center
-                ">
+              <li key={articleId} className="border p-4 rounded">
+                <div className="flex justify-between items-center">
                   <div>
-                    <h2
-                    className="
-                      text-xl font-semibold
-                    ">
-                      {article.title}
-                    </h2>
-                    <p
-                    className="
-                      text-gray-600
-                    ">
-                      {article.body ?
-                      article.body.substring(0, 100) + "..." : "本文なし"}
+                    <h2 className="text-xl font-semibold">{article.title}</h2>
+                    <p className="text-gray-600">
+                      {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
                     </p>
-                    <small
-                    className="
-                      text-gray-500
-                    ">
+                    <small className="text-gray-500">
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
+                  {/* 削除ボタン */}
                   <Button
                     variant="outlined"
                     color="error"
                     startIcon={<DeleteIcon />}
                     onClick={() => handleDelete(articleId)}
+                    sx={{
+                      width: { xs: '100px', sm: '120px', md: '140px' },
+                      height: { xs: '36px', sm: '40px', md: '48px' },
+                      fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
+                      padding: { xs: '4px 8px', sm: '6px 12px' },
+                      borderWidth: '2px',
+                    }}
                   >
+                    削除
                   </Button>
                 </div>
               </li>
