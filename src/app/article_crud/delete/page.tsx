@@ -399,7 +399,7 @@ export default function DeleteArticlePage() {
                       startIcon={<DeleteIcon />}
                       onClick={() => handleDelete(articleId)}
                       sx={{
-                        width: { xs: '69px', sm: '120px' },
+                        width: { xs: '10px', sm: '120px' },
                         height: { xs: '34px', sm: '40px' },
                         fontSize: { xs: '0', sm: '0.85rem' },
                         padding: { xs: '0', sm: '6px 12px' },
