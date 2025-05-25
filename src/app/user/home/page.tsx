@@ -28,7 +28,6 @@ const DemoBody: FC = () => {
     articlesPerPage: 9
   });
 
-  // コンポーネントがマウントされたことを確認
   // 初期データロード
   useEffect(() => {
     const fetchAllArticles = async () => {
@@ -41,9 +40,9 @@ const DemoBody: FC = () => {
         }
 
         // 全記事を取得するシンプルなAPI呼び出し
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const response = await fetch(
-          // 'http://127.0.0.1:8000/api/v1/articles', {
-          'https://blog-api-main.onrender.com/api/v1/articles', {
+          `${apiUrl}/articles`, {
           headers: {
             'Authorization': `Bearer ${token.trim()}`
           }
@@ -72,10 +71,10 @@ const DemoBody: FC = () => {
             }
           });
         }
-        // IDの型変換を確実に行う (article_idに修正)
+        // IDの型変換を確実に行う
         const processedData = Array.isArray(data)
           ? data.map(article => {
-              // IDの有無とタイプを詳細にチェック (article_idに修正)
+              // IDの有無とタイプを詳細にチェック
               const hasId = 'article_id' in article && article.article_id !== null;
               console.log(
                 `記事「${article.title}」:
@@ -83,7 +82,7 @@ const DemoBody: FC = () => {
                 タイプ ${typeof article.article_id}`);
               return {
                 ...article,
-                // 明示的に存在チェック - 0や空文字も有効なIDとして処理 (article_idに修正)
+                // 明示的に存在チェック - 0や空文字も有効なIDとして処理
                 article_id: hasId ? Number(
                   article.article_id
                 ) : undefined
@@ -119,7 +118,7 @@ const DemoBody: FC = () => {
     }));
   };
 
-  // 修正: 明示的なナビゲーション関数 (article_idに修正)
+  // 明示的なナビゲーション関数
   const navigateToArticle = (
     articleId?: number, e?: React.MouseEvent) => {
     if (e) {

@@ -211,7 +211,15 @@ const UpdateArticlePage: React.FC = () => {
                       </Button>
                     </ButtonGroup>
                     <Popper
-                      sx={{ zIndex: 1 }}
+                      sx={{
+                        zIndex: 1,
+                        width: {
+                          xs: '90vw',
+                          sm: '80vw',
+                          md: '400px',
+                          lg: '400px'
+                        }
+                      }}
                       open={open}
                       anchorEl={anchorRef.current}
                       role={undefined}
