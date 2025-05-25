@@ -407,7 +407,7 @@ export default function DeleteArticlePage() {
                         height: { xs: '34px', sm: '40px' },
                         fontSize: { xs: '0', sm: '0.85rem' },
                         padding: { xs: '0', sm: '6px 12px' },
-                        borderWidth: '2px',
+                        // borderWidth: '2px',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
