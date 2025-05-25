@@ -397,11 +397,11 @@ export default function DeleteArticlePage() {
                     startIcon={<DeleteIcon />}
                     onClick={() => handleDelete(articleId)}
                     sx={{
-                      width: { xs: '80px', sm: '120px', md: '140px' },
-                      height: { xs: '36px', sm: '40px', md: '48px' },
-                      fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
-                      padding: { xs: '4px 8px', sm: '6px 12px' },
-                      borderWidth: '2px',
+                      width: '120px', // ボタンの幅を統一
+                      height: '40px', // ボタンの高さを統一
+                      fontSize: '0.875rem', // フォントサイズを統一
+                      padding: '6px 12px', // 内側の余白を統一
+                      borderWidth: '2px', // ボーダーの太さを統一
                     }}
                   >
                     削除
@@ -421,6 +421,11 @@ export default function DeleteArticlePage() {
             rounded
             hover:bg-gray-300
             transition-colors"
+          style={{
+            width: '120px', // ボタンの幅を統一
+            height: '40px', // ボタンの高さを統一
+            fontSize: '0.875rem', // フォントサイズを統一
+          }}
         >
           会員専用ページに戻る
         </button>
