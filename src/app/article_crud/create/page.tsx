@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import PublishIcon from '@mui/icons-material/Publish';
 import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useRouter } from 'next/navigation';
 import { styled } from '@mui/material/styles';
 
@@ -323,53 +324,64 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         />
         {/* アクションボタン */}
         <Box
-        className="
-          flex justify-between
-          pt-4 border-t
-          border-gray-200
-        ">
-          <div
-          className="
-            flex gap-2
-          ">
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => router.push('/user')}
-              disabled={saving}
-              sx={{
-                fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                padding: { xs: '4px 8px', sm: '6px 12px' }
-              }}
-            >
-              キャンセル
-            </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<SaveIcon />}
-              onClick={() => handleSubmit('draft')}
-              disabled={saving}
-              sx={{
-                fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                padding: { xs: '4px 8px', sm: '6px 12px' }
-              }}
-            >
-              下書き保存
-            </Button>
-          </div>
+          mt={2}
+          display="flex"
+          flexDirection={{ xs: 'column', sm: 'row' }} // モバイルでは縦並び、デスクトップでは横並び
+          gap={2} // ボタン間のスペース
+        >
           <Button
             variant="contained"
             color="primary"
+            startIcon={<SaveIcon />}
+            onClick={() => handleSubmit('draft')}
+            disabled={saving}
+            sx={{
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
+          >
+            下書き保存
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
             startIcon={<PublishIcon />}
             onClick={() => handleSubmit('publish')}
             disabled={saving}
             sx={{
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              padding: { xs: '4px 8px', sm: '6px 12px' }
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
             }}
           >
-            {saving ? '処理中...' : '公開する'}
+            公開する
+          </Button>
+          <Button
+            variant="outlined"
+            color="inherit"
+            startIcon={<CancelIcon />}
+            onClick={() => router.push('/user')}
+            disabled={saving}
+            sx={{
+              color: 'red',
+              borderColor: 'red',
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
+          >
+            キャンセル
+          </Button>
+        </Box>
+        <Box mt={3} textAlign="center" className="border-t pt-4">
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => router.push('/user')}
+            className="mx-auto"
+          >
+            会員専用ページに戻る
           </Button>
         </Box>
       </Box>
