@@ -137,18 +137,17 @@ const UpdateArticlePage: React.FC = () => {
         >
           記事を編集する
         </Typography>
-        
         {/* ホームに戻るボタンをヘッダー右側に追加 */}
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/user')}
           sx={{
             fontSize: { xs: '0.75rem', sm: '0.875rem' },
             padding: { xs: '4px 8px', sm: '6px 12px' }
           }}
         >
-          ホームに戻る
+          戻る
         </Button>
       </Box>
 
