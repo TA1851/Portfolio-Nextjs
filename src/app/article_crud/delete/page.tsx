@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import * as React from 'react';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
@@ -390,22 +391,32 @@ export default function DeleteArticlePage() {
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
-                  {/* 削除ボタン */}
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => handleDelete(articleId)}
-                    sx={{
-                      width: '120px', // ボタンの幅を統一
-                      height: '40px', // ボタンの高さを統一
-                      fontSize: '0.875rem', // フォントサイズを統一
-                      padding: '6px 12px', // 内側の余白を統一
-                      borderWidth: '2px', // ボーダーの太さを統一
-                    }}
-                  >
-                    削除
-                  </Button>
+                  <div>
+                    {/* Fixed Delete Button */}
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => handleDelete(articleId)}
+                      sx={{
+                        width: { xs: '69px', sm: '120px' },
+                        height: { xs: '34px', sm: '40px' },
+                        fontSize: { xs: '0', sm: '0.85rem' },
+                        padding: { xs: '0', sm: '6px 12px' },
+                        borderWidth: '2px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography
+                        sx={{ display: { xs: 'none', sm: 'inline' } }}
+                        component="span"
+                      >
+                        削除
+                      </Typography>
+                    </Button>
+                  </div>
                 </div>
               </li>
             );
