@@ -7,7 +7,7 @@ import { styled } from '@mui/material/styles';
 // Material UIコンポーネント
 import {
   TextField, Button, Box, Typography, Paper, CircularProgress,
-  MenuItem, ButtonGroup, Popper, Grow, MenuList, ClickAwayListener
+  MenuItem, Popper, Grow, MenuList, ClickAwayListener
 } from '@mui/material';
 
 // Material UIアイコン
@@ -61,7 +61,7 @@ const UpdateArticlePage: React.FC = () => {
   const [selectedArticleId, setSelectedArticleId] = useState<number | ''>('');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [open, setOpen] = useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
+  const anchorRef = React.useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -187,55 +187,39 @@ const UpdateArticlePage: React.FC = () => {
                   p-2
                 ">
                   <div>
-                    <ButtonGroup
+                    {/* ButtonGroupの代わりに単一のButtonコンポーネントを使用 */}
+                    <Button
                       variant="contained"
                       ref={anchorRef} 
-                      aria-label="split button"
+                      aria-label="select article"
+                      aria-controls={open ? 'split-button-menu' : undefined}
+                      aria-expanded={open ? 'true' : undefined}
+                      aria-haspopup="menu"
+                      onClick={handleToggle}
                       sx={{ 
                         backgroundColor: '#1976d2', 
                         color: 'white',
                         width: { xs: '100%', sm: '100%', md: 'auto' }, // モバイルで幅いっぱいに
-                        flexDirection: { xs: 'column', sm: 'row' }, // モバイルでは縦並びに
-                        boxShadow: 2
+                        padding: { xs: '10px', sm: '8px 16px' }, // パディングも調整
+                        textAlign: 'left',
+                        fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' }, // 画面サイズに応じてフォントサイズ調整
+                        whiteSpace: 'normal', // テキストを折り返し
+                        overflowWrap: 'break-word',
+                        wordBreak: 'break-word',
+                        height: 'auto', // 高さを自動調整
+                        minHeight: '40px',
+                        display: 'flex',
+                        justifyContent: 'space-between', // テキストとアイコンを両端に配置
+                        alignItems: 'center',
+                        '&:hover': {
+                          backgroundColor: '#1565c0', // ホバー時の色
+                        }
                       }}
+                      endIcon={<ArrowDropDownIcon />} // 右端にアイコンを配置
                     >
-                      <Button
-                        onClick={() => selectedArticleId && handleArticleSelect(
-                          selectedArticleId as number
-                        )}
-                        sx={{ 
-                          color: 'white', 
-                          textAlign: 'left', 
-                          fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' }, // 画面サイズに応じてフォントサイズ調整
-                          padding: { xs: '10px', sm: '8px 16px' }, // パディングも調整
-                          whiteSpace: 'normal', // テキストを折り返し
-                          overflowWrap: 'break-word',
-                          wordBreak: 'break-word',
-                          height: 'auto', // 高さを自動調整
-                          minHeight: '40px',
-                          display: 'flex',
-                          alignItems: 'center'
-                        }}
-                      >
-                        {selectedArticle?.title || '記事を選択してください'}
-                      </Button>
-                      <Button
-                        size="small"
-                        aria-controls={open ? 'split-button-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-label="select article"
-                        aria-haspopup="menu"
-                        onClick={handleToggle}
-                        sx={{ 
-                          color: 'white',
-                          width: { xs: '100%', sm: 'auto' }, // モバイルで幅いっぱいに
-                          borderTop: { xs: '1px solid rgba(255, 255, 255, 0.3)', sm: 'none' }, // モバイル時の区切り線
-                          borderLeft: { xs: 'none', sm: '1px solid rgba(255, 255, 255, 0.3)' } // デスクトップ時の区切り線
-                        }}
-                      >
-                        <ArrowDropDownIcon />
-                      </Button>
-                    </ButtonGroup>
+                      {selectedArticle?.title || '記事を選択してください'}
+                    </Button>
+                    
                     <Popper
                       sx={{
                         zIndex: 1,
