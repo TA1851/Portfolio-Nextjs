@@ -129,12 +129,11 @@ const UpdateArticlePage: React.FC = () => {
       container mx-auto
       px-4 py-8
       bg-white
-      xs:text-sm sm:text-base
-      md:text-lg lg:text-xl
     ">
     <Typography
-      variant="h4" component="h1" className="mb-6"
-    >
+      variant="h4" component="h1"
+      className="mb-6 text-center
+    ">
       記事を編集する
     </Typography>
 
@@ -190,14 +189,33 @@ const UpdateArticlePage: React.FC = () => {
                   <div>
                     <ButtonGroup
                       variant="contained"
-                      ref={anchorRef} aria-label="split button"
-                      sx={{ backgroundColor: '#1976d2', color: 'white' }}
+                      ref={anchorRef} 
+                      aria-label="split button"
+                      sx={{ 
+                        backgroundColor: '#1976d2', 
+                        color: 'white',
+                        width: { xs: '100%', sm: '100%', md: 'auto' }, // モバイルで幅いっぱいに
+                        flexDirection: { xs: 'column', sm: 'row' }, // モバイルでは縦並びに
+                        boxShadow: 2
+                      }}
                     >
                       <Button
                         onClick={() => selectedArticleId && handleArticleSelect(
                           selectedArticleId as number
                         )}
-                        sx={{ color: 'white', textAlign: 'left', fontSize: '1.4rem' }}
+                        sx={{ 
+                          color: 'white', 
+                          textAlign: 'left', 
+                          fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' }, // 画面サイズに応じてフォントサイズ調整
+                          padding: { xs: '10px', sm: '8px 16px' }, // パディングも調整
+                          whiteSpace: 'normal', // テキストを折り返し
+                          overflowWrap: 'break-word',
+                          wordBreak: 'break-word',
+                          height: 'auto', // 高さを自動調整
+                          minHeight: '40px',
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}
                       >
                         {selectedArticle?.title || '記事を選択してください'}
                       </Button>
@@ -208,7 +226,12 @@ const UpdateArticlePage: React.FC = () => {
                         aria-label="select article"
                         aria-haspopup="menu"
                         onClick={handleToggle}
-                        sx={{ color: 'white' }}
+                        sx={{ 
+                          color: 'white',
+                          width: { xs: '100%', sm: 'auto' }, // モバイルで幅いっぱいに
+                          borderTop: { xs: '1px solid rgba(255, 255, 255, 0.3)', sm: 'none' }, // モバイル時の区切り線
+                          borderLeft: { xs: 'none', sm: '1px solid rgba(255, 255, 255, 0.3)' } // デスクトップ時の区切り線
+                        }}
                       >
                         <ArrowDropDownIcon />
                       </Button>
@@ -216,18 +239,21 @@ const UpdateArticlePage: React.FC = () => {
                     <Popper
                       sx={{
                         zIndex: 1,
-                        width: {
-                          xs: '90vw',
-                          sm: '80vw',
-                          md: '400px',
-                          lg: '400px'
-                        }
+                        width: { 
+                          xs: 'calc(100% - 32px)', // モバイルでは画面幅いっぱい(パディング分を引く)
+                          sm: 'calc(100% - 64px)', 
+                          md: '500px',
+                          lg: '500px'
+                        },
+                        maxHeight: '60vh', // 高さ制限を追加
+                        overflowY: 'auto'  // スクロール可能に
                       }}
                       open={open}
                       anchorEl={anchorRef.current}
                       role={undefined}
                       transition
                       disablePortal
+                      placement="bottom-start" // 下部に表示
                     >
                       {({ TransitionProps, placement }) => (
                         <Grow
@@ -235,16 +261,27 @@ const UpdateArticlePage: React.FC = () => {
                           style={{
                             transformOrigin:
                               placement === 'bottom' ? 'center top' : 'center bottom',
+                            maxHeight: '50vh', // 高さ制限を追加
+                            overflowY: 'auto'  // スクロール可能に
                           }}
                         >
-                          <Paper>
+                          <Paper sx={{ maxHeight: '50vh', overflowY: 'auto' }}>
                             <ClickAwayListener onClickAway={handleClose}>
-                              <MenuList id="split-button-menu" autoFocusItem>
+                              <MenuList 
+                                id="split-button-menu" 
+                                autoFocusItem
+                              >
                                 {articles.map((article) => (
                                   <MenuItem
                                     key={article.article_id}
                                     selected={article.article_id === selectedArticleId}
                                     onClick={() => handleMenuItemClick(article.article_id)}
+                                    sx={{
+                                      whiteSpace: 'normal', // テキストを折り返し
+                                      wordBreak: 'break-word',
+                                      padding: '8px 16px',
+                                      minHeight: '40px'
+                                    }}
                                   >
                                     {article.title}
                                   </MenuItem>
