@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+// import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 
 // 記事の型定義
@@ -391,35 +392,22 @@ export default function DeleteArticlePage() {
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
-                  <div
-                    // style={{
-                    //   margin: '-67px', // 上にずらす
-                    // }}
-                  >
-                    {/* Fixed Delete Button */}
-                    <Button
-                      variant="outlined"
+                  <div>
+                    {/* ゴミ箱アイコンボタン */}
+                    <IconButton
+                      aria-label="delete"
                       color="error"
-                      startIcon={<DeleteIcon />}
                       onClick={() => handleDelete(articleId)}
                       sx={{
-                        width: { xs: '10px', sm: '120px' },
+                        width: { xs: '34px', sm: '40px' },
                         height: { xs: '34px', sm: '40px' },
-                        fontSize: { xs: '0', sm: '0.85rem' },
-                        padding: { xs: '0', sm: '6px 12px' },
-                        // borderWidth: '2px',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                       }}
                     >
-                      <Typography
-                        sx={{ display: { xs: 'none', sm: 'inline' } }}
-                        component="span"
-                      >
-                        削除
-                      </Typography>
-                    </Button>
+                      <DeleteIcon />
+                    </IconButton>
                   </div>
                 </div>
               </li>
