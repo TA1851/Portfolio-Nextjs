@@ -435,7 +435,6 @@ const PostForm: React.FC<PostFormProps> = (
       const result = await response.json();
       console.log('API 成功レスポンス:', result);
       // 成功したら一覧ページに戻る
-      // alert('記事を正常に更新しました');
       router.push('/user');
     } catch (error) {
       console.error('更新エラー:', error);

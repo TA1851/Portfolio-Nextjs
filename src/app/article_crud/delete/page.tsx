@@ -421,7 +421,6 @@ export default function DeleteArticlePage() {
                     startIcon={<DeleteIcon />}
                     onClick={() => handleDelete(articleId)}
                   >
-                    削除する
                   </Button>
                 </div>
               </li>
