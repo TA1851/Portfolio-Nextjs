@@ -392,11 +392,14 @@ export default function DeleteArticlePage() {
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
-                  <div>
+                  <div
+                    className="
+                      ml-3 mt-3
+                    ">
                     {/* ゴミ箱アイコンボタン */}
                     <IconButton
                       aria-label="delete"
-                      color="error"
+                      disabled color="primary"
                       onClick={() => handleDelete(articleId)}
                       sx={{
                         width: { xs: '34px', sm: '40px' },
