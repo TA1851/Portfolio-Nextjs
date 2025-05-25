@@ -337,6 +337,10 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
               color="error"
               onClick={() => router.push('/user')}
               disabled={saving}
+              sx={{
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                padding: { xs: '4px 8px', sm: '6px 12px' }
+              }}
             >
               キャンセル
             </Button>
@@ -346,6 +350,10 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
               startIcon={<SaveIcon />}
               onClick={() => handleSubmit('draft')}
               disabled={saving}
+              sx={{
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                padding: { xs: '4px 8px', sm: '6px 12px' }
+              }}
             >
               下書き保存
             </Button>
@@ -356,6 +364,10 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             startIcon={<PublishIcon />}
             onClick={() => handleSubmit('publish')}
             disabled={saving}
+            sx={{
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              padding: { xs: '4px 8px', sm: '6px 12px' }
+            }}
           >
             {saving ? '処理中...' : '公開する'}
           </Button>
