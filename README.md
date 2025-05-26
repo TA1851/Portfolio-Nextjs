@@ -1,4 +1,11 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## プロジェクトの概要
+- React: 19.0
+- Nextjs: 15.3.1
+- axios: 1.9.0
+- Typescript: 5.7.3
+- mui/material: 7.0.2
+- tailwindcss: 3.4.1
+
 
 ## プロジェクトの作成
 ```bash
