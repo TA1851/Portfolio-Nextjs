@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FC, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
-import { saveLog } from "@/utils/logger";
+import { saveLog } from "..//../utils/logger";
 
 
 const LoginComp: FC = () => {
@@ -37,9 +37,12 @@ const LoginComp: FC = () => {
         formData.append('password', passwordValue);
 
         console.log('送信データ:', {username: emailValue, password: passwordValue});
+        // 環境変数からAPIエンドポイントを取得する
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        console.log('API URL:', apiUrl);
+
         const response = await axios.post(
-          // 'http://127.0.0.1:8000/api/v1/login',
-          'https://blog-api-main.onrender.com/api/v1/login',
+          `${apiUrl}/login`,
           formData
         );
 
@@ -168,11 +171,11 @@ const LoginComp: FC = () => {
             >
               ログイン
             </button>
-            <div className="flex justify-center">
+            {/* <div className="flex justify-center">
               <a href="/logs" className="text-sm text-gray-500 hover:text-blue-500">
                 開発者向け: ログを表示
               </a>
-            </div>
+            </div> */}
           </div>
           <p className="text-center mb-4">
             <Link href="/register"
@@ -190,5 +193,4 @@ const LoginComp: FC = () => {
     </>
   );
 };
-
 export default LoginComp;

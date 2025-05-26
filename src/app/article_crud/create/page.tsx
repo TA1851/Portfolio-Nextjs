@@ -10,36 +10,37 @@ import {
 } from '@mui/material';
 import PublishIcon from '@mui/icons-material/Publish';
 import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useRouter } from 'next/navigation';
 import { styled } from '@mui/material/styles';
 
 
-// カスタムスタイリングされたMUIコンポーネント
+// MUIコンポーネント
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
 }));
 
-// フォームデータの型定義 - 必要なプロパティのみに簡素化
+// フォームデータの型定義
 interface PostFormData {
   title: string;
   content: string;
   publishStatus: 'draft' | 'published';
 }
 
-// エラーの型定義 - 必要なプロパティのみに簡素化
+// エラーの型定義
 interface FormErrors {
   title?: string;
   content?: string;
 }
 
-// 初期データの型定義 - 必要なプロパティのみに簡素化
+// 初期データの型定義
 interface PostData {
   id?: string;
   title?: string;
   content?: string;
-  body?: string; // APIからのレスポンスでbodyとして返ってくる可能性を考慮
+  body?: string;
   publishStatus?: 'draft' | 'published';
 }
 
@@ -93,15 +94,16 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // トークンのリフレッシュを試みる
+  // トークンのリフレッシュ
   const refreshToken = async () => {
     try {
       const currentToken = localStorage.getItem('authToken');
       if (!currentToken) return null;
 
-      // リフレッシュAPI呼び出し（APIの仕様に合わせて調整）
+      // 環境変数からAPIエンドポイントを取得する
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const refreshResponse = await fetch(
-        'https://blog-api-main.onrender.com/api/v1/auth/refresh', {
+        `${apiUrl}/refresh`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
@@ -144,13 +146,13 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
 
     try {
       // トークン取得と検証を強化
-      let cleanToken = ''; // cleanTokenをより広いスコープで宣言
+      let cleanToken = '';
 
-      // ユーザーIDを追加（FastAPIのデフォルト実装では通常必要）
+      // ユーザーIDを追加
       const postData = {
         title: formData.title,
         body: formData.content,
-        user_id: 6, // テストで成功したuser_idを指定
+        user_id: 6,
         publish_status: action === 'publish' ? 'published' : 'draft',
       };
 
@@ -169,11 +171,11 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           return;
         }
 
-        // JWT判定（簡易的な確認）
+        // JWT判定
         const isJWT = token.split('.').length === 3;
         console.log('トークン形式:', isJWT ? 'JWT形式' : '通常文字列');
 
-        // トークンをクリーン化（不要な空白削除）
+        // トークンをクリーン化
         cleanToken = token.trim();
 
         // トークンの正当性を確認
@@ -186,9 +188,10 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           return;
         }
 
-        // APIリクエスト送信
+        // 環境変数からAPIエンドポイントを取得する
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const response = await fetch(
-          'https://blog-api-main.onrender.com/api/v1/articles', {
+          `${apiUrl}/articles`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -205,7 +208,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           if (newToken) {
             // 新しいトークンで再試行
             const retryResponse = await fetch(
-              'https://blog-api-main.onrender.com/api/v1/articles', {
+              `${apiUrl}/articles`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -221,21 +224,20 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             }
           }
           handleAuthError();
-          return; // 処理を中断
+          return;
         }
 
-        // レスポンスのテキストを取得（JSONでもそうでなくても）
+        // レスポンスのテキストを取得
         const responseText = await response.text();
-        console.log('レスポンスボディ:', responseText); // デバッグログ追加
+        console.log('レスポンスボディ:', responseText);
 
         if (!response.ok) {
-          // レスポンスボディをJSONとして解析しようとする
           let errorData = null;
           try {
             errorData = responseText ? JSON.parse(responseText) : null;
           } catch (e) {
             console.error('JSONパースエラー:', e);
-            errorData = responseText; // JSONではない場合はテキストのまま
+            errorData = responseText;
           }
 
           console.error('APIエラー:', response.status, errorData);
@@ -260,11 +262,17 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         router.push('/user');
       } catch (error) {
         console.error('Error during API call:', error);
-        alert('API呼び出し中にエラーが発生しました：' + (error instanceof Error ? error.message : String(error)));
+        alert(
+          'API呼び出し中にエラーが発生しました：'
+          + (error instanceof Error ? error.message : String(error))
+        );
       }
     } catch (error) {
       console.error('投稿エラー:', error);
-      alert(`記事の保存に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
+      alert(
+        `記事の保存に失敗しました:
+        ${error instanceof Error ? error.message : '不明なエラー'}`
+      );
     } finally {
       setSaving(false);
     }
@@ -316,41 +324,64 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         />
         {/* アクションボタン */}
         <Box
-        className="
-          flex justify-between
-          pt-4 border-t
-          border-gray-200
-        ">
-          <div
-          className="
-            flex gap-2
-          ">
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => router.push('/user')} // デモページに戻る
-              disabled={saving}
-            >
-              キャンセル
-            </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<SaveIcon />}
-              onClick={() => handleSubmit('draft')}
-              disabled={saving}
-            >
-              下書き保存
-            </Button>
-          </div>
+          mt={2}
+          display="flex"
+          flexDirection={{ xs: 'column', sm: 'row' }} // モバイルでは縦並び、デスクトップでは横並び
+          gap={2} // ボタン間のスペース
+        >
           <Button
             variant="contained"
             color="primary"
+            startIcon={<SaveIcon />}
+            onClick={() => handleSubmit('draft')}
+            disabled={saving}
+            sx={{
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
+          >
+            下書き保存
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
             startIcon={<PublishIcon />}
             onClick={() => handleSubmit('publish')}
             disabled={saving}
+            sx={{
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
           >
-            {saving ? '処理中...' : '公開する'}
+            公開する
+          </Button>
+          <Button
+            variant="outlined"
+            color="inherit"
+            startIcon={<CancelIcon />}
+            onClick={() => router.push('/user')}
+            disabled={saving}
+            sx={{
+              color: 'red',
+              borderColor: 'red',
+              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+            }}
+          >
+            キャンセル
+          </Button>
+        </Box>
+        <Box mt={3} textAlign="center" className="border-t pt-4">
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => router.push('/user')}
+            className="mx-auto"
+          >
+            会員専用ページに戻る
           </Button>
         </Box>
       </Box>

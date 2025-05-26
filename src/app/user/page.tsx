@@ -1,13 +1,18 @@
 'use client';
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import DemoBody from "@/app/user/home/page";
-import { saveLog } from "@/utils/logger";
+import DemoBody from "./home/page";
+import { saveLog } from "..//../utils/logger";
 
 const HeaderComp: FC = () => {
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   // ログアウト処理関数
   const handleLogout = async () => {
@@ -19,10 +24,12 @@ const HeaderComp: FC = () => {
         console.error('トークンがありません');
         return;
       }
-      // APIにログアウトリクエストを送信
+      // 環境変数からAPIエンドポイントを取得する
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      console.log('API URL:', apiUrl);
+
       const response = await fetch(
-        // 'http://127.0.0.1:8000/api/v1/logout',
-        'https://blog-api-main.onrender.com/api/v1/logout', {
+        `${apiUrl}/logout`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -74,23 +81,18 @@ const HeaderComp: FC = () => {
                   h-auto w-6
                   text-indigo-500"
                   fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg
-                ">
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                 <path d="M96 0V47L48 94H0V47L48 0H96Z" />
               </svg>
               会員専用ページ
             </a>
 
+            {/* デスクトップナビゲーション */}
             <nav className="
               hidden
               gap-12 lg:flex
             ">
-              {/* <Link
-                href="/"
-                className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700"
-              >
-                ホーム
-              </Link> */}
               <Link
                 href="/article_crud/create"
                 className="
@@ -126,48 +128,120 @@ const HeaderComp: FC = () => {
               </Link>
             </nav>
 
-            {/* 検索ボックス */}
-            {/* <div className="relative">
-              <input
-                type="text"
-                placeholder="検索"
+            <div className="flex items-center gap-4">
+              {/* ログアウトボタン */}
+              <button
+                type="button"
                 className="
-                  w-full rounded-lg
-                  border border-gray-300
-                  px-10 py-3
-                  text-sm text-gray-800
-                  outline-none ring-indigo-300
-                  transition duration-100
-                  focus:ring"
-              />
+                  hidden lg:block
+                  text-black
+                  px-4 py-1
+                  bg-blue-500
+                  hover:bg-blue-400
+                  rounded"
+                onClick={handleLogout}
+              >
+                ログアウト
+              </button>
+
+              {/* ハンバーガーメニュー */}
+              <button
+                type="button"
+                onClick={toggleMenu}
+                className="
+                  inline-flex 
+                  items-center 
+                  gap-2 
+                  rounded-lg 
+                  px-2.5 
+                  py-2 
+                  text-sm 
+                  font-semibold 
+                  text-black
+                  ring-indigo-300 
+                  hover:text-gray-600 
+                  focus-visible:ring 
+                  active:text-gray-700 
+                  md:text-base 
+                  lg:hidden
+                "
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z
+                      M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z
+                      M3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
             </div>
-            <button
-              type="submit"
-              className="
-                text-black
-                px-4 py-1
-                bg-gray-400
-                hover:bg-gray-300 rounded
-              ">
-                検索
-            </button> */}
-            {/* ログアウトボタン - Linkを使わずに直接ボタンでハンドリング */}
-            <button
-              type="button"
-              className="
-                text-black
-                px-4 py-1
-                bg-blue-500
-                hover:bg-blue-400
-                rounded"
-              onClick={handleLogout}
-            >
-              ログアウト
-            </button>
           </header>
+
+          {/* モバイルメニュー */}
+          {isMenuOpen && (
+            <div className="lg:hidden py-4 px-2 bg-white border-t">
+              <div className="flex flex-col space-y-4">
+                <Link
+                  href="/article_crud/create"
+                  className="
+                    block
+                    px-4 py-2
+                    text-gray-700
+                    hover:bg-gray-100
+                    rounded
+                  "
+                >
+                  記事を書く
+                </Link>
+                <Link
+                  href="/article_crud/update"
+                  className="
+                    block
+                    px-4 py-2
+                    text-gray-700
+                    hover:bg-gray-100
+                    rounded
+                  "
+                >
+                  記事を編集する
+                </Link>
+                <Link
+                  href="/article_crud/delete"
+                  className="
+                    block
+                    px-4 py-2
+                    text-gray-700
+                    hover:bg-gray-100
+                    rounded
+                  "
+                >
+                  記事を削除する
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="
+                    block w-full text-left
+                    px-4 py-2
+                    text-gray-700
+                    hover:bg-blue-100
+                    rounded
+                  "
+                >
+                  ログアウト
+                </button>
+              </div>
+            </div>
+          )}
         </div>
+        <DemoBody />
       </div>
-      <DemoBody></DemoBody>
     </>
   );
 };

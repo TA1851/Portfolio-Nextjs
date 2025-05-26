@@ -45,5 +45,4 @@ const LogoutPage: FC = () => {
     </div>
   );
 };
-
 export default LogoutPage;

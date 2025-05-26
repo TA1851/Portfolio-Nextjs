@@ -1,6 +1,9 @@
 import { FC } from 'react';
+import Link from 'next/link';
+
 
 const Page1: FC = () => {
+  const publishedDate = "2025年3月5日";
   return (
     <>
       <article className="
@@ -66,10 +69,26 @@ const Page1: FC = () => {
           text-gray-500 text-sm
           text-right mr-3"
         >
-          投稿日: 2023年10月15日
+          投稿日: {publishedDate}
         </div>
       </div>
-
+      {/* ホームに戻るボタン */}
+      <div className="
+        mt-8 text-center
+      ">
+        <Link href="/"
+        className="
+          inline-block
+          px-4 py-2
+          bg-gray-100
+          text-blue-600
+          rounded
+          hover:bg-gray-200
+          transition-colors
+        ">
+          ホームに戻る
+        </Link>
+      </div>
       </article>
     </>
   )

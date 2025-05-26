@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import * as React from 'react';
 import Button from '@mui/material/Button';
+// import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 
 // 記事の型定義
@@ -18,8 +20,9 @@ interface Article {
   created_at?: string;
   updated_at?: string;
 }
-
-const API_URL = "https://blog-api-main.onrender.com/api/v1/articles";
+// 環境変数からAPI_URLを取得
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const article_URL = `${API_URL}/articles`;
 
 export default function DeleteArticlePage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -28,7 +31,7 @@ export default function DeleteArticlePage() {
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
   const authAxios = axios.create({
-    baseURL: "https://blog-api-main.onrender.com/api/v1",
+    baseURL: API_URL,
     // タイムアウト設定
     timeout: 10000,
     // CORS関連の設定
@@ -150,16 +153,17 @@ export default function DeleteArticlePage() {
     initPage();
   }, []); // 空の依存配列
 
-  // トークンリフレッシュ関数 - FastAPI仕様に合わせて修正
+  // トークンリフレッシュ関数
   const refreshToken = async () => {
     try {
       if (!token) {
         throw new Error("認証トークンが見つかりません");
       }
 
-      // リフレッシュAPIの形式に合わせて修正
+      // 環境変数からAPIエンドポイントを取得
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await axios.post(
-        "https://blog-api-main.onrender.com/api/v1/auth/refresh",
+        `${apiUrl}/refresh`,
         {},
         {
           headers: {
@@ -196,7 +200,7 @@ export default function DeleteArticlePage() {
       }
 
       // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
-      const response = await authAxios.get(API_URL, {
+      const response = await authAxios.get(article_URL, {
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
         }
@@ -206,6 +210,7 @@ export default function DeleteArticlePage() {
 
       if (Array.isArray(response.data)) {
         console.log(`${response.data.length}件の記事を取得しました`);
+        // フィルタリング不要: バックエンドでnullを許容しない
         setArticles(response.data);
       } else {
         console.warn("APIレスポンスが配列ではありません:", response.data);
@@ -240,7 +245,7 @@ export default function DeleteArticlePage() {
 
     alert("記事が正常に削除されました");
   };
-  // 記事の削除 - APIドキュメントに基づいた正確な実装
+  // 記事の削除
   const handleDelete = async (articleId: number) => {
     if (!articleId) {
       console.error("削除対象の記事IDが不正です:", articleId);
@@ -254,13 +259,23 @@ export default function DeleteArticlePage() {
 
     try {
       console.log(`記事ID ${articleId} の削除を開始します`);
+      
+      // 認証トークンの状態を確認
+      const currentToken = localStorage.getItem("authToken");
+      if (!currentToken) {
+        console.error("認証トークンがありません");
+        throw new Error("認証情報がありません。再度ログインしてください。");
+      }
 
-      // APIドキュメントに従った正しいURL形式:
-      // DELETEメソッドで/api/v1/articlesにアクセスし、クエリパラメータとしてarticle_idを指定
-      const deleteUrl = `${API_URL}?article_id=${articleId}`;
-      console.log("正しい削除URL:", deleteUrl);
+      // DELETEメソッド
+      const deleteUrl = `${API_URL}/articles?article_id=${articleId}`;
+      console.log("削除リクエスト先:", deleteUrl);
 
-      const response = await authAxios.delete(deleteUrl);
+      const response = await authAxios.delete(deleteUrl, {
+        headers: {
+          'Authorization': `Bearer ${currentToken.trim()}`
+        }
+      });
       console.log("削除成功:", response.status, response.data);
 
       updateArticlesList(articleId);
@@ -372,83 +387,76 @@ export default function DeleteArticlePage() {
           </button>
         </div>
       ) : (
-        <ul
-        className="
-          space-y-4
-        ">
+        <ul className="space-y-4">
           {articles.map((article) => {
-            // article_idとidの両方を考慮して確実にIDを取得
             const articleId = article.article_id ?? article.id;
-            // IDが存在しない場合はスキップ
             if (!articleId) {
               console.warn("IDのない記事:", article);
               return null;
             }
             return (
-              <li key={articleId}
-              className="
-                border p-4
-                rounded
-              ">
-                <div
-                className="
-                  flex justify-between
-                  items-center
-                ">
+              <li key={articleId} className="border p-4 rounded">
+                <div className="flex justify-between items-center">
                   <div>
-                    <h2
-                    className="
-                      text-xl font-semibold
-                    ">
-                      {article.title}
-                    </h2>
-                    <p
-                    className="
-                      text-gray-600
-                    ">
-                      {article.body ?
-                      article.body.substring(0, 100) + "..." : "本文なし"}
+                    <h2 className="text-xl font-semibold">{article.title || "無題"}</h2>
+                    <p className="text-gray-600">
+                      {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
                     </p>
-                    <small
-                    className="
-                      text-gray-500
-                    ">
+                    <small className="text-gray-500">
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
-                  {/* <button
-                    onClick={() => handleDelete(articleId)}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    削除
-                  </button> */}
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => handleDelete(articleId)}
-                  >
-                    削除する
-                  </Button>
+                  <div
+                    className="
+                      ml-3 mt-3
+                    ">
+                    {/* ゴミ箱アイコンボタン */}
+                    <IconButton
+                      aria-label="delete"
+                      color="primary"  // デフォルトカラー
+                      onClick={() => handleDelete(articleId)}
+                      sx={{
+                        width: { xs: '34px', sm: '40px' },
+                        height: { xs: '34px', sm: '40px' },
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        '&:hover': {
+                          backgroundColor: 'transparent',  // 背景色を透明に保つ
+                          color: theme => theme.palette.error.main,  // ホバー時に赤色に変更
+                          transition: 'color 0.2s ease-in-out', // 色の変化にトランジションを適用
+                        }
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </div>
                 </div>
               </li>
             );
           })}
         </ul>
       )}
-      {/* 下部にだけ戻るボタンを残す */}
-      <div className="mt-6 text-center">
-        <button
+      <div
+        className="
+          flex justify-center
+          text-center items-center
+          min-h-screen
+        ">
+        <Button
+          variant="outlined"
+          color="primary"
           onClick={() => router.push('/user')}
-          className="
-            px-6 py-2
-            bg-gray-200 text-gray-800
-            rounded
-            hover:bg-gray-300
-            transition-colors"
+          sx={{
+            width: '170px', // ボタンの幅を統一
+            height: '40px', // ボタンの高さを統一
+            fontSize: '0.85rem', // フォントサイズを統一
+            padding: '6px 12px', // 内側の余白を統一
+            borderWidth: '2px', // ボーダーの太さを統一
+          }}
         >
           会員専用ページに戻る
-        </button>
+        </Button>
       </div>
     </div>
   );
