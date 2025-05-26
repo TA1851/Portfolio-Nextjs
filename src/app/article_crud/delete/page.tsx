@@ -210,7 +210,12 @@ export default function DeleteArticlePage() {
 
       if (Array.isArray(response.data)) {
         console.log(`${response.data.length}件の記事を取得しました`);
-        setArticles(response.data);
+        // nullのタイトルと本文を持つ記事をフィルタリング
+        const validArticles = response.data.filter(article => 
+          article.title !== null && article.body !== null
+        );
+        console.log(`${validArticles.length}件の有効な記事をフィルタリングしました`);
+        setArticles(validArticles);
       } else {
         console.warn("APIレスポンスが配列ではありません:", response.data);
         setArticles([]);
@@ -402,7 +407,7 @@ export default function DeleteArticlePage() {
               <li key={articleId} className="border p-4 rounded">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-xl font-semibold">{article.title}</h2>
+                    <h2 className="text-xl font-semibold">{article.title || "無題"}</h2>
                     <p className="text-gray-600">
                       {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
                     </p>
