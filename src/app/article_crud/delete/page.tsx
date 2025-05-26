@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 // import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import { alpha } from '@mui/material/styles';
 
 
 // 記事の型定義
@@ -408,8 +409,8 @@ export default function DeleteArticlePage() {
                         justifyContent: 'center',
                         alignItems: 'center',
                         '&:hover': {
-                          backgroundColor: theme => `${theme.palette.primary.main}15`,  // メインカラーを透明度15%で
-                          color: theme => theme.palette.primary.dark,  // 濃いバージョンのメインカラー
+                          backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),  // 透明度5%
+                          color: theme => theme.palette.primary.dark,
                           transition: 'all 0.2s ease-in-out',
                         }
                       }}
