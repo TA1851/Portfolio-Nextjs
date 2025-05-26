@@ -399,7 +399,7 @@ export default function DeleteArticlePage() {
                     {/* ゴミ箱アイコンボタン */}
                     <IconButton
                       aria-label="delete"
-                      disabled color="primary"
+                      color="primary"  // デフォルトカラー
                       onClick={() => handleDelete(articleId)}
                       sx={{
                         width: { xs: '34px', sm: '40px' },
@@ -407,6 +407,11 @@ export default function DeleteArticlePage() {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
+                        '&:hover': {
+                          backgroundColor: theme => `${theme.palette.primary.main}15`,  // メインカラーを透明度15%で
+                          color: theme => theme.palette.primary.dark,  // 濃いバージョンのメインカラー
+                          transition: 'all 0.2s ease-in-out',
+                        }
                       }}
                     >
                       <DeleteIcon />
