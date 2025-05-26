@@ -272,17 +272,17 @@ export default function DeleteArticlePage() {
       }
       
       // 修正: APIの仕様に合わせて削除リクエストを構築
-      // DELETE メソッドではなく POST メソッドを使用し、action=deleteパラメータを追加
-      const deleteUrl = `${API_URL}/articles`;
+      // DELETE メソッドを使用し、URLにIDを含める
+      const deleteUrl = `${API_URL}/articles/${articleId}`;
       console.log("削除リクエスト先:", deleteUrl);
 
       // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
-      const response = await authAxios.post(deleteUrl, {
-        article_id: articleId,
-        action: 'delete'
-      }, {
+      const response = await authAxios.delete(deleteUrl, {
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
+        },
+        data: {
+          action: 'delete'
         }
       });
       console.log("削除成功:", response.status, response.data);
