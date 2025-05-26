@@ -409,9 +409,9 @@ export default function DeleteArticlePage() {
                         justifyContent: 'center',
                         alignItems: 'center',
                         '&:hover': {
-                          backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),  // 透明度5%
-                          color: theme => theme.palette.primary.dark,
-                          transition: 'all 0.2s ease-in-out',
+                          backgroundColor: 'transparent',  // 背景色を透明に保つ
+                          color: theme => theme.palette.error.main,  // ホバー時に赤色に変更
+                          transition: 'color 0.2s ease-in-out', // 色の変化にトランジションを適用
                         }
                       }}
                     >
