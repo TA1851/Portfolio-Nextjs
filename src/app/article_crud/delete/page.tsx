@@ -259,14 +259,26 @@ export default function DeleteArticlePage() {
     try {
       console.log(`記事ID ${articleId} の削除を開始します`);
       
+      // 認証トークンの状態を確認
+      const currentToken = localStorage.getItem("authToken");
+      if (!currentToken) {
+        console.error("認証トークンがありません");
+        throw new Error("認証情報がありません。再度ログインしてください。");
+      }
+      
       // 修正: APIの仕様に合わせて削除リクエストを構築
       // DELETE メソッドではなく POST メソッドを使用し、action=deleteパラメータを追加
       const deleteUrl = `${API_URL}/articles`;
       console.log("削除リクエスト先:", deleteUrl);
 
+      // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
       const response = await authAxios.post(deleteUrl, {
         article_id: articleId,
         action: 'delete'
+      }, {
+        headers: {
+          'Authorization': `Bearer ${currentToken.trim()}`
+        }
       });
       console.log("削除成功:", response.status, response.data);
 
