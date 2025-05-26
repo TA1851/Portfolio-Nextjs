@@ -71,23 +71,25 @@ const DemoBody: FC = () => {
             }
           });
         }
-        // IDの型変換を確実に行う
+        // nullのタイトルと本文を持つ記事をフィルタリングし、IDの型変換を行う
         const processedData = Array.isArray(data)
-          ? data.map(article => {
-              // IDの有無とタイプを詳細にチェック
-              const hasId = 'article_id' in article && article.article_id !== null;
-              console.log(
-                `記事「${article.title}」:
-                ID ${hasId ? article.article_id : 'なし'},
-                タイプ ${typeof article.article_id}`);
-              return {
-                ...article,
-                // 明示的に存在チェック - 0や空文字も有効なIDとして処理
-                article_id: hasId ? Number(
-                  article.article_id
-                ) : undefined
-              };
-            })
+          ? data
+              .filter(article => article.title !== null && article.body !== null) // NULLの記事をフィルタリング
+              .map(article => {
+                // IDの有無とタイプを詳細にチェック
+                const hasId = 'article_id' in article && article.article_id !== null;
+                console.log(
+                  `記事「${article.title}」:
+                  ID ${hasId ? article.article_id : 'なし'},
+                  タイプ ${typeof article.article_id}`);
+                return {
+                  ...article,
+                  // 明示的に存在チェック - 0や空文字も有効なIDとして処理
+                  article_id: hasId ? Number(
+                    article.article_id
+                  ) : undefined
+                };
+              })
           : [];
 
         setArticles(processedData);
