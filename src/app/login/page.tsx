@@ -171,11 +171,11 @@ const LoginComp: FC = () => {
             >
               ログイン
             </button>
-            <div className="flex justify-center">
+            {/* <div className="flex justify-center">
               <a href="/logs" className="text-sm text-gray-500 hover:text-blue-500">
                 開発者向け: ログを表示
               </a>
-            </div>
+            </div> */}
           </div>
           <p className="text-center mb-4">
             <Link href="/register"

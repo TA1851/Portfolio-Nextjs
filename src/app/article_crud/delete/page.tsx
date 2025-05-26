@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 // import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { alpha } from '@mui/material/styles';
 
 
 // 記事の型定義
