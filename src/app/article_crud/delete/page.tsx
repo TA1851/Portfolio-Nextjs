@@ -266,17 +266,12 @@ export default function DeleteArticlePage() {
         console.error("認証トークンがありません");
         throw new Error("認証情報がありません。再度ログインしてください。");
       }
-      
-      // 修正: APIの仕様に合わせて削除リクエストを構築
-      // DELETEメソッドではなくPOSTメソッドを使用（405エラー対策）
-      const deleteUrl = `${API_URL}/articles`;
+
+      // DELETEメソッド
+      const deleteUrl = `${API_URL}/articles?article_id=${articleId}`;
       console.log("削除リクエスト先:", deleteUrl);
 
-      // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
-      const response = await authAxios.post(deleteUrl, {
-        article_id: articleId,
-        action: 'delete'
-      }, {
+      const response = await authAxios.delete(deleteUrl, {
         headers: {
           'Authorization': `Bearer ${currentToken.trim()}`
         }
