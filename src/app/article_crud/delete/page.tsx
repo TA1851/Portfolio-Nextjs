@@ -210,12 +210,8 @@ export default function DeleteArticlePage() {
 
       if (Array.isArray(response.data)) {
         console.log(`${response.data.length}件の記事を取得しました`);
-        // nullのタイトルと本文を持つ記事をフィルタリング
-        const validArticles = response.data.filter(article => 
-          article.title !== null && article.body !== null
-        );
-        console.log(`${validArticles.length}件の有効な記事をフィルタリングしました`);
-        setArticles(validArticles);
+        // フィルタリング不要: バックエンドでnullを許容しない
+        setArticles(response.data);
       } else {
         console.warn("APIレスポンスが配列ではありません:", response.data);
         setArticles([]);
