@@ -258,11 +258,16 @@ export default function DeleteArticlePage() {
 
     try {
       console.log(`記事ID ${articleId} の削除を開始します`);
-      // 修正: REST APIの慣習に従ってURLを構築
-      const deleteUrl = `${API_URL}/articles/${articleId}`;
+      
+      // 修正: APIの仕様に合わせて削除リクエストを構築
+      // DELETE メソッドではなく POST メソッドを使用し、action=deleteパラメータを追加
+      const deleteUrl = `${API_URL}/articles`;
       console.log("削除リクエスト先:", deleteUrl);
 
-      const response = await authAxios.delete(deleteUrl);
+      const response = await authAxios.post(deleteUrl, {
+        article_id: articleId,
+        action: 'delete'
+      });
       console.log("削除成功:", response.status, response.data);
 
       updateArticlesList(articleId);
