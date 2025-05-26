@@ -21,7 +21,7 @@ interface Article {
   updated_at?: string;
 }
 // 環境変数からAPI_URLを取得
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
 const article_URL = `${API_URL}/articles`;
 
 export default function DeleteArticlePage() {
@@ -161,7 +161,7 @@ export default function DeleteArticlePage() {
       }
 
       // 環境変数からAPIエンドポイントを取得
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
       const response = await axios.post(
         `${apiUrl}/refresh`,
         {},

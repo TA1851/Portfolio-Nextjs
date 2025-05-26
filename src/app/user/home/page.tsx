@@ -40,7 +40,7 @@ const DemoBody: FC = () => {
         }
 
         // 全記事を取得するシンプルなAPI呼び出し
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         const response = await fetch(
           `${apiUrl}/articles`, {
           headers: {

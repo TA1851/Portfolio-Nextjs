@@ -101,7 +101,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
       if (!currentToken) return null;
 
       // 環境変数からAPIエンドポイントを取得する
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
       const refreshResponse = await fetch(
         `${apiUrl}/refresh`, {
         method: 'POST',
@@ -189,7 +189,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         }
 
         // 環境変数からAPIエンドポイントを取得する
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         const response = await fetch(
           `${apiUrl}/articles`, {
           method: 'POST',

@@ -25,7 +25,7 @@ const HeaderComp: FC = () => {
         return;
       }
       // 環境変数からAPIエンドポイントを取得する
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
       console.log('API URL:', apiUrl);
 
       const response = await fetch(

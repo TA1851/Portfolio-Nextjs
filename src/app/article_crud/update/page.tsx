@@ -74,7 +74,7 @@ const UpdateArticlePage: React.FC = () => {
           return;
         }
         // 環境変数を使用してAPIエンドポイントを取得
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         const response = await fetch(
           `${apiUrl}/articles`, {
           headers: {
@@ -415,7 +415,7 @@ const PostForm: React.FC<PostFormProps> = (
         return;
       }
       // 環境変数を使用してAPIエンドポイントを取得
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
       const url =
       `${apiUrl}/articles?article_id=${initialData.article_id}`;
       // 実際のAPI呼び出し

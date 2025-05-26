@@ -42,7 +42,7 @@ const ArticleDetailPage: FC = () => {
 
         console.log(`記事ID: ${id} の詳細を取得します`);
         // 環境変数からAPIのURLを取得
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         const response = await fetch(
           `${apiUrl}/articles/${id}`, {
           headers: {
