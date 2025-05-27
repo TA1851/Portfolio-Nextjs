@@ -101,7 +101,6 @@ import { FC, useState } from "react";
 import axios from "axios";
 
 interface SignupFormData {
-  name: string;
   email: string;
   password: string;
 }
@@ -112,7 +111,6 @@ interface ApiErrorResponse {
 
 const LoginComp: FC = () => {
   const [formData, setFormData] = useState<SignupFormData>({
-    name: "",
     email: "",
     password: ""
   });
@@ -136,7 +134,7 @@ const LoginComp: FC = () => {
     setIsLoading(true);
 
     // フロントエンドでの簡単なバリデーション
-    if (!formData.name || !formData.email || !formData.password) {
+    if (!formData.email || !formData.password) {
       setError("すべてのフィールドを入力してください。");
       setIsLoading(false);
       return;
@@ -144,7 +142,6 @@ const LoginComp: FC = () => {
 
     try {
       const response = await axios.post(`${apiUrl}/user`, {
-        name: formData.name,
         email: formData.email,
         password: formData.password
       }, {
@@ -156,7 +153,7 @@ const LoginComp: FC = () => {
       // 成功時の処理
       console.log("ユーザー作成成功:", response.data);
       setSuccess(true);
-      setFormData({ name: "", email: "", password: "" });
+      setFormData({ email: "", password: "" });
       
       // 必要に応じてリダイレクトやその他の処理を追加
       // router.push("/login");
@@ -167,13 +164,10 @@ const LoginComp: FC = () => {
         
         switch (err.response.status) {
           case 400:
-            setError("入力内容に不備があります。");
-            break;
-          case 401:
-            setError(errorData.detail || "このメールアドレスは既に使用されています。");
+            setError(errorData.detail || "入力内容に不備があります。");
             break;
           case 409:
-            setError(errorData.detail || "パスワードが不正です。");
+            setError(errorData.detail || "このメールアドレスは既に使用されています。");
             break;
           case 500:
             setError("サーバーエラーが発生しました。時間をおいて再度お試しください。");
@@ -238,32 +232,6 @@ const LoginComp: FC = () => {
             )}
 
             <div>
-              <label htmlFor="name"
-                className="
-                  mb-2 inline-block text-sm text-gray-800
-                  sm:text-base
-                ">
-                お名前
-              </label>
-              <input 
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="
-                  w-full rounded
-                  border bg-gray-50
-                  px-3 py-2
-                  text-gray-800
-                  outline-none ring-indigo-300
-                  transition duration-100 focus:ring
-                "
-                placeholder="山田太郎"
-              />
-            </div>
-
-            <div>
               <label htmlFor="email"
                 className="
                   mb-2 inline-block text-sm text-gray-800
@@ -272,6 +240,7 @@ const LoginComp: FC = () => {
                 Email
               </label>
               <input 
+                id="email"
                 name="email"
                 type="email"
                 value={formData.email}
@@ -299,6 +268,7 @@ const LoginComp: FC = () => {
                 Password
               </label>
               <input 
+                id="password"
                 name="password"
                 type="password"
                 value={formData.password}
@@ -348,5 +318,4 @@ const LoginComp: FC = () => {
     </>
   )
 }
-
 export default LoginComp;
