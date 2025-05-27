@@ -109,6 +109,16 @@ interface ApiErrorResponse {
   detail: string;
 }
 
+interface ApiSuccessResponse {
+  email: string;
+  password: string;
+  is_active: boolean;
+  id?: number;
+  name?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 const LoginComp: FC = () => {
   const [formData, setFormData] = useState<SignupFormData>({
     email: "",
@@ -155,16 +165,28 @@ const LoginComp: FC = () => {
       }, {
         headers: {
           'Content-Type': 'application/json'
+        },
+        validateStatus: function (status) {
+          // 200-299の範囲のステータスコードを成功として扱う
+          return status >= 200 && status < 300;
         }
       });
 
       // 成功時の処理
       console.log("ユーザー作成成功:", response.data);
-      setSuccess(true);
-      setFormData({ email: "", password: "" });
+      console.log("レスポンスステータス:", response.status);
       
-      // 必要に応じてリダイレクトやその他の処理を追加
-      // router.push("/login");
+      // レスポンスの形式をチェック
+      const userData = response.data as ApiSuccessResponse;
+      if (userData.email) {
+        setSuccess(true);
+        setFormData({ email: "", password: "" });
+        // 必要に応じてリダイレクトやその他の処理を追加
+        // router.push("/login");
+      } else {
+        console.warn("予期しないレスポンス形式:", userData);
+        setError("登録は完了しましたが、レスポンス形式が予期されたものと異なります。");
+      }
       
     } catch (err) {
       console.error("詳細エラー情報:", err);
