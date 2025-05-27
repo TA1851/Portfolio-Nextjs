@@ -9,7 +9,9 @@ const LoginComp: FC = () => {
         py-6 sm:py-60 lg:py-12
       ">
         <h2 className="
-          mb-4 text-center text-2xl font-bold text-blue-500
+          mb-4 text-center
+          text-2xl font-bold
+          text-blue-500
           md:mb-8 lg:text-3xl
         ">
           新規登録
