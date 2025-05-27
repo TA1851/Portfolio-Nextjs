@@ -141,7 +141,15 @@ const LoginComp: FC = () => {
     }
 
     try {
+      console.log("送信データ:", {
+        name: formData.email.split('@')[0], // メールアドレスの@マーク前をnameとして使用
+        email: formData.email,
+        password: formData.password
+      });
+      console.log("API URL:", `${apiUrl}/user`);
+      
       const response = await axios.post(`${apiUrl}/user`, {
+        name: formData.email.split('@')[0], // 一時的にnameフィールドを追加
         email: formData.email,
         password: formData.password
       }, {
@@ -159,24 +167,41 @@ const LoginComp: FC = () => {
       // router.push("/login");
       
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        const errorData = err.response.data as ApiErrorResponse;
+      console.error("詳細エラー情報:", err);
+      
+      if (axios.isAxiosError(err)) {
+        console.error("Axiosエラー詳細:", {
+          status: err.response?.status,
+          statusText: err.response?.statusText,
+          data: err.response?.data,
+          headers: err.response?.headers
+        });
         
-        switch (err.response.status) {
-          case 400:
-            setError(errorData.detail || "入力内容に不備があります。");
-            break;
-          case 409:
-            setError(errorData.detail || "このメールアドレスは既に使用されています。");
-            break;
-          case 500:
-            setError("サーバーエラーが発生しました。時間をおいて再度お試しください。");
-            break;
-          default:
-            setError("予期しないエラーが発生しました。");
+        if (err.response) {
+          const errorData = err.response.data as ApiErrorResponse;
+          
+          switch (err.response.status) {
+            case 400:
+              setError(errorData.detail || "入力内容に不備があります。");
+              break;
+            case 409:
+              setError(errorData.detail || "このメールアドレスは既に使用されています。");
+              break;
+            case 500:
+              setError(`サーバーエラーが発生しました: ${errorData.detail || "時間をおいて再度お試しください。"}`);
+              break;
+            default:
+              setError(`エラー(${err.response.status}): ${errorData.detail || "予期しないエラーが発生しました。"}`);
+          }
+        } else if (err.request) {
+          console.error("リクエストエラー:", err.request);
+          setError("サーバーに接続できませんでした。ネットワーク接続を確認してください。");
+        } else {
+          console.error("設定エラー:", err.message);
+          setError("リクエストの設定エラーが発生しました。");
         }
       } else {
-        setError("ネットワークエラーが発生しました。");
+        setError("予期しないエラーが発生しました。");
       }
       console.error("ユーザー作成エラー:", err);
     } finally {
@@ -318,4 +343,5 @@ const LoginComp: FC = () => {
     </>
   )
 }
+
 export default LoginComp;
