@@ -356,7 +356,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             variant="contained"
             color="secondary"
             startIcon={<PublishIcon />}
-            onClick={() => handleSubmit('publish')}
+            onClick={() => setOpen(true)} // handleSubmitの代わりにモーダルを開く
             disabled={saving}
             sx={{
               width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
@@ -400,17 +400,34 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        PaperProps={{
+          sx: {
+            borderRadius: '8px',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+            width: { xs: '90%', sm: '450px' }
+          }
+        }}
       >
-        <DialogTitle id="alert-dialog-title">
-          {"記事の公開確認"}
+        <DialogTitle id="alert-dialog-title" sx={{ pb: 1 }}>
+          記事の公開確認
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {`"${formData.title}"を公開しますか？`}
+            &ldquo;{formData.title}&rdquo; を公開しますか？
+            <br />
+            公開すると、すべてのユーザーが閲覧できるようになります。
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
+        <DialogActions sx={{ p: 2 }}>
+          <Button 
+            onClick={handleClose} 
+            color="primary"
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(25, 118, 210, 0.08)',
+              },
+            }}
+          >
             キャンセル
           </Button>
           <Button
@@ -419,7 +436,14 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
               handleClose();
             }}
             color="secondary"
+            variant="contained"
             autoFocus
+            sx={{
+              '&:hover': {
+                backgroundColor: 'secondary.dark',
+                boxShadow: '0 4px 8px rgba(156, 39, 176, 0.3)',
+              },
+            }}
           >
             公開する
           </Button>
