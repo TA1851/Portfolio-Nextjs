@@ -3,6 +3,12 @@
 import { FC, useEffect, useState } from "react";
 import { marked } from "marked";
 
+// markedの設定
+marked.setOptions({
+  breaks: true, // 改行を<br>に変換
+  gfm: true,    // GitHub Flavored Markdownを有効
+});
+
 // 記事データの型定義
 interface Article {
   title: string;

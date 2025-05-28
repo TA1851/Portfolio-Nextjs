@@ -5,6 +5,12 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { marked } from "marked";
 
+// markedの設定
+marked.setOptions({
+  breaks: true, // 改行を<br>に変換
+  gfm: true,    // GitHub Flavored Markdownを有効
+});
+
 // 記事詳細の型定義
 interface ArticleDetail {
   title: string;
@@ -135,14 +141,26 @@ const ArticleDetailPage: FC = () => {
           </span>
         </div>
         <div className="
-          prose prose-lg prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-          max-w-none"
+          prose prose-lg prose-gray
+          prose-headings:font-bold prose-headings:text-gray-900
+          prose-h1:text-3xl prose-h1:font-extrabold prose-h1:mb-4
+          prose-h2:text-2xl prose-h2:font-bold prose-h2:mb-3
+          prose-h3:text-xl prose-h3:font-bold prose-h3:mb-2
+          prose-h4:text-lg prose-h4:font-bold prose-h4:mb-2
+          prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
+          prose-strong:font-bold prose-strong:text-gray-900
+          max-w-none markdown-content"
         >
         {article.body ? (
           <div 
-            className="mb-4 text-gray-800"
+            className="mb-4 article-content"
             dangerouslySetInnerHTML={{ 
-              __html: marked(article.body) 
+              __html: (() => {
+                const htmlContent = marked(article.body);
+                console.log('Original markdown:', article.body);
+                console.log('Converted HTML:', htmlContent);
+                return htmlContent;
+              })()
             }}
           />
         ) : (
