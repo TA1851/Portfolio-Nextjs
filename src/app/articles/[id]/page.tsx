@@ -139,7 +139,7 @@ const ArticleDetailPage: FC = () => {
         >
         {article.body ? (
           <p className="
-            mb-4 text-gray-800"
+            mb-4 text-gray-800 whitespace-pre-line"
           >
             {article.body}
           </p>

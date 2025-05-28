@@ -208,7 +208,7 @@ const DemoBody: FC = () => {
                   </h2>
                   <p className="
                     text-gray-600 text-sm
-                    line-clamp-3
+                    line-clamp-3 whitespace-pre-line
                   ">
                     {article.body?.substring(0, 150)}...
                   </p>
