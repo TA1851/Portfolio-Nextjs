@@ -3,6 +3,7 @@
 import { FC, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { marked } from "marked";
 
 // 記事詳細の型定義
 interface ArticleDetail {
@@ -134,15 +135,16 @@ const ArticleDetailPage: FC = () => {
           </span>
         </div>
         <div className="
-          prose prose-lg
+          prose prose-lg prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
           max-w-none"
         >
         {article.body ? (
-          <p className="
-            mb-4 text-gray-800 whitespace-pre-line"
-          >
-            {article.body}
-          </p>
+          <div 
+            className="mb-4 text-gray-800"
+            dangerouslySetInnerHTML={{ 
+              __html: marked(article.body) 
+            }}
+          />
         ) : (
           <p className="
             text-gray-500 italic"

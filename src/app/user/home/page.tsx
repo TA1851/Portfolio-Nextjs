@@ -1,6 +1,7 @@
 'use client';
 
 import { FC, useEffect, useState } from "react";
+import { marked } from "marked";
 
 // 記事データの型定義
 interface Article {
@@ -206,12 +207,12 @@ const DemoBody: FC = () => {
                   ">
                     {article.title}
                   </h2>
-                  <p className="
-                    text-gray-600 text-sm
-                    line-clamp-3 whitespace-pre-line
-                  ">
-                    {article.body?.substring(0, 150)}...
-                  </p>
+                  <div 
+                    className="text-gray-600 text-sm line-clamp-3"
+                    dangerouslySetInnerHTML={{ 
+                      __html: marked(article.body?.substring(0, 150) || '') + '...'
+                    }}
+                  />
                   <div className="
                     mt-4 flex
                     justify-between
