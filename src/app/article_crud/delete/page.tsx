@@ -498,10 +498,33 @@ export default function DeleteArticlePage() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button 
+            onClick={handleClose} 
+            color="primary"
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                transform: 'translateY(-2px)',
+                transition: 'transform 0.2s',
+              },
+            }}
+          >
             キャンセル
           </Button>
-          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+          <Button 
+            onClick={handleConfirmDelete} 
+            color="error" 
+            variant="contained"
+            autoFocus
+            sx={{
+              '&:hover': {
+                backgroundColor: 'error.dark',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 8px rgba(211, 47, 47, 0.3)',
+                transition: 'all 0.2s',
+              },
+            }}
+          >
             削除
           </Button>
         </DialogActions>
