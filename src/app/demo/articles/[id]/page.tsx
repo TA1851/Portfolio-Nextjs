@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -16,7 +16,7 @@ const ArticleDetailPage: FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
 
-  const fetchArticle = async () => {
+  const fetchArticle = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -36,13 +36,13 @@ const ArticleDetailPage: FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
 
   useEffect(() => {
     if (params.id) {
       fetchArticle();
     }
-  }, [params.id]);
+  }, [params.id, fetchArticle]);
 
   if (loading) {
     return (
