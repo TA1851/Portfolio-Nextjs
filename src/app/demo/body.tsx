@@ -1,14 +1,64 @@
-import { FC } from "react";
+import { FC, useState, useEffect } from "react";
 import Link from "next/link";
 
+// 記事の型定義
+interface Article {
+  article_id: number;
+  title: string;
+  body: string;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+}
 
 const BodyComp: FC = () => {
-  const publishedDate_Page1 = "2023年10月15日";
-  const publishedDate_Page2 = "2024年11月25日";
-  const publishedDate_Page3 = "2025年3月5日";
-  const publishedDate_Page4 = "2025年4月10日";
-  const publishedDate_Page5 = "2025年4月25日";
-  const publishedDate_Page6 = "2025年5月15日";
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
+
+  // 日付フォーマット関数
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  // 記事の取得
+  const fetchArticles = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      
+      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
+      const response = await fetch(`${API_URL}/public/articles`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('取得した記事データ:', data);
+      
+      if (Array.isArray(data)) {
+        setArticles(data);
+      } else {
+        console.warn('APIレスポンスが配列ではありません:', data);
+        setArticles([]);
+      }
+    } catch (error) {
+      console.error('記事の取得に失敗しました:', error);
+      setError('記事の取得に失敗しました。しばらく後でもう一度お試しください。');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
   return (
     <>
       <div className="
@@ -30,325 +80,88 @@ const BodyComp: FC = () => {
                 ブログを始める
               </h2>
             </div>
-            <div className="
-              grid gap-4 sm:grid-cols-2
-              md:gap-6 lg:grid-cols-3 xl:grid-cols-3
-              xl:gap-8
-            ">
+            
+            {/* ローディング表示 */}
+            {loading && (
+              <div className="text-center py-8">
+                <p className="text-gray-600">記事を読み込み中...</p>
+              </div>
+            )}
+            
+            {/* エラー表示 */}
+            {error && (
+              <div className="text-center py-8">
+                <p className="text-red-500 mb-4">{error}</p>
+                <button 
+                  onClick={fetchArticles}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  再試行
+                </button>
+              </div>
+            )}
+            {/* 記事一覧表示 */}
+            {!loading && !error && (
               <div className="
-                flex flex-col overflow-hidden
-                rounded-lg border bg-white
+                grid gap-4 sm:grid-cols-2
+                md:gap-6 lg:grid-cols-3 xl:grid-cols-3
+                xl:gap-8
               ">
-                {/* <Link href="#" className="
-                  group relative block h-48
-                  overflow-hidden bg-gray-100
-                ">
-                </Link> */}
-                <div className="
-                  flex flex-1 flex-col
-                  p-4 sm:p-6
-                ">
-                  <h3 className="
-                    mb-2 text-lg font-semibold
-                    text-gray-800
-                  ">
-                    <Link href="../blog/page1/" className="
-                      transition duration-100
-                      hover:text-indigo-500
-                    ">
-                      ブログ始め方の基本ガイド
-                    </Link>
-                  </h3>
-                  <p className="
-                    text-gray-500 mb-8
-                  ">
-                    ブログを始める際の準備から投稿までのステップを初心者にもわかりやすく解説します。
-                  </p>
-                  <div className="
-                    mt-auto flex items-end
-                    justify-between
-                  ">
-                    <span className="
-                      text-sm text-gray-500
-                    ">
-                      {publishedDate_Page1}
-                    </span>
-                    <span
-                    className="
-                      rounded-lg bg-gray-100 px-2
-                      py-1 text-sm text-gray-700
-                    ">
-                      初心者向け
-                    </span>
+                {articles.length === 0 ? (
+                  <div className="col-span-full text-center py-8">
+                    <p className="text-gray-600">まだ記事が投稿されていません。</p>
                   </div>
-                </div>
+                ) : (
+                  articles.map((article) => (
+                    <div key={article.article_id} className="
+                      flex flex-col overflow-hidden
+                      rounded-lg border bg-white
+                    ">
+                      <div className="
+                        flex flex-1 flex-col
+                        p-4 sm:p-6
+                      ">
+                        <h3 className="
+                          mb-2 text-lg font-semibold
+                          text-gray-800
+                        ">
+                          <Link href={`/articles/${article.article_id}`} className="
+                            transition duration-100
+                            hover:text-indigo-500
+                          ">
+                            {article.title}
+                          </Link>
+                        </h3>
+                        <p className="
+                          text-gray-500 mb-8
+                        ">
+                          {article.body.length > 1000
+                            ? `${article.body.substring(0, 1000)}...`
+                            : article.body
+                          }
+                        </p>
+                        <div className="
+                          mt-auto flex items-end
+                          justify-between
+                        ">
+                          <span className="
+                            text-sm text-gray-500
+                          ">
+                            {formatDate(article.created_at)}
+                          </span>
+                          <span className="
+                            rounded-lg bg-gray-100 px-2
+                            py-1 text-sm text-gray-700
+                          ">
+                            記事ID: {article.article_id}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
-              <div className="
-                flex flex-col overflow-hidden
-                rounded-lg border bg-white
-              ">
-                {/* <Link href="#"
-                className="
-                  group relative block h-48
-                  overflow-hidden bg-gray-100
-                ">
-                </Link> */}
-                <div
-                className="
-                  flex flex-1 flex-col
-                  p-4 sm:p-6
-                ">
-                  <h3
-                  className="
-                    mb-2 text-lg font-semibold
-                    text-gray-800
-                  ">
-                    <Link href="../blog/page2"
-                    className="
-                      transition duration-100
-                      hover:text-indigo-500
-                    ">
-                      ブログのSEO対策入門
-                    </Link>
-                  </h3>
-                  <p
-                  className="
-                    text-gray-500 mb-8
-                  ">
-                    検索エンジンからアクセスを増やすための基本テクニックを紹介します。
-                  </p>
-                  <div
-                  className="
-                    mt-auto flex items-end
-                    justify-between
-                  ">
-                    <span
-                    className="
-                      text-sm text-gray-500
-                    ">
-                      {publishedDate_Page2}
-                    </span>
-                    <span
-                    className="
-                      rounded-lg bg-gray-100 px-2
-                      py-1 text-sm text-gray-700
-                    ">
-                      SEO
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div
-              className="
-                flex flex-col overflow-hidden
-                rounded-lg border bg-white
-              ">
-                {/* <Link href="../blog/page2"
-                className="
-                  group relative block h-48
-                  overflow-hidden bg-gray-100
-                ">
-                </Link> */}
-                <div
-                className="
-                  flex flex-1 flex-col
-                  p-4 sm:p-6
-                ">
-                  <h3
-                  className="
-                    mb-2 text-lg font-semibold
-                    text-gray-800
-                  ">
-                    <Link href="../blog/page3"
-                    className="
-                      transition duration-100
-                      hover:text-indigo-500
-                    ">
-                      読まれるブログの書き方
-                    </Link>
-                  </h3>
-                  <p
-                  className="
-                    text-gray-500 mb-8
-                  ">
-                    読者を惹きつける記事の構成と文章テクニックについて解説します。
-                  </p>
-                  <div
-                  className="
-                    mt-auto flex items-end
-                    justify-between
-                  ">
-                    <span
-                    className="
-                      text-sm text-gray-500
-                    ">
-                      {publishedDate_Page3}
-                    </span>
-                    <span
-                    className="
-                      rounded-lg bg-gray-100 px-2
-                      py-1 text-sm text-gray-700
-                    ">
-                      ライティング
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* 新たに追加する記事カード */}
-              <div
-              className="
-                flex flex-col overflow-hidden
-                rounded-lg border bg-white
-              ">
-                <div
-                className="
-                  flex flex-1 flex-col
-                  p-4 sm:p-6
-                ">
-                  <h3
-                  className="
-                    mb-2 text-lg font-semibold
-                    text-gray-800
-                  ">
-                    <Link href="../blog/page4"
-                    className="
-                      transition duration-100
-                      hover:text-indigo-500
-                    ">
-                      ブログ収益化の始め方
-                    </Link>
-                  </h3>
-                  <p
-                  className="
-                    text-gray-500 mb-8
-                  ">
-                    ブログで収入を得るための様々な方法と実践的なアドバイスを紹介します。
-                  </p>
-                  <div
-                  className="
-                    mt-auto flex items-end
-                    justify-between
-                  ">
-                    <span
-                    className="
-                      text-sm text-gray-500
-                    ">
-                      {publishedDate_Page4}
-                    </span>
-                    <span
-                    className="
-                      rounded-lg bg-gray-100 px-2
-                      py-1 text-sm text-gray-700
-                    ">
-                      マネタイズ
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div
-              className="
-                flex flex-col overflow-hidden
-                rounded-lg border bg-white
-              ">
-                <div
-                className="
-                  flex flex-1 flex-col
-                  p-4 sm:p-6
-                ">
-                  <h3
-                  className="
-                    mb-2 text-lg font-semibold
-                    text-gray-800
-                  ">
-                    <Link href="../blog/page5"
-                    className="
-                      transition duration-100
-                      hover:text-indigo-500
-                    ">
-                      SNSとブログの連携術
-                    </Link>
-                  </h3>
-                  <p
-                  className="
-                    text-gray-500 mb-8
-                  ">
-                    TwitterやInstagramなどのSNSを活用してブログのアクセスを増やす方法を解説します。
-                  </p>
-                  <div
-                  className="
-                    mt-auto flex items-end
-                    justify-between
-                  ">
-                    <span
-                    className="
-                      text-sm text-gray-500
-                    ">
-                      {publishedDate_Page5}
-                    </span>
-                    <span
-                    className="
-                      rounded-lg bg-gray-100 px-2
-                      py-1 text-sm text-gray-700
-                    ">
-                      集客
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div
-              className="
-                flex flex-col overflow-hidden
-                rounded-lg border bg-white
-              ">
-                <div
-                className="
-                  flex flex-1 flex-col
-                  p-4 sm:p-6
-                ">
-                  <h3
-                  className="
-                    mb-2 text-lg font-semibold
-                    text-gray-800
-                  ">
-                    <Link href="../blog/page6"
-                    className="
-                      transition duration-100
-                      hover:text-indigo-500
-                    ">
-                      ブログ継続のコツと習慣化
-                    </Link>
-                  </h3>
-                  <p
-                  className="
-                    text-gray-500 mb-8
-                  ">
-                    長期間ブログを続けるためのモチベーション維持法と効率的な執筆習慣について紹介します。
-                  </p>
-                  <div
-                  className="
-                    mt-auto flex items-end
-                    justify-between
-                  ">
-                    <span
-                    className="
-                      text-sm text-gray-500
-                    ">
-                      {publishedDate_Page6}
-                    </span>
-                    <span
-                    className="
-                      rounded-lg bg-gray-100 px-2
-                      py-1 text-sm text-gray-700
-                    ">
-                      継続術
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
         </div>
       </div>
     </>
