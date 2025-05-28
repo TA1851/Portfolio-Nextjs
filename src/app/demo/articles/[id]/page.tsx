@@ -23,10 +23,18 @@ const ArticleDetailPage: FC = () => {
       setError("");
       setNotFound(false);
       
-      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
-      const response = await fetch(`${API_URL}/public/articles/${params.id}`);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1 || 'https://blog-api-main.onrender.com/api/v1';
+      console.log('環境変数 API_URL:', API_URL);
+      const url = `${API_URL}/public/articles/${params.id}`;
+      console.log('記事詳細リクエスト URL:', url);
+      console.log('記事ID:', params.id);
+      console.log('paramsオブジェクト全体:', params);
+      
+      const response = await fetch(url);
+      console.log('レスポンスステータス:', response.status);
       
       if (response.status === 404) {
+        console.log('記事が見つかりません (404)');
         setNotFound(true);
         return;
       }
@@ -36,6 +44,7 @@ const ArticleDetailPage: FC = () => {
       }
       
       const data = await response.json();
+      console.log('取得した記事詳細:', data);
       setArticle(data);
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
@@ -43,7 +52,7 @@ const ArticleDetailPage: FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [params.id]);
+  }, [params]);
 
   useEffect(() => {
     if (params.id) {

@@ -26,8 +26,11 @@ const BodyComp: FC = () => {
       setLoading(true);
       setError("");
       
-      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
-      const response = await fetch(`${API_URL}/public/articles`);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1 || 'https://blog-api-main.onrender.com/api/v1';
+      console.log('記事一覧 - 環境変数 API_URL:', API_URL);
+      const listUrl = `${API_URL}/public/articles`;
+      console.log('記事一覧リクエスト URL:', listUrl);
+      const response = await fetch(listUrl);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -37,6 +40,7 @@ const BodyComp: FC = () => {
       console.log('取得した記事データ:', data);
       
       if (Array.isArray(data)) {
+        console.log('利用可能な記事ID一覧:', data.map(article => article.article_id));
         setArticles(data);
       } else {
         console.warn('APIレスポンスが配列ではありません:', data);
