@@ -136,8 +136,8 @@ const BodyComp: FC = () => {
                           {/* HTMLをテキストとして表示するため、HTMLタグを除去 */}
                           {(() => {
                             const plainText = stripHtml(article.body_html);
-                            return plainText.length > 1000
-                              ? `${plainText.substring(0, 1000)}...`
+                            return plainText.length > 30
+                              ? `${plainText.substring(0, 30)}...`
                               : plainText;
                           })()}
                         </p>
