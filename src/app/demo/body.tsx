@@ -119,7 +119,7 @@ const BodyComp: FC = () => {
                           mb-2 text-lg font-semibold
                           text-gray-800
                         ">
-                          <Link href={`/demo/articles/${article.article_id}`} className="
+                          <Link href={`/articles/${article.article_id}`} className="
                             transition duration-100
                             hover:text-indigo-500
                           ">

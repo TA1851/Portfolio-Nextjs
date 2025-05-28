@@ -63,7 +63,7 @@ const ArticleDetailPage: FC = () => {
           <div className="text-center py-8">
             <p className="text-red-500 mb-4">{error}</p>
             <Link
-              href="/"
+              href="/demo"
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               ホームに戻る
@@ -81,7 +81,7 @@ const ArticleDetailPage: FC = () => {
           <div className="text-center py-8">
             <p className="text-gray-600 mb-4">記事が見つかりませんでした。</p>
             <Link
-              href="/"
+              href="/demo"
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               ホームに戻る
@@ -97,7 +97,7 @@ const ArticleDetailPage: FC = () => {
       <div className="mx-auto max-w-screen-lg px-4 md:px-8">
         <div className="mb-6">
           <Link
-            href="/"
+            href="/demo"
             className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
           >
             ← ホームに戻る

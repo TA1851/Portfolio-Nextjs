@@ -105,7 +105,7 @@ const ArticleDetailPage: FC = () => {
           >
             {error}
           </p>
-          <Link href="/user"
+          <Link href="/demo"
           className="
             inline-block mt-4
             text-indigo-600
