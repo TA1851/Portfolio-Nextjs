@@ -14,10 +14,25 @@ const BodyComp: FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 6;
 
   // HTMLタグを除去してプレーンテキストに変換する関数
   const stripHtml = (html: string) => {
     return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+  };
+
+  // ページネーション計算
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+
+  // ページ変更ハンドラ
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // ページ変更時にトップにスクロール
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // 記事の取得
@@ -42,9 +57,12 @@ const BodyComp: FC = () => {
       if (Array.isArray(data)) {
         console.log('利用可能な記事ID一覧:', data.map(article => article.article_id));
         setArticles(data);
+        // 記事データが更新されたら最初のページに戻る
+        setCurrentPage(1);
       } else {
         console.warn('APIレスポンスが配列ではありません:', data);
         setArticles([]);
+        setCurrentPage(1);
       }
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
@@ -100,68 +118,129 @@ const BodyComp: FC = () => {
             )}
             {/* 記事一覧表示 */}
             {!loading && !error && (
-              <div className="
-                grid gap-4 sm:grid-cols-2
-                md:gap-6 lg:grid-cols-3 xl:grid-cols-3
-                xl:gap-8
-              ">
-                {articles.length === 0 ? (
-                  <div className="col-span-full text-center py-8">
-                    <p className="text-gray-600">まだ記事が投稿されていません。</p>
-                  </div>
-                ) : (
-                  articles.map((article) => (
-                    <div key={article.article_id} className="
-                      flex flex-col overflow-hidden
-                      rounded-lg border bg-white
-                    ">
-                      <div className="
-                        flex flex-1 flex-col
-                        p-4 sm:p-6
+              <>
+                <div className="
+                  grid gap-4 sm:grid-cols-2
+                  md:gap-6 lg:grid-cols-3 xl:grid-cols-3
+                  xl:gap-8
+                ">
+                  {currentArticles.length === 0 ? (
+                    <div className="col-span-full text-center py-8">
+                      <p className="text-gray-600">まだ記事が投稿されていません。</p>
+                    </div>
+                  ) : (
+                    currentArticles.map((article) => (
+                      <div key={article.article_id} className="
+                        flex flex-col overflow-hidden
+                        rounded-lg border bg-white
                       ">
-                        <h3 className="
-                          mb-2 text-lg font-semibold
-                          text-gray-800
-                        ">
-                          <Link href={`/demo/articles/${article.article_id}`} className="
-                            transition duration-100
-                            hover:text-indigo-500
-                          ">
-                            {article.title}
-                          </Link>
-                        </h3>
-                        <p className="
-                          text-gray-500 mb-8
-                        ">
-                          {/* HTMLをテキストとして表示するため、HTMLタグを除去 */}
-                          {(() => {
-                            const plainText = stripHtml(article.body_html);
-                            return plainText.length > 30
-                              ? `${plainText.substring(0, 30)}...`
-                              : plainText;
-                          })()}
-                        </p>
                         <div className="
-                          mt-auto flex items-end
-                          justify-between
+                          flex flex-1 flex-col
+                          p-4 sm:p-6
                         ">
-                          <span className="
-                            text-sm text-gray-500
+                          <h3 className="
+                            mb-2 text-lg font-semibold
+                            text-gray-800
                           ">
-                            記事ID: {article.article_id}
-                          </span>
-                          <span className="
-                            rounded-lg bg-gray-100 px-2
-                            py-1 text-sm text-gray-700
+                            <Link href={`/demo/articles/${article.article_id}`} className="
+                              transition duration-100
+                              hover:text-indigo-500
+                            ">
+                              {article.title}
+                            </Link>
+                          </h3>
+                          <p className="
+                            text-gray-500 mb-8
                           ">
-                            ブログ記事
-                          </span>
+                            {/* HTMLをテキストとして表示するため、HTMLタグを除去 */}
+                            {(() => {
+                              const plainText = stripHtml(article.body_html);
+                              return plainText.length > 30
+                                ? `${plainText.substring(0, 30)}...`
+                                : plainText;
+                            })()}
+                          </p>
+                          <div className="
+                            mt-auto flex items-end
+                            justify-between
+                          ">
+                            <span className="
+                              text-sm text-gray-500
+                            ">
+                              記事ID: {article.article_id}
+                            </span>
+                            <span className="
+                              rounded-lg bg-gray-100 px-2
+                              py-1 text-sm text-gray-700
+                            ">
+                              ブログ記事
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    ))
+                  )}
+                </div>
+
+                {/* ページネーション */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex justify-center">
+                    <nav className="flex items-center space-x-2">
+                      {/* 前のページボタン */}
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          currentPage === 1
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        前へ
+                      </button>
+
+                      {/* ページ番号ボタン */}
+                      {Array.from({ length: totalPages }, (_, index) => {
+                        const pageNumber = index + 1;
+                        return (
+                          <button
+                            key={pageNumber}
+                            onClick={() => handlePageChange(pageNumber)}
+                            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                              currentPage === pageNumber
+                                ? 'bg-indigo-500 text-white'
+                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            {pageNumber}
+                          </button>
+                        );
+                      })}
+
+                      {/* 次のページボタン */}
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          currentPage === totalPages
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        次へ
+                      </button>
+                    </nav>
+                  </div>
                 )}
-              </div>
+
+                {/* ページ情報 */}
+                {articles.length > 0 && (
+                  <div className="mt-6 text-center text-sm text-gray-500">
+                    {articles.length}件中 {indexOfFirstArticle + 1}-{Math.min(indexOfLastArticle, articles.length)}件を表示
+                    {totalPages > 1 && ` (${currentPage}/${totalPages}ページ)`}
+                  </div>
+                )}
+              </>
             )}
         </div>
       </div>
