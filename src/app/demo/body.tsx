@@ -7,10 +7,7 @@ import Link from "next/link";
 interface Article {
   article_id: number;
   title: string;
-  body: string;
-  user_id: number;
-  created_at: string;
-  updated_at: string;
+  body_html: string;
 }
 
 const BodyComp: FC = () => {
@@ -18,14 +15,9 @@ const BodyComp: FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
 
-  // 日付フォーマット関数
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  // HTMLタグを除去してプレーンテキストに変換する関数
+  const stripHtml = (html: string) => {
+    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
   };
 
   // 記事の取得
@@ -137,10 +129,13 @@ const BodyComp: FC = () => {
                         <p className="
                           text-gray-500 mb-8
                         ">
-                          {article.body.length > 1000
-                            ? `${article.body.substring(0, 1000)}...`
-                            : article.body
-                          }
+                          {/* HTMLをテキストとして表示するため、HTMLタグを除去 */}
+                          {(() => {
+                            const plainText = stripHtml(article.body_html);
+                            return plainText.length > 100
+                              ? `${plainText.substring(0, 100)}...`
+                              : plainText;
+                          })()}
                         </p>
                         <div className="
                           mt-auto flex items-end
@@ -149,13 +144,13 @@ const BodyComp: FC = () => {
                           <span className="
                             text-sm text-gray-500
                           ">
-                            {formatDate(article.created_at)}
+                            記事ID: {article.article_id}
                           </span>
                           <span className="
                             rounded-lg bg-gray-100 px-2
                             py-1 text-sm text-gray-700
                           ">
-                            記事ID: {article.article_id}
+                            ブログ記事
                           </span>
                         </div>
                       </div>
