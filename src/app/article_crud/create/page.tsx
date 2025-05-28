@@ -7,6 +7,11 @@ import {
   Box,
   Typography,
   Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import PublishIcon from '@mui/icons-material/Publish';
 import SaveIcon from '@mui/icons-material/Save';
@@ -60,6 +65,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false); // ダイアログのオープン状態
   const router = useRouter();
 
   // 入力フィールドの変更ハンドラー
@@ -218,7 +224,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             });
 
             if (retryResponse.ok) {
-              alert('記事を正常に保存しました');
               router.push('/user');
               return;
             }
@@ -258,7 +263,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         console.log('作成成功:', result);
 
         // 成功したら記事一覧ページに戻る
-        alert('記事を正常に保存しました');
         router.push('/user');
       } catch (error) {
         console.error('Error during API call:', error);
@@ -276,6 +280,11 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     } finally {
       setSaving(false);
     }
+  };
+
+  // ダイアログを閉じるハンドラー
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -385,6 +394,37 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           </Button>
         </Box>
       </Box>
+      {/* 確認ダイアログ */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"記事の公開確認"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {`"${formData.title}"を公開しますか？`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            キャンセル
+          </Button>
+          <Button
+            onClick={() => {
+              handleSubmit('publish');
+              handleClose();
+            }}
+            color="secondary"
+            autoFocus
+          >
+            公開する
+          </Button>
+        </DialogActions>
+      </Dialog>
     </StyledPaper>
   );
 };
