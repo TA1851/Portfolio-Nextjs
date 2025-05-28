@@ -260,10 +260,6 @@ export default function DeleteArticlePage() {
       return;
     }
 
-    if (!confirm("この記事を削除してもよろしいですか？")) {
-      return;
-    }
-
     try {
       console.log(`記事ID ${articleId} の削除を開始します`);
       
