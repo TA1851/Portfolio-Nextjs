@@ -80,7 +80,7 @@ const ArticleDetailPage: FC = () => {
             </p>
             <div className="space-x-4">
               <Link
-                href="/demo"
+                href="/"
                 className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
               >
                 ← ホームに戻る
@@ -135,7 +135,7 @@ const ArticleDetailPage: FC = () => {
       <div className="mx-auto max-w-screen-lg px-4 md:px-8">
         <div className="mb-6">
           <Link
-            href="/demo"
+            href="/"
             className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
           >
             ← ホームに戻る
