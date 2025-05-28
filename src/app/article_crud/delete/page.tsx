@@ -8,6 +8,11 @@ import Button from '@mui/material/Button';
 // import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 
 // 記事の型定義
@@ -29,6 +34,8 @@ export default function DeleteArticlePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [token, setToken] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentArticleId, setCurrentArticleId] = useState<number | null>(null);
   const router = useRouter();
   const authAxios = axios.create({
     baseURL: API_URL,
@@ -243,7 +250,7 @@ export default function DeleteArticlePage() {
       return currentId !== deletedId;
     }));
 
-    alert("記事が正常に削除されました");
+    // alert("記事が正常に削除されました");
   };
   // 記事の削除
   const handleDelete = async (articleId: number) => {
@@ -314,6 +321,22 @@ export default function DeleteArticlePage() {
 
     setError("");
     fetchArticles();
+  };
+
+  const handleClickOpen = (articleId: number) => {
+    setCurrentArticleId(articleId);
+    setOpenDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (currentArticleId !== null) {
+      await handleDelete(currentArticleId);
+      setOpenDialog(false);
+    }
   };
 
   if (loading) {
@@ -414,7 +437,7 @@ export default function DeleteArticlePage() {
                     <IconButton
                       aria-label="delete"
                       color="primary"  // デフォルトカラー
-                      onClick={() => handleDelete(articleId)}
+                      onClick={() => handleClickOpen(articleId)}
                       sx={{
                         width: { xs: '34px', sm: '40px' },
                         height: { xs: '34px', sm: '40px' },
@@ -458,6 +481,31 @@ export default function DeleteArticlePage() {
           会員専用ページに戻る
         </Button>
       </div>
+
+      {/* 確認ダイアログ */}
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"記事の削除確認"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            この記事を本当に削除してもよろしいですか？
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            キャンセル
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+            削除
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
