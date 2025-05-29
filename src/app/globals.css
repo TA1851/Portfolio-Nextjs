@@ -98,8 +98,8 @@ body {
   color: #111827 !important;
 }
 
-/* グローバルCSSファイルに追加 */
-.prose pre {
+/* デモページ専用のスタイル - より具体的なセレクターを使用 */
+[data-page="demo"] .prose pre {
   @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6 !important;
   font-family: 'Courier New', Consolas, 'Liberation Mono', Menlo, monospace !important;
   border: 1px solid #374151;
@@ -107,8 +107,8 @@ body {
   position: relative;
 }
 
-/* コードブロックのヘッダー装飾 */
-.prose pre::before {
+/* デモページ専用のコードブロックヘッダー装飾 */
+[data-page="demo"] .prose pre::before {
   content: '';
   position: absolute;
   top: 0;
@@ -118,8 +118,8 @@ body {
   background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
 }
 
-/* コードブロック内のコード */
-.prose pre code {
+/* デモページ専用のコードブロック内のコード */
+[data-page="demo"] .prose pre code {
   @apply bg-transparent p-0 text-gray-100 !important;
   font-weight: normal;
   display: block;
@@ -128,15 +128,15 @@ body {
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace !important;
 }
 
-/* インラインコード */
-.prose code {
+/* デモページ専用のインラインコード */
+[data-page="demo"] .prose code {
   @apply bg-gray-100 px-2 py-1 rounded text-sm text-red-600 font-mono !important;
   font-weight: 600;
 }
 
-/* 全体がコードタグで囲まれた場合の特別処理 */
-.prose > code:only-child,
-.prose code:first-child:last-child {
+/* デモページ専用の全体がコードタグで囲まれた場合の特別処理 */
+[data-page="demo"] .prose > code:only-child,
+[data-page="demo"] .prose code:first-child:last-child {
   @apply block bg-transparent text-gray-700 p-0 !important;
   white-space: pre-wrap;
   font-family: inherit !important;
@@ -145,9 +145,9 @@ body {
   border-radius: 0 !important;
 }
 
-/* 単一の大きなコードブロックが記事全体の場合 */
-.prose code:only-child:where([class*="language-"]),
-.prose code:only-child {
+/* デモページ専用の単一の大きなコードブロックが記事全体の場合 */
+[data-page="demo"] .prose code:only-child:where([class*="language-"]),
+[data-page="demo"] .prose code:only-child {
   @apply bg-transparent !important;
   color: inherit !important;
   padding: 0 !important;

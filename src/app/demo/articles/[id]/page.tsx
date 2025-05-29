@@ -228,7 +228,7 @@ const ArticleDetailPage: FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-6 sm:py-8 lg:py-12">
+    <div className="min-h-screen bg-white py-6 sm:py-8 lg:py-12" data-page="demo">
       <div className="mx-auto max-w-screen-lg px-4 md:px-8">
         <div className="mb-6">
           <Link
