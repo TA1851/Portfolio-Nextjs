@@ -45,27 +45,27 @@ const BodyComp: FC = () => {
       setProgress(0);
       
       // 初期化
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 100));
       setProgress(10);
       
       const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
       console.log('記事一覧 - 環境変数 API_URL:', API_URL);
       
       // API URL準備
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise(resolve => setTimeout(resolve, 150));
       setProgress(25);
       
       const listUrl = `${API_URL}/public/articles`;
       console.log('記事一覧リクエスト URL:', listUrl);
       
       // リクエスト準備
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 200));
       setProgress(40);
       
       const response = await fetch(listUrl);
       
       // レスポンス受信
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise(resolve => setTimeout(resolve, 250));
       setProgress(60);
       
       if (!response.ok) {
