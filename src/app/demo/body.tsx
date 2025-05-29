@@ -44,24 +44,44 @@ const BodyComp: FC = () => {
       setError("");
       setProgress(0);
       
+      // 初期化
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setProgress(10);
+      
       const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
       console.log('記事一覧 - 環境変数 API_URL:', API_URL);
-      setProgress(20);
+      
+      // API URL準備
+      await new Promise(resolve => setTimeout(resolve, 400));
+      setProgress(25);
       
       const listUrl = `${API_URL}/public/articles`;
       console.log('記事一覧リクエスト URL:', listUrl);
+      
+      // リクエスト準備
+      await new Promise(resolve => setTimeout(resolve, 300));
       setProgress(40);
       
       const response = await fetch(listUrl);
+      
+      // レスポンス受信
+      await new Promise(resolve => setTimeout(resolve, 400));
       setProgress(60);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
+      // データ解析中
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setProgress(75);
+      
       const data = await response.json();
-      setProgress(80);
       console.log('取得した記事データ:', data);
+      
+      // データ処理中
+      await new Promise(resolve => setTimeout(resolve, 400));
+      setProgress(90);
       
       if (Array.isArray(data)) {
         console.log('利用可能な記事ID一覧:', data.map(article => article.article_id));
@@ -73,7 +93,13 @@ const BodyComp: FC = () => {
         setArticles([]);
         setCurrentPage(1);
       }
+      
+      // 完了
+      await new Promise(resolve => setTimeout(resolve, 200));
       setProgress(100);
+      
+      // 完了後に少し待ってからローディングを終了
+      await new Promise(resolve => setTimeout(resolve, 300));
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
       setError('記事の取得に失敗しました。しばらく後でもう一度お試しください。');
