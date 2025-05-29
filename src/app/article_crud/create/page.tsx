@@ -335,8 +335,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         <Box
           mt={2}
           display="flex"
+          justifyContent={{ xs: 'center', sm: 'space-between', lg: 'flex-end' }} // 1400px以上で右寄せ
           flexDirection={{ xs: 'column', sm: 'row' }} // モバイルでは縦並び、デスクトップでは横並び
-          gap={2} // ボタン間のスペース
+          gap={{xs:2, sm:2, md:2, lg:2}} // ボタン間のスペース
         >
           <Button
             variant="contained"
