@@ -111,6 +111,31 @@ body {
   font-weight: 600;
 }
 
+/* 全体がコードタグで囲まれた場合の特別処理 */
+.prose > code:only-child,
+.prose code:first-child:last-child {
+  @apply block bg-transparent text-gray-700 p-0 !important;
+  white-space: pre-wrap;
+  font-family: inherit !important;
+  font-weight: normal !important;
+  font-size: inherit !important;
+  border-radius: 0 !important;
+}
+
+/* 単一の大きなコードブロックが記事全体の場合 */
+.prose code:only-child:where([class*="language-"]),
+.prose code:only-child {
+  @apply bg-transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  border-radius: 0 !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+}
+
 .prose pre code {
   @apply bg-transparent p-0 text-gray-100 !important;
   font-weight: normal;

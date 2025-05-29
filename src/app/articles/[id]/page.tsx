@@ -166,7 +166,8 @@ const ArticleDetailPage: FC = () => {
             className="mb-4 article-content"
             dangerouslySetInnerHTML={{ 
               __html: (() => {
-                const htmlContent = marked(article.body);
+                const markdownResult = marked.parse ? marked.parse(article.body) : marked(article.body);
+                const htmlContent = typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
                 console.log('Original markdown:', article.body);
                 console.log('Converted HTML:', htmlContent);
                 return htmlContent;
