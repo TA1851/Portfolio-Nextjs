@@ -17,6 +17,7 @@ const BodyComp: FC = () => {
   const [error, setError] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [progress, setProgress] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const articlesPerPage = 6;
 
   // HTMLタグを除去してプレーンテキストに変換する関数
@@ -48,68 +49,92 @@ const BodyComp: FC = () => {
   };
 
   // 記事の取得
-  const fetchArticles = async () => {
+  const fetchArticles = async (isRetry = false) => {
     try {
       setLoading(true);
       setError("");
-      setProgress(0);
-      
-      // 初期化
-      await new Promise(resolve => setTimeout(resolve, 20));
-      setProgress(10);
-      
-      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
-      console.log('記事一覧 - 環境変数 API_URL:', API_URL);
-      
-      // API URL準備
-      await new Promise(resolve => setTimeout(resolve, 50));
-      setProgress(25);
-      
-      const listUrl = `${API_URL}/public/articles`;
-      console.log('記事一覧リクエスト URL:', listUrl);
-      
-      // リクエスト準備
-      await new Promise(resolve => setTimeout(resolve, 100));
-      setProgress(40);
-      
-      const response = await fetch(listUrl);
-      
-      // レスポンス受信
-      await new Promise(resolve => setTimeout(resolve, 150));
-      setProgress(60);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!isRetry) {
+        setProgress(0);
       }
       
-      // データ解析中
-      await new Promise(resolve => setTimeout(resolve, 200));
-      setProgress(75);
-      
-      const data = await response.json();
-      console.log('取得した記事データ:', data);
-      
-      // データ処理中
-      await new Promise(resolve => setTimeout(resolve, 250));
-      setProgress(90);
-      
-      if (Array.isArray(data)) {
-        console.log('利用可能な記事ID一覧:', data.map(article => article.article_id));
-        setArticles(data);
-        // 記事データが更新されたら最初のページに戻る
-        setCurrentPage(1);
+      // 初回ロード時のみプログレス表示の遅延処理を実行
+      if (isInitialLoad && !isRetry) {
+        // 初期化
+        await new Promise(resolve => setTimeout(resolve, 20));
+        setProgress(10);
+        
+        const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
+        console.log('記事一覧 - 環境変数 API_URL:', API_URL);
+        
+        // API URL準備
+        await new Promise(resolve => setTimeout(resolve, 50));
+        setProgress(25);
+        
+        const listUrl = `${API_URL}/public/articles`;
+        console.log('記事一覧リクエスト URL:', listUrl);
+        
+        // リクエスト準備
+        await new Promise(resolve => setTimeout(resolve, 100));
+        setProgress(40);
+        
+        const response = await fetch(listUrl);
+        
+        // レスポンス受信
+        await new Promise(resolve => setTimeout(resolve, 150));
+        setProgress(60);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // データ解析中
+        await new Promise(resolve => setTimeout(resolve, 200));
+        setProgress(75);
+        
+        const data = await response.json();
+        console.log('取得した記事データ:', data);
+        
+        // データ処理中
+        await new Promise(resolve => setTimeout(resolve, 250));
+        setProgress(90);
+        
+        if (Array.isArray(data)) {
+          console.log('利用可能な記事ID一覧:', data.map(article => article.article_id));
+          setArticles(data);
+          setCurrentPage(1);
+        } else {
+          console.warn('APIレスポンスが配列ではありません:', data);
+          setArticles([]);
+          setCurrentPage(1);
+        }
+        
+        // 完了
+        await new Promise(resolve => setTimeout(resolve, 100));
+        setProgress(100);
+        
+        // 完了後に少し待ってからローディングを終了
+        await new Promise(resolve => setTimeout(resolve, 200));
+        setIsInitialLoad(false);
       } else {
-        console.warn('APIレスポンスが配列ではありません:', data);
-        setArticles([]);
-        setCurrentPage(1);
+        // 再試行時は通常の処理
+        const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
+        const listUrl = `${API_URL}/public/articles`;
+        const response = await fetch(listUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (Array.isArray(data)) {
+          setArticles(data);
+          setCurrentPage(1);
+        } else {
+          setArticles([]);
+          setCurrentPage(1);
+        }
       }
-      
-      // 完了
-      await new Promise(resolve => setTimeout(resolve, 100));
-      setProgress(100);
-      
-      // 完了後に少し待ってからローディングを終了
-      await new Promise(resolve => setTimeout(resolve, 200));
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
       setError('記事の取得に失敗しました。しばらく後でもう一度お試しください。');
@@ -172,11 +197,18 @@ const BodyComp: FC = () => {
             {/* ローディング表示 */}
             {loading && (
               <div className="text-center py-8">
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                  <CircularProgressWithLabel value={progress} />
+                {isInitialLoad ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <CircularProgressWithLabel value={progress} />
+                    <Typography variant="body2" color="text.secondary">
+                      記事を読み込み中...
+                    </Typography>
+                  </Box>
+                ) : (
                   <Typography variant="body2" color="text.secondary">
+                    読み込み中...
                   </Typography>
-                </Box>
+                )}
               </div>
             )}
             {/* エラー表示 */}
@@ -184,7 +216,7 @@ const BodyComp: FC = () => {
               <div className="text-center py-8">
                 <p className="text-red-500 mb-4">{error}</p>
                 <button 
-                  onClick={fetchArticles}
+                  onClick={() => fetchArticles(true)}
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                   再試行
@@ -239,12 +271,12 @@ const BodyComp: FC = () => {
                             mt-auto flex items-end
                             justify-between
                           ">
-                            <span className="
+                            {/* <span className="
                               text-sm text-gray-500
                             ">
-                              記事ID: {article.article_id}
+                              記事ID: {article.article_id} */}
                               {/* {formatDate(article.created_at)} */}
-                            </span>
+                            {/* </span> */}
                             <span className="
                               rounded-lg bg-gray-100 px-2
                               py-1 text-sm text-gray-700
