@@ -163,6 +163,19 @@ body {
   @apply border-l-4 border-gray-300 pl-4 italic text-gray-600;
 }
 
+/* 会員ページのコードブロック内のコードスタイルを修正 */
+.prose pre code {
+  @apply bg-transparent p-0 text-gray-100 !important;
+  font-weight: normal !important;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace !important;
+}
+
+/* インラインコードのデフォルトスタイル */
+.prose code {
+  @apply bg-gray-100 px-2 py-1 rounded text-sm text-red-600 font-mono !important;
+  font-weight: 600;
+}
+
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
   @apply text-gray-800 font-semibold;
 }
