@@ -98,8 +98,8 @@ body {
   color: #111827 !important;
 }
 
-/* デモページ専用のスタイル - より具体的なセレクターを使用 */
-[data-page="demo"] .prose pre {
+/* デモページ専用のスタイル - body要素にdata-page属性が設定された場合 */
+body[data-page="demo"] .prose pre {
   @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6 !important;
   font-family: 'Courier New', Consolas, 'Liberation Mono', Menlo, monospace !important;
   border: 1px solid #374151;
@@ -108,7 +108,7 @@ body {
 }
 
 /* デモページ専用のコードブロックヘッダー装飾 */
-[data-page="demo"] .prose pre::before {
+body[data-page="demo"] .prose pre::before {
   content: '';
   position: absolute;
   top: 0;
@@ -119,35 +119,47 @@ body {
 }
 
 /* デモページ専用のコードブロック内のコード */
-[data-page="demo"] .prose pre code {
+body[data-page="demo"] .prose pre code {
   @apply bg-transparent p-0 text-gray-100 !important;
   font-weight: normal;
   display: block;
   padding-left: 1rem;
   border-left: 2px solid #374151;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace !important;
+  color: #f3f4f6 !important; /* 明示的に白色を指定 */
+}
+
+/* デモページ専用 - 全ての子要素も白色に */
+body[data-page="demo"] .prose pre code * {
+  color: #f3f4f6 !important;
+}
+
+/* デモページ専用 - プリフォーマットテキスト内の全ての要素 */
+body[data-page="demo"] .prose pre * {
+  color: #f3f4f6 !important;
 }
 
 /* デモページ専用のインラインコード */
-[data-page="demo"] .prose code {
+body[data-page="demo"] .prose code {
   @apply bg-gray-100 px-2 py-1 rounded text-sm text-red-600 font-mono !important;
   font-weight: 600;
 }
 
 /* デモページ専用の全体がコードタグで囲まれた場合の特別処理 */
-[data-page="demo"] .prose > code:only-child,
-[data-page="demo"] .prose code:first-child:last-child {
-  @apply block bg-transparent text-gray-700 p-0 !important;
+body[data-page="demo"] .prose > code:only-child,
+body[data-page="demo"] .prose code:first-child:last-child {
+  @apply block bg-transparent text-gray-100 p-0 !important;
   white-space: pre-wrap;
   font-family: inherit !important;
   font-weight: normal !important;
   font-size: inherit !important;
   border-radius: 0 !important;
+  color: #f3f4f6 !important; /* 明示的に白色を指定 */
 }
 
 /* デモページ専用の単一の大きなコードブロックが記事全体の場合 */
-[data-page="demo"] .prose code:only-child:where([class*="language-"]),
-[data-page="demo"] .prose code:only-child {
+body[data-page="demo"] .prose code:only-child:where([class*="language-"]),
+body[data-page="demo"] .prose code:only-child {
   @apply bg-transparent !important;
   color: inherit !important;
   padding: 0 !important;
@@ -159,6 +171,15 @@ body {
   word-break: break-word !important;
 }
 
+/* デモページ専用 - コードブロック内の要素のみ白色に */
+body[data-page="demo"] .prose pre {
+  color: #f3f4f6 !important;
+}
+
+body[data-page="demo"] .prose pre * {
+  color: #f3f4f6 !important;
+}
+
 .prose blockquote {
   @apply border-l-4 border-gray-300 pl-4 italic text-gray-600;
 }
@@ -168,6 +189,16 @@ body {
   @apply bg-transparent p-0 text-gray-100 !important;
   font-weight: normal !important;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace !important;
+}
+
+/* 会員ページ専用 - 全ての子要素も白色に */
+body:not([data-page="demo"]) .prose pre code * {
+  color: #f3f4f6 !important;
+}
+
+/* 会員ページ専用 - プリフォーマットテキスト内の全ての要素 */
+body:not([data-page="demo"]) .prose pre * {
+  color: #f3f4f6 !important;
 }
 
 /* インラインコードのデフォルトスタイル */

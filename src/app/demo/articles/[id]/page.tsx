@@ -100,6 +100,16 @@ const ArticleDetailPage: FC = () => {
   const [error, setError] = useState<string>("");
   const [notFound, setNotFound] = useState(false);
 
+  // コンポーネントマウント時にdata属性を設定
+  useEffect(() => {
+    document.body.setAttribute('data-page', 'demo');
+    
+    // クリーンアップ関数でdata属性を削除
+    return () => {
+      document.body.removeAttribute('data-page');
+    };
+  }, []);
+
   const fetchArticle = useCallback(async () => {
     try {
       setLoading(true);
@@ -228,7 +238,7 @@ const ArticleDetailPage: FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-6 sm:py-8 lg:py-12" data-page="demo">
+    <div className="min-h-screen bg-white py-6 sm:py-8 lg:py-12">
       <div className="mx-auto max-w-screen-lg px-4 md:px-8">
         <div className="mb-6">
           <Link
@@ -250,24 +260,7 @@ const ArticleDetailPage: FC = () => {
           </header>
           
           <div 
-            className="prose prose-lg prose-gray max-w-none
-              prose-headings:font-bold prose-headings:text-gray-900
-              prose-h1:text-3xl prose-h1:font-extrabold prose-h1:mb-4
-              prose-h2:text-2xl prose-h2:font-bold prose-h2:mb-3 prose-h2:mt-8
-              prose-h3:text-xl prose-h3:font-bold prose-h3:mb-2 prose-h3:mt-6
-              prose-h4:text-lg prose-h4:font-bold prose-h4:mb-2 prose-h4:mt-4
-              prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
-              prose-strong:font-bold prose-strong:text-gray-900
-              prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-a:underline
-              prose-code:bg-gray-100 prose-code:text-red-600 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono
-              prose-pre:!bg-gray-900 prose-pre:!text-gray-100 prose-pre:!p-4 prose-pre:!rounded-lg prose-pre:!overflow-x-auto prose-pre:!my-6
-              prose-pre>code:!bg-transparent prose-pre>code:!text-gray-100 prose-pre>code:!p-0
-              prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
-              prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6
-              prose-li:text-gray-700 prose-li:mb-1
-              prose-table:border-collapse prose-table:w-full
-              prose-th:border prose-th:border-gray-300 prose-th:bg-gray-50 prose-th:p-2 prose-th:text-left
-              prose-td:border prose-td:border-gray-300 prose-td:p-2"
+            className="prose prose-lg prose-gray max-w-none"
             dangerouslySetInnerHTML={{
               __html: article ? processArticleContent(article) : ''
             }}
