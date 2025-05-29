@@ -30,7 +30,14 @@ const processArticleContent = (article: Article): string => {
   if (article?.body_html && typeof article.body_html === 'string') {
     let content = article.body_html;
     
-    // マークダウンコンテンツがcodeタグ内に埋め込まれているかチェック
+    // 1. まず<br />タグを改行文字に変換
+    content = content.replace(/<br\s*\/?>/gi, '\n');
+    
+    // 2. コードブロック記法を含むp要素を検出して変換
+    content = content.replace(/<p>```<\/p>/g, '\n```\n');
+    content = content.replace(/<p>```([^<]*)<\/p>/g, '\n```$1\n```\n');
+    
+    // 3. マークダウンコンテンツがcodeタグ内に埋め込まれているかチェック
     const codeMatches = content.match(/<code[^>]*>([\s\S]*?)<\/code>/g);
     
     if (codeMatches && codeMatches.length > 0) {
@@ -41,7 +48,8 @@ const processArticleContent = (article: Article): string => {
         // マークダウンパターンを検出（#, **, *, -, [, etc.）
         if (innerContent.includes('#') || innerContent.includes('**') || 
             innerContent.includes('*') || innerContent.includes('-') ||
-            innerContent.includes('[') || innerContent.includes('```')) {
+            innerContent.includes('[') || innerContent.includes('```') ||
+            innerContent.includes('\n')) {
           try {
             const markdownResult = marked.parse ? marked.parse(innerContent) : marked(innerContent);
             const processedContent = typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
@@ -53,6 +61,31 @@ const processArticleContent = (article: Article): string => {
         }
       });
     }
+    
+    // 4. p要素内に混在するコードブロック記法を検出・処理
+    content = content.replace(/<p>([\s\S]*?)```([\s\S]*?)```([\s\S]*?)<\/p>/g, (match, before, codeContent, after) => {
+      const beforeProcessed = before.trim() ? `<p>${before.trim()}</p>` : '';
+      const afterProcessed = after.trim() ? `<p>${after.trim()}</p>` : '';
+      const codeProcessed = `<pre><code>${codeContent}</code></pre>`;
+      return beforeProcessed + codeProcessed + afterProcessed;
+    });
+    
+    // 5. 残りの混在マークダウンパターンを処理
+    // p要素内の複数行テキストでマークダウン記法が含まれている場合
+    content = content.replace(/<p>([\s\S]*?)<\/p>/g, (match, innerText) => {
+      // マークダウンパターンが含まれているかチェック
+      if (innerText.includes('**') || innerText.includes('*') || 
+          innerText.includes('#') || innerText.includes('-') || 
+          innerText.includes('[') || innerText.includes('\n')) {
+        try {
+          const markdownResult = marked.parse ? marked.parse(innerText) : marked(innerText);
+          return typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
+        } catch {
+          return match; // 変換に失敗した場合は元のHTMLを返す
+        }
+      }
+      return match; // マークダウンパターンがない場合は元のHTMLを返す
+    });
     
     return content;
   }
