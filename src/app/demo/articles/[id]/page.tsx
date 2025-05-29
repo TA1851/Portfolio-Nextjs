@@ -23,7 +23,7 @@ const ArticleDetailPage: FC = () => {
       setError("");
       setNotFound(false);
       
-      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1 || 'https://blog-api-main.onrender.com/api/v1';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
       console.log('環境変数 API_URL:', API_URL);
       const url = `${API_URL}/public/articles/${params.id}`;
       console.log('記事詳細リクエスト URL:', url);
