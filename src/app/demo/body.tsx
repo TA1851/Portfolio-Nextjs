@@ -266,7 +266,13 @@ const BodyComp: FC = () => {
                             prose-headings:text-gray-800 prose-p:text-gray-500
                             prose-strong:text-gray-700 prose-em:text-gray-600
                             prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5
-                            prose-code:rounded prose-code:text-sm
+                            prose-code:rounded prose-code:text-sm prose-code:text-gray-800
+                            prose-pre:bg-gray-900 prose-pre:text-gray-100
+                            prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto
+                            prose-blockquote:border-l-4 prose-blockquote:border-gray-300
+                            prose-blockquote:pl-4 prose-blockquote:italic
+                            prose-ul:list-disc prose-ol:list-decimal
+                            prose-li:text-gray-600
                           ">
                             {/* HTMLをレンダリングするが、プレビュー用に短縮 */}
                             <div 
