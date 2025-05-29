@@ -95,11 +95,11 @@ const BodyComp: FC = () => {
       }
       
       // 完了
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 100));
       setProgress(100);
       
       // 完了後に少し待ってからローディングを終了
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 200));
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
       setError('記事の取得に失敗しました。しばらく後でもう一度お試しください。');
