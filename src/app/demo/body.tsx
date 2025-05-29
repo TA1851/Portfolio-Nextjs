@@ -31,15 +31,10 @@ const BodyComp: FC = () => {
     return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
   };
 
-  // 日付をフォーマットする関数
-  // const formatDate = (dateString: string) => {
-  //   const date = new Date(dateString);
-  //   return date.toLocaleDateString('ja-JP', {
-  //     year: 'numeric',
-  //     month: 'long',
-  //     day: 'numeric'
-  //   });
-  // };
+  // マークダウンをHTMLに変換してサニタイズする関数
+  const createMarkdown = (htmlContent: string) => {
+    return { __html: htmlContent };
+  };
 
   // ページネーション計算
   const totalPages = Math.ceil(articles.length / articlesPerPage);
@@ -266,27 +261,34 @@ const BodyComp: FC = () => {
                               {article.title}
                             </Link>
                           </h3>
-                          <p className="
-                            text-gray-500 mb-8
+                          <div className="
+                            text-gray-500 mb-8 prose prose-sm max-w-none
+                            prose-headings:text-gray-800 prose-p:text-gray-500
+                            prose-strong:text-gray-700 prose-em:text-gray-600
+                            prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5
+                            prose-code:rounded prose-code:text-sm
                           ">
-                            {/* HTMLをテキストとして表示するため、HTMLタグを除去 */}
-                            {(() => {
-                              const plainText = stripHtml(article.body_html);
-                              return plainText.length > 30
-                                ? `${plainText.substring(0, 30)}...`
-                                : plainText;
-                            })()}
-                          </p>
+                            {/* HTMLをレンダリングするが、プレビュー用に短縮 */}
+                            <div 
+                              dangerouslySetInnerHTML={createMarkdown(
+                                (() => {
+                                  const plainText = stripHtml(article.body_html);
+                                  if (plainText.length > 100) {
+                                    // HTMLコンテンツも短縮する場合の処理
+                                    const truncatedHtml = article.body_html.length > 200 
+                                      ? article.body_html.substring(0, 200) + '...'
+                                      : article.body_html;
+                                    return truncatedHtml;
+                                  }
+                                  return article.body_html;
+                                })()
+                              )}
+                            />
+                          </div>
                           <div className="
                             mt-auto flex items-end
                             justify-between
                           ">
-                            {/* <span className="
-                              text-sm text-gray-500
-                            ">
-                              記事ID: {article.article_id} */}
-                              {/* {formatDate(article.created_at)} */}
-                            {/* </span> */}
                             <span className="
                               rounded-lg bg-gray-100 px-2
                               py-1 text-sm text-gray-700
