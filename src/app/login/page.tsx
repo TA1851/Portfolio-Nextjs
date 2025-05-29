@@ -188,11 +188,11 @@ const LoginComp: FC = () => {
                 新規登録はこちら
             </Link>
           </p>
-          <p className="text-center mb-4 text-blue-500">
+          <p className="text-center mb-4">
             <Link href="/"
               className="
-                text-gray-500
-                hover:text-gray-700
+                text-blue-500
+                hover:text-blue-700
                 transition
                 duration-100"
               >
