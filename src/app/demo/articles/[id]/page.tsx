@@ -3,11 +3,19 @@
 import { FC, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { marked } from "marked";
+
+// markedの設定
+marked.setOptions({
+  breaks: true, // 改行を<br>に変換
+  gfm: true,    // GitHub Flavored Markdownを有効
+});
 
 interface Article {
   article_id: number;
   title: string;
   body_html: string;
+  body?: string; // マークダウン形式のボディも対応
 }
 
 const ArticleDetailPage: FC = () => {
@@ -162,9 +170,38 @@ const ArticleDetailPage: FC = () => {
           </header>
           
           <div 
-            className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: article?.body_html || '' }}
-          />
+            className="prose prose-lg prose-gray
+              prose-headings:font-bold prose-headings:text-gray-900
+              prose-h1:text-3xl prose-h1:font-extrabold prose-h1:mb-4
+              prose-h2:text-2xl prose-h2:font-bold prose-h2:mb-3
+              prose-h3:text-xl prose-h3:font-bold prose-h3:mb-2
+              prose-h4:text-lg prose-h4:font-bold prose-h4:mb-2
+              prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
+              prose-strong:font-bold prose-strong:text-gray-900
+              prose-a:text-blue-600 prose-a:hover:text-blue-800
+              prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+              prose-pre:bg-gray-900 prose-pre:text-white prose-pre:p-4 prose-pre:rounded-lg
+              prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4
+              prose-ul:list-disc prose-ol:list-decimal
+              max-w-none"
+          >
+            {article?.body ? (
+              // マークダウン形式の場合はmarkedで変換
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: (() => {
+                    const htmlContent = marked(article.body);
+                    console.log('Original markdown:', article.body);
+                    console.log('Converted HTML:', htmlContent);
+                    return htmlContent;
+                  })()
+                }}
+              />
+            ) : (
+              // HTML形式の場合はそのまま表示
+              <div dangerouslySetInnerHTML={{ __html: article?.body_html || '' }} />
+            )}
+          </div>
         </article>
       </div>
     </div>
