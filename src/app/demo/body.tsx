@@ -16,6 +16,7 @@ const BodyComp: FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [progress, setProgress] = useState(0);
   const articlesPerPage = 6;
 
   // HTMLタグを除去してプレーンテキストに変換する関数
@@ -41,18 +42,25 @@ const BodyComp: FC = () => {
     try {
       setLoading(true);
       setError("");
+      setProgress(0);
       
       const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
       console.log('記事一覧 - 環境変数 API_URL:', API_URL);
+      setProgress(20);
+      
       const listUrl = `${API_URL}/public/articles`;
       console.log('記事一覧リクエスト URL:', listUrl);
+      setProgress(40);
+      
       const response = await fetch(listUrl);
+      setProgress(60);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
+      setProgress(80);
       console.log('取得した記事データ:', data);
       
       if (Array.isArray(data)) {
@@ -65,9 +73,11 @@ const BodyComp: FC = () => {
         setArticles([]);
         setCurrentPage(1);
       }
+      setProgress(100);
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
       setError('記事の取得に失敗しました。しばらく後でもう一度お試しください。');
+      setProgress(0);
     } finally {
       setLoading(false);
     }
@@ -127,7 +137,7 @@ const BodyComp: FC = () => {
             {loading && (
               <div className="text-center py-8">
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                  <CircularProgressWithLabel value={75} />
+                  <CircularProgressWithLabel value={progress} />
                   <Typography variant="body2" color="text.secondary">
                     記事を読み込み中...
                   </Typography>
