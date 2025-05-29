@@ -9,7 +9,6 @@ interface Article {
   article_id: number;
   title: string;
   body_html: string;
-  created_at: string;
 }
 
 const BodyComp: FC = () => {
@@ -26,14 +25,14 @@ const BodyComp: FC = () => {
   };
 
   // 日付をフォーマットする関数
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  // const formatDate = (dateString: string) => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('ja-JP', {
+  //     year: 'numeric',
+  //     month: 'long',
+  //     day: 'numeric'
+  //   });
+  // };
 
   // ページネーション計算
   const totalPages = Math.ceil(articles.length / articlesPerPage);
@@ -243,7 +242,8 @@ const BodyComp: FC = () => {
                             <span className="
                               text-sm text-gray-500
                             ">
-                              {formatDate(article.created_at)}
+                              記事ID: {article.article_id}
+                              {/* {formatDate(article.created_at)} */}
                             </span>
                             <span className="
                               rounded-lg bg-gray-100 px-2
