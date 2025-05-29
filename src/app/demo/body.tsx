@@ -45,27 +45,27 @@ const BodyComp: FC = () => {
       setProgress(0);
       
       // 初期化
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 100));
       setProgress(10);
       
       const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
       console.log('記事一覧 - 環境変数 API_URL:', API_URL);
       
       // API URL準備
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 200));
       setProgress(25);
       
       const listUrl = `${API_URL}/public/articles`;
       console.log('記事一覧リクエスト URL:', listUrl);
       
       // リクエスト準備
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 300));
       setProgress(40);
       
       const response = await fetch(listUrl);
       
       // レスポンス受信
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 400));
       setProgress(60);
       
       if (!response.ok) {
@@ -73,14 +73,14 @@ const BodyComp: FC = () => {
       }
       
       // データ解析中
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      await new Promise(resolve => setTimeout(resolve, 500));
       setProgress(75);
       
       const data = await response.json();
       console.log('取得した記事データ:', data);
       
       // データ処理中
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 600));
       setProgress(90);
       
       if (Array.isArray(data)) {
@@ -95,11 +95,11 @@ const BodyComp: FC = () => {
       }
       
       // 完了
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 100));
       setProgress(100);
       
       // 完了後に少し待ってからローディングを終了
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise(resolve => setTimeout(resolve, 200));
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
       setError('記事の取得に失敗しました。しばらく後でもう一度お試しください。');
