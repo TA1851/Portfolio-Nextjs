@@ -2,6 +2,7 @@
 
 import { FC, useState, useEffect } from "react";
 import Link from "next/link";
+import { CircularProgress, Box, Typography } from '@mui/material';
 
 // 記事の型定義
 interface Article {
@@ -41,7 +42,7 @@ const BodyComp: FC = () => {
       setLoading(true);
       setError("");
       
-      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1 || 'https://blog-api-main.onrender.com/api/v1';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
       console.log('記事一覧 - 環境変数 API_URL:', API_URL);
       const listUrl = `${API_URL}/public/articles`;
       console.log('記事一覧リクエスト URL:', listUrl);
@@ -75,6 +76,32 @@ const BodyComp: FC = () => {
   useEffect(() => {
     fetchArticles();
   }, []);
+
+  // CircularProgressWithLabelコンポーネント
+  const CircularProgressWithLabel = ({ value }: { value: number }) => {
+    return (
+      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+        <CircularProgress variant="determinate" value={value} size={60} />
+        <Box
+          sx={{
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            position: 'absolute',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography variant="caption" component="div" color="text.secondary">
+            {`${Math.round(value)}%`}
+          </Typography>
+        </Box>
+      </Box>
+    );
+  };
+
   return (
     <>
       <div className="
@@ -96,14 +123,17 @@ const BodyComp: FC = () => {
                 ブログを始める
               </h2>
             </div>
-            
             {/* ローディング表示 */}
             {loading && (
               <div className="text-center py-8">
-                <p className="text-gray-600">記事を読み込み中...</p>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                  <CircularProgressWithLabel value={75} />
+                  <Typography variant="body2" color="text.secondary">
+                    記事を読み込み中...
+                  </Typography>
+                </Box>
               </div>
             )}
-            
             {/* エラー表示 */}
             {error && (
               <div className="text-center py-8">
