@@ -9,6 +9,7 @@ interface Article {
   article_id: number;
   title: string;
   body_html: string;
+  created_at: string;
 }
 
 const BodyComp: FC = () => {
@@ -22,6 +23,16 @@ const BodyComp: FC = () => {
   // HTMLタグを除去してプレーンテキストに変換する関数
   const stripHtml = (html: string) => {
     return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+  };
+
+  // 日付をフォーマットする関数
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   // ページネーション計算
@@ -165,7 +176,6 @@ const BodyComp: FC = () => {
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                   <CircularProgressWithLabel value={progress} />
                   <Typography variant="body2" color="text.secondary">
-                    記事を読み込み中...
                   </Typography>
                 </Box>
               </div>
@@ -233,7 +243,7 @@ const BodyComp: FC = () => {
                             <span className="
                               text-sm text-gray-500
                             ">
-                              記事ID: {article.article_id}
+                              {formatDate(article.created_at)}
                             </span>
                             <span className="
                               rounded-lg bg-gray-100 px-2
