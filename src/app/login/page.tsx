@@ -188,6 +188,17 @@ const LoginComp: FC = () => {
                 新規登録はこちら
             </Link>
           </p>
+          <p className="text-center mb-4">
+            <Link href="/"
+              className="
+                text-gray-500
+                hover:text-gray-700
+                transition
+                duration-100"
+              >
+                ホームに戻る
+            </Link>
+          </p>
         </form>
       </div>
     </>

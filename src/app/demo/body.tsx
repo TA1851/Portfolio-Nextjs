@@ -17,7 +17,13 @@ const BodyComp: FC = () => {
   const [error, setError] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [progress, setProgress] = useState(0);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(() => {
+    // セッションストレージから初回ロード状態を取得
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('articlesLoaded');
+    }
+    return true;
+  });
   const articlesPerPage = 6;
 
   // HTMLタグを除去してプレーンテキストに変換する関数
@@ -115,6 +121,10 @@ const BodyComp: FC = () => {
         // 完了後に少し待ってからローディングを終了
         await new Promise(resolve => setTimeout(resolve, 200));
         setIsInitialLoad(false);
+        // セッションストレージに初回ロード完了を記録
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('articlesLoaded', 'true');
+        }
       } else {
         // 再試行時は通常の処理
         const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
