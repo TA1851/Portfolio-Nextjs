@@ -18,6 +18,48 @@ interface Article {
   body?: string; // マークダウン形式のボディも対応
 }
 
+// コンテンツ処理ヘルパー関数
+const processArticleContent = (article: Article): string => {
+  // bodyフィールドが存在し、かつ有効な文字列の場合はマークダウンとして処理
+  if (article?.body && typeof article.body === 'string' && article.body.trim().length > 0) {
+    const markdownResult = marked.parse ? marked.parse(article.body) : marked(article.body);
+    return typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
+  } 
+  
+  // body_htmlが存在する場合
+  if (article?.body_html && typeof article.body_html === 'string') {
+    let content = article.body_html;
+    
+    // マークダウンコンテンツがcodeタグ内に埋め込まれているかチェック
+    const codeMatches = content.match(/<code[^>]*>([\s\S]*?)<\/code>/g);
+    
+    if (codeMatches && codeMatches.length > 0) {
+      // 各codeタグの内容を抽出してマークダウンとして処理
+      codeMatches.forEach(codeMatch => {
+        const innerContent = codeMatch.replace(/<\/?code[^>]*>/g, '');
+        
+        // マークダウンパターンを検出（#, **, *, -, [, etc.）
+        if (innerContent.includes('#') || innerContent.includes('**') || 
+            innerContent.includes('*') || innerContent.includes('-') ||
+            innerContent.includes('[') || innerContent.includes('```')) {
+          try {
+            const markdownResult = marked.parse ? marked.parse(innerContent) : marked(innerContent);
+            const processedContent = typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
+            content = content.replace(codeMatch, processedContent);
+          } catch {
+            // マークダウン処理に失敗した場合はプレーンテキストとして表示
+            content = content.replace(codeMatch, `<div style="white-space: pre-wrap;">${innerContent}</div>`);
+          }
+        }
+      });
+    }
+    
+    return content;
+  }
+  
+  return '<p class="text-gray-500 italic">この記事には表示可能な内容がありません。</p>';
+};
+
 const ArticleDetailPage: FC = () => {
   const params = useParams();
   const [article, setArticle] = useState<Article | null>(null);
@@ -32,17 +74,11 @@ const ArticleDetailPage: FC = () => {
       setNotFound(false);
       
       const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
-      console.log('環境変数 API_URL:', API_URL);
       const url = `${API_URL}/public/articles/${params.id}`;
-      console.log('記事詳細リクエスト URL:', url);
-      console.log('記事ID:', params.id);
-      console.log('paramsオブジェクト全体:', params);
       
       const response = await fetch(url);
-      console.log('レスポンスステータス:', response.status);
       
       if (response.status === 404) {
-        console.log('記事が見つかりません (404)');
         setNotFound(true);
         return;
       }
@@ -52,13 +88,18 @@ const ArticleDetailPage: FC = () => {
       }
       
       const data = await response.json();
-      console.log('取得した記事詳細:', data);
-      console.log('記事データの構造:');
-      console.log('- title:', data.title);
-      console.log('- body:', data.body);
-      console.log('- body_html:', data.body_html);
-      console.log('- body type:', typeof data.body);
-      console.log('- body_html type:', typeof data.body_html);
+      
+      // 開発環境でのみログ出力
+      if (process.env.NODE_ENV === 'development') {
+        console.log('取得した記事詳細:', data);
+        console.log('記事データの構造:');
+        console.log('- title:', data.title);
+        console.log('- body:', data.body);
+        console.log('- body_html:', data.body_html);
+        console.log('- body type:', typeof data.body);
+        console.log('- body_html type:', typeof data.body_html);
+      }
+      
       setArticle(data);
     } catch (error) {
       console.error('記事の取得に失敗しました:', error);
@@ -194,81 +235,10 @@ const ArticleDetailPage: FC = () => {
               prose-table:border-collapse prose-table:w-full
               prose-th:border prose-th:border-gray-300 prose-th:bg-gray-50 prose-th:p-2 prose-th:text-left
               prose-td:border prose-td:border-gray-300 prose-td:p-2"
-          >
-            {(() => {
-              console.log('=== 記事のレンダリング判断 ===');
-              console.log('article?.body:', article?.body);
-              console.log('article?.body_html:', article?.body_html);
-              console.log('bodyの型:', typeof article?.body);
-              console.log('body_htmlの型:', typeof article?.body_html);
-              console.log('bodyの長さ:', article?.body?.length);
-              console.log('body_htmlの長さ:', article?.body_html?.length);
-              
-              // body_htmlの内容をチェック（先頭100文字）
-              if (article?.body_html) {
-                console.log('body_html先頭100文字:', article.body_html.substring(0, 100));
-                console.log('body_htmlがコードタグで囲まれているか:', article.body_html.startsWith('<code>'));
-                console.log('body_htmlがpreタグで囲まれているか:', article.body_html.includes('<pre>'));
-              }
-              
-              // bodyフィールドが存在し、かつ有効な文字列の場合はマークダウンとして処理
-              if (article?.body && typeof article.body === 'string' && article.body.trim().length > 0) {
-                console.log('マークダウンとして処理します');
-                const markdownResult = marked.parse ? marked.parse(article.body) : marked(article.body);
-                const htmlContent = typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
-                console.log('変換後のHTML:', htmlContent);
-                return (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: htmlContent
-                    }}
-                  />
-                );
-              } 
-              // body_htmlが存在する場合
-              else if (article?.body_html && typeof article.body_html === 'string') {
-                console.log('HTMLとして処理します');
-                let content = article.body_html;
-                
-                // コンテンツの形式を分析
-                const isWrappedInSingleCode = content.match(/^<code[^>]*>([\s\S]*)<\/code>$/) && !content.includes('</code><code>');
-                const isWrappedInPre = content.match(/^<pre[^>]*>([\s\S]*)<\/pre>$/);
-                
-                if (isWrappedInSingleCode) {
-                  console.log('単一のコードタグで全体が囲まれているため、内容を抽出してマークダウンとして処理します');
-                  const innerContent = content.replace(/^<code[^>]*>/, '').replace(/<\/code>$/, '');
-                  
-                  try {
-                    // markedは同期的に動作するように設定されているため、直接使用
-                    const markdownResult = marked.parse ? marked.parse(innerContent) : marked(innerContent);
-                    content = typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
-                    console.log('マークダウンとして再解析しました:', content.substring(0, 100));
-                  } catch (error) {
-                    console.log('マークダウン解析に失敗、プレーンテキストとして表示', error);
-                    content = `<div style="white-space: pre-wrap; font-family: inherit;">${innerContent}</div>`;
-                  }
-                } else if (isWrappedInPre) {
-                  console.log('preタグで囲まれています');
-                  // preタグの場合はそのまま使用
-                } else {
-                  console.log('通常のHTMLとして処理します');
-                }
-                
-                return (
-                  <div dangerouslySetInnerHTML={{ __html: content }} />
-                );
-              } 
-              // どちらも無効な場合
-              else {
-                console.log('有効なコンテンツが見つかりません');
-                return (
-                  <p className="text-gray-500 italic">
-                    この記事には表示可能な内容がありません。
-                  </p>
-                );
-              }
-            })()}
-          </div>
+            dangerouslySetInnerHTML={{
+              __html: article ? processArticleContent(article) : ''
+            }}
+          />
         </article>
       </div>
     </div>
