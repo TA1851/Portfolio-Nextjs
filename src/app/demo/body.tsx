@@ -234,12 +234,12 @@ const BodyComp: FC = () => {
                 )}
 
                 {/* ページ情報 */}
-                {articles.length > 0 && (
+                {/* {articles.length > 0 && (
                   <div className="mt-6 text-center text-sm text-gray-500">
                     {articles.length}件中 {indexOfFirstArticle + 1}-{Math.min(indexOfLastArticle, articles.length)}件を表示
                     {totalPages > 1 && ` (${currentPage}/${totalPages}ページ)`}
                   </div>
-                )}
+                )} */}
               </>
             )}
         </div>
