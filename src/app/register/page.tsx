@@ -1,99 +1,3 @@
-// import Link from "next/link";
-// import { FC } from "react";
-
-// const LoginComp: FC = () => {
-//   return (
-//     <>
-//       <div className="
-//         bg-white min-h-screen
-//         py-6 sm:py-60 lg:py-12
-//       ">
-//         <h2 className="
-//           mb-4 text-center
-//           text-2xl font-bold
-//           text-blue-500
-//           md:mb-8 lg:text-3xl
-//         ">
-//           新規登録
-//         </h2>
-//         <form className="
-//           mx-auto max-w-lg
-//           rounded-lg border
-//         ">
-//           <div className="
-//             flex flex-col gap-4 p-4
-//             md:p-8
-//           ">
-//             <div>
-//               <label htmlFor="email"
-//               className="
-//                 mb-2 inline-block text-sm text-gray-800
-//                 sm:text-base
-//               ">
-//                 Email
-//               </label>
-//               <input name="email"
-//               className="
-//                 w-full rounded
-//                 border bg-gray-50
-//                 px-3 py-2
-//                 text-gray-800
-//                 outline-none ring-indigo-300
-//                 transition duration-100 focus:ring
-//               "/>
-//             </div>
-//             <div>
-//               <label htmlFor="password"
-//               className="
-//                 mb-2 inline-block
-//                 text-sm text-gray-800
-//                 sm:text-base
-//               ">
-//                 Password
-//               </label>
-//               <input name="password"
-//               className="
-//                 w-full rounded
-//                 border bg-gray-50
-//                 px-3 py-2
-//                 text-gray-800
-//                 outline-none ring-indigo-300
-//                 transition duration-100 focus:ring
-//               "/>
-//             </div>
-//             <button
-//             className="
-//               block rounded-lg
-//               bg-blue-600
-//               px-8 py-3
-//               text-center text-sm
-//               font-semibold text-white
-//               outline-none ring-gray-300
-//               transition duration-100
-//               hover:bg-blue-500 focus-visible:ring
-//               active:bg-gray-600 md:text-base
-//             ">
-//               <Link href="/login">
-//                 新規登録
-//               </Link>
-//             </button>
-//           </div>
-//           <p className="
-//             text-center mb-4
-//           ">
-//             <Link href="/login" className="
-//               text-gray-800 hover:text-blue-600 transition duration-100
-//             ">
-//               登録済みの方はこちら
-//             </Link>
-//           </p>
-//         </form>
-//       </div>
-//     </>
-//   )
-// }
-// export default LoginComp;
-
 'use client';
 
 import Link from "next/link";
@@ -151,13 +55,13 @@ const LoginComp: FC = () => {
     }
 
     try {
-      console.log("送信データ:", {
-        name: formData.email.split('@')[0], // メールアドレスの@マーク前をnameとして使用
-        email: formData.email,
-        password: formData.password
-      });
-      console.log("API URL:", `${apiUrl}/user`);
-      
+      // console.log("送信データ:", {
+      //   name: formData.email.split('@')[0], // メールアドレスの@マーク前をnameとして使用
+      //   email: formData.email,
+      //   password: formData.password
+      // });
+      // console.log("API URL:", `${apiUrl}/user`);
+
       const response = await axios.post(`${apiUrl}/user`, {
         name: formData.email.split('@')[0], // 一時的にnameフィールドを追加
         email: formData.email,
@@ -173,9 +77,9 @@ const LoginComp: FC = () => {
       });
 
       // 成功時の処理
-      console.log("ユーザー作成成功:", response.data);
-      console.log("レスポンスステータス:", response.status);
-      
+      // console.log("ユーザー作成成功:", response.data);
+      // console.log("レスポンスステータス:", response.status);
+
       // レスポンスの形式をチェック
       const userData = response.data as ApiSuccessResponse;
       if (userData.email) {
@@ -187,10 +91,9 @@ const LoginComp: FC = () => {
         console.warn("予期しないレスポンス形式:", userData);
         setError("登録は完了しましたが、レスポンス形式が予期されたものと異なります。");
       }
-      
     } catch (err) {
       console.error("詳細エラー情報:", err);
-      
+
       if (axios.isAxiosError(err)) {
         console.error("Axiosエラー詳細:", {
           status: err.response?.status,
@@ -198,10 +101,8 @@ const LoginComp: FC = () => {
           data: err.response?.data,
           headers: err.response?.headers
         });
-        
         if (err.response) {
           const errorData = err.response.data as ApiErrorResponse;
-          
           switch (err.response.status) {
             case 400:
               setError(errorData.detail || "入力内容に不備があります。");
@@ -233,47 +134,37 @@ const LoginComp: FC = () => {
 
   return (
     <>
-      <div className="
-        bg-white min-h-screen
-        py-6 sm:py-60 lg:py-12
-      ">
-        <h2 className="
-          mb-4 text-center
-          text-2xl font-bold
-          text-blue-500
-          md:mb-8 lg:text-3xl
-        ">
+      <div
+        className="bg-white min-h-screenpy-6 sm:py-60 lg:py-12"
+      >
+        <h2
+          className="
+            mb-4 text-center text-2xl font-bold text-blue-500 md:mb-8 lg:text-3xl"
+        >
           新規登録
         </h2>
-        <form 
-          className="
-            mx-auto max-w-lg
-            rounded-lg border
-          "
+        <form
+          className="mx-auto max-w-lg rounded-lg border"
           onSubmit={handleSubmit}
         >
-          <div className="
-            flex flex-col gap-4 p-4
-            md:p-8
-          ">
+          <div
+            className="flex flex-col gap-4 p-4 md:p-8"
+          >
             {/* エラーメッセージ表示 */}
             {error && (
-              <div className="
-                rounded-lg bg-red-50 
-                border border-red-200 
-                p-3 text-red-800 text-sm
-              ">
+              <div
+                className="
+                  rounded-lg bg-red-50 border border-red-200 p-3 text-red-800 text-sm"
+              >
                 {error}
               </div>
             )}
-
             {/* 成功メッセージ表示 */}
             {success && (
-              <div className="
-                rounded-lg bg-green-50 
-                border border-green-200 
-                p-3 text-green-800 text-sm
-              ">
+              <div
+                className="
+                  rounded-lg bg-green-50 border border-green-200 p-3 text-green-800 text-sm"
+              >
                 アカウントが正常に作成されました！
               </div>
             )}
@@ -281,12 +172,11 @@ const LoginComp: FC = () => {
             <div>
               <label htmlFor="email"
                 className="
-                  mb-2 inline-block text-sm text-gray-800
-                  sm:text-base
-                ">
+                  mb-2 inline-block text-sm text-gray-800 sm:text-base"
+              >
                 Email
               </label>
-              <input 
+              <input
                 id="email"
                 name="email"
                 type="email"
@@ -294,13 +184,9 @@ const LoginComp: FC = () => {
                 onChange={handleInputChange}
                 required
                 className="
-                  w-full rounded
-                  border bg-gray-50
-                  px-3 py-2
-                  text-gray-800
-                  outline-none ring-indigo-300
-                  transition duration-100 focus:ring
-                "
+                  w-full rounded border bg-gray-50 px-3 py-2
+                  text-gray-800 outline-none ring-indigo-300
+                  transition duration-100 focus:ring"
                 placeholder="example@example.com"
               />
             </div>
@@ -308,13 +194,11 @@ const LoginComp: FC = () => {
             <div>
               <label htmlFor="password"
                 className="
-                  mb-2 inline-block
-                  text-sm text-gray-800
-                  sm:text-base
-                ">
+                  mb-2 inline-block text-sm text-gray-800 sm:text-base"
+              >
                 Password
               </label>
-              <input 
+              <input
                 id="password"
                 name="password"
                 type="password"
@@ -322,13 +206,8 @@ const LoginComp: FC = () => {
                 onChange={handleInputChange}
                 required
                 className="
-                  w-full rounded
-                  border bg-gray-50
-                  px-3 py-2
-                  text-gray-800
-                  outline-none ring-indigo-300
-                  transition duration-100 focus:ring
-                "
+                  w-full rounded border bg-gray-50 px-3 py-2 text-gray-800
+                  outline-none ring-indigo-300 transition duration-100 focus:ring"
                 placeholder="パスワードを入力してください"
               />
             </div>
@@ -337,26 +216,21 @@ const LoginComp: FC = () => {
               type="submit"
               disabled={isLoading}
               className="
-                block rounded-lg
-                bg-blue-600
-                px-8 py-3
-                text-center text-sm
-                font-semibold text-white
-                outline-none ring-gray-300
-                transition duration-100
-                hover:bg-blue-500 focus-visible:ring
-                active:bg-gray-600 md:text-base
-                disabled:bg-gray-400 disabled:cursor-not-allowed
+                block rounded-lg bg-blue-600 px-8 py-3 text-center text-sm
+                font-semibold text-white outline-none ring-gray-300
+                transition duration-100 hover:bg-blue-500 focus-visible:ring
+                active:bg-gray-600 md:text-base disabled:bg-gray-400 disabled:cursor-not-allowed
               ">
               {isLoading ? "登録中..." : "新規登録"}
             </button>
           </div>
-          <p className="
-            text-center mb-4
-          ">
-            <Link href="/login" className="
-              text-gray-800 hover:text-blue-600 transition duration-100
-            ">
+          <p
+            className="text-center mb-4"
+          >
+            <Link
+              href="/login"
+              className="text-gray-800 hover:text-blue-600 transition duration-100"
+            >
               登録済みの方はこちら
             </Link>
           </p>
@@ -365,5 +239,4 @@ const LoginComp: FC = () => {
     </>
   )
 }
-
 export default LoginComp;

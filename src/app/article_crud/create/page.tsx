@@ -162,24 +162,24 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         publish_status: action === 'publish' ? 'published' : 'draft',
       };
 
-      console.log('送信データ:', postData);
+      // console.log('送信データ:', postData);
 
       try {
         // トークン取得とログ出力
         const token = localStorage.getItem('authToken');
-        console.log('Token in storage:', token); // トークン全体を出力（開発環境のみ）
+        // console.log('Token in storage:', token); // トークン全体を出力
 
         // トークンの存在確認
         if (!token) {
-          console.error('トークンがありません');
+          // console.error('トークンがありません');
           alert('ログインが必要です。ログイン画面に移動します。');
           router.push('/login');
           return;
         }
 
         // JWT判定
-        const isJWT = token.split('.').length === 3;
-        console.log('トークン形式:', isJWT ? 'JWT形式' : '通常文字列');
+        // const isJWT = token.split('.').length === 3;
+        // console.log('トークン形式:', isJWT ? 'JWT形式' : '通常文字列');
 
         // トークンをクリーン化
         cleanToken = token.trim();
@@ -187,7 +187,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         // トークンの正当性を確認
         if (
           cleanToken === 'undefined' || cleanToken === 'null' || cleanToken === '') {
-          console.error('無効なトークン:', cleanToken);
+          // console.error('無効なトークン:', cleanToken);
           localStorage.removeItem('authToken');
           alert('認証情報が無効です。再度ログインしてください。');
           router.push('/login');
@@ -206,7 +206,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           body: JSON.stringify(postData)
         });
 
-        console.log('レスポンスステータス:', response.status); // デバッグログ追加
+        // console.log('レスポンスステータス:', response.status); // デバッグログ追加
 
         // 401エラー発生時に一度リフレッシュを試す
         if (response.status === 401) {
@@ -234,7 +234,7 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
 
         // レスポンスのテキストを取得
         const responseText = await response.text();
-        console.log('レスポンスボディ:', responseText);
+        // console.log('レスポンスボディ:', responseText);
 
         if (!response.ok) {
           let errorData = null;
@@ -252,15 +252,15 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         }
 
         // 正常なレスポンスをJSONとしてパース
-        let result;
-        try {
-          result = responseText ? JSON.parse(responseText) : {};
-        } catch (e) {
-          console.warn('成功レスポンスのJSONパースエラー:', e);
-          result = { message: '記事が作成されましたが、レスポンスの解析に失敗しました' };
-        }
+        // let result;
+        // try {
+        //   result = responseText ? JSON.parse(responseText) : {};
+        // } catch (e) {
+        //   console.warn('成功レスポンスのJSONパースエラー:', e);
+        //   result = { message: '記事が作成されましたが、レスポンスの解析に失敗しました' };
+        // }
 
-        console.log('作成成功:', result);
+        // console.log('作成成功:', result);
 
         // 成功したら記事一覧ページに戻る
         router.push('/user');
@@ -346,9 +346,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             onClick={() => handleSubmit('draft')}
             disabled={saving}
             sx={{
-              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
-              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
-              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+              width: { xs: '100%', sm: 'auto' }, // レスポンシブ対応：モバイルでは幅いっぱい
+              height: { xs: '48px', sm: 'auto' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             下書き保存
@@ -357,12 +357,12 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             variant="contained"
             color="secondary"
             startIcon={<PublishIcon />}
-            onClick={() => setOpen(true)} // handleSubmitの代わりにモーダルを開く
+            onClick={() => setOpen(true)}
             disabled={saving}
             sx={{
-              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
-              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
-              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+              width: { xs: '100%', sm: 'auto' },
+              height: { xs: '48px', sm: 'auto' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             公開する
@@ -376,9 +376,9 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             sx={{
               color: 'red',
               borderColor: 'red',
-              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
-              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
-              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+              width: { xs: '100%', sm: 'auto' },
+              height: { xs: '48px', sm: 'auto' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             キャンセル
@@ -420,8 +420,8 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button 
-            onClick={handleClose} 
+          <Button
+            onClick={handleClose}
             color="primary"
             sx={{
               '&:hover': {
@@ -453,7 +453,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
     </StyledPaper>
   );
 };
-// エクスポートするページコンポーネント
 const CreatePostPage: React.FC = () => {
   return (
     <div className="

@@ -29,9 +29,9 @@ const ArticleDetailPage: FC = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        console.log('パラメータ:', params);
+        // console.log('パラメータ:', params);
         const id = params.id;
-        console.log('URLから取得したID:', id, '型:', typeof id);
+        // console.log('URLから取得したID:', id, '型:', typeof id);
 
         if (!id) {
           console.error('無効な記事ID:', id);
@@ -47,7 +47,7 @@ const ArticleDetailPage: FC = () => {
           return;
         }
 
-        console.log(`記事ID: ${id} の詳細を取得します`);
+        // console.log(`記事ID: ${id} の詳細を取得します`);
         // 環境変数からAPIのURLを取得
         const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         const response = await fetch(
@@ -72,7 +72,7 @@ const ArticleDetailPage: FC = () => {
         }
 
         const data = await response.json();
-        console.log('取得した記事詳細:', data);
+        // console.log('取得した記事詳細:', data);
         setArticle(data);
         setLoading(false);
       } catch (err) {
@@ -86,55 +86,46 @@ const ArticleDetailPage: FC = () => {
   }, [params]);
 
   return (
-    <div className="
-      bg-gray-100 min-h-screen
-      py-8 px-4"
+    <div
+      className="bg-gray-100 min-h-screen py-8 px-4"
     >
-    <div className="
-      max-w-4xl mx-auto"
+    <div
+      className="max-w-4xl mx-auto"
     >
       {loading ? (
-        <div className="
-          text-center py-10"
+        <div
+          className="text-center py-10"
         >
-          <p className="
-            text-gray-600
-          ">
+          <p className="text-gray-600"
+          >
             記事を読み込み中...
           </p>
         </div>
       ) : error ? (
-        <div className="
-          text-center py-10"
+        <div
+          className="text-center py-10"
         >
-          <p className="
-          text-red-500"
+          <p
+            className="text-red-500"
           >
             {error}
           </p>
           <Link href="/demo"
-          className="
-            inline-block mt-4
-            text-indigo-600
-            hover:text-indigo-800"
+            className="inline-block mt-4 text-indigo-600 hover:text-indigo-800"
           >
             記事一覧に戻る
           </Link>
         </div>
       ) : article ? (
-        <div className="
-          bg-white rounded-lg
-          shadow-md p-6"
+        <div
+          className="bg-white rounded-lg shadow-md p-6"
         >
-        <h1 className="
-          text-3xl
-          font-bold mb-4"
+        <h1
+          className="text-3xl font-bold mb-4"
         >
           {article.title}
         </h1>
-        <div className="
-          mb-6 text-sm
-          text-gray-500"
+        <div className="mb-6 text-sm text-gray-500"
         >
           <span>
             投稿者ID: {article.user_id}
@@ -150,10 +141,13 @@ const ArticleDetailPage: FC = () => {
           prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
           prose-strong:font-bold prose-strong:text-gray-900
           prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-a:underline
-          prose-code:bg-gray-100 prose-code:text-red-600 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono
-          prose-pre:!bg-gray-900 prose-pre:!text-gray-100 prose-pre:!p-4 prose-pre:!rounded-lg prose-pre:!overflow-x-auto prose-pre:!my-6
+          prose-code:bg-gray-100 prose-code:text-red-600 prose-code:px-2
+          prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono
+          prose-pre:!bg-gray-900 prose-pre:!text-gray-100 prose-pre:!p-4 prose-pre:!rounded-lg
+          prose-pre:!overflow-x-auto prose-pre:!my-6
           prose-pre>code:!bg-transparent prose-pre>code:!text-gray-100 prose-pre>code:!p-0
-          prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
+          prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4
+          prose-blockquote:italic prose-blockquote:text-gray-600
           prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6
           prose-li:text-gray-700 prose-li:mb-1
           prose-table:border-collapse prose-table:w-full
@@ -168,49 +162,42 @@ const ArticleDetailPage: FC = () => {
               __html: (() => {
                 const markdownResult = marked.parse ? marked.parse(article.body) : marked(article.body);
                 const htmlContent = typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
-                console.log('Original markdown:', article.body);
-                console.log('Converted HTML:', htmlContent);
+                // console.log('Original markdown:', article.body);
+                // console.log('Converted HTML:', htmlContent);
                 return htmlContent;
               })()
             }}
           />
         ) : (
-          <p className="
-            text-gray-500 italic"
+          <p
+            className="text-gray-500 italic"
           >
             この記事には本文がありません。
           </p>
         )}
         </div>
-        <div className="
-          mt-10 pt-6
-          border-t
-          border-gray-200"
+        <div
+          className="mt-10 pt-6 border-t border-gray-200"
         >
           <Link href="/user"
-            className="
-              text-indigo-600
-              hover:text-indigo-800"
+            className="text-indigo-600 hover:text-indigo-800"
           >
             記事一覧に戻る
           </Link>
         </div>
       </div>
       ) : (
-        <div className="
-          text-center py-10"
+        <div
+          className="text-center py-10"
         >
-          <p className="
-            text-gray-600
-          ">
+          <p
+            className="text-gray-600"
+          >
             記事情報が取得できませんでした
           </p>
           <Link
             href="/user"
-            className="
-              inline-block mt-4
-              text-indigo-600
-              hover:text-indigo-800"
+            className="inline-block mt-4 text-indigo-600 hover:text-indigo-800"
           >
             記事一覧に戻る
           </Link>

@@ -57,48 +57,47 @@ const BodyComp: FC = () => {
       if (!isRetry) {
         setProgress(0);
       }
-      
       // 初回ロード時のみプログレス表示の遅延処理を実行
       if (isInitialLoad && !isRetry) {
         // 初期化
         await new Promise(resolve => setTimeout(resolve, 20));
         setProgress(10);
-        
+
         const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
         console.log('記事一覧 - 環境変数 API_URL:', API_URL);
-        
+
         // API URL準備
         await new Promise(resolve => setTimeout(resolve, 50));
         setProgress(25);
-        
+
         const listUrl = `${API_URL}/public/articles`;
         console.log('記事一覧リクエスト URL:', listUrl);
-        
+
         // リクエスト準備
         await new Promise(resolve => setTimeout(resolve, 100));
         setProgress(40);
-        
+
         const response = await fetch(listUrl);
-        
+
         // レスポンス受信
         await new Promise(resolve => setTimeout(resolve, 150));
         setProgress(60);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         // データ解析中
         await new Promise(resolve => setTimeout(resolve, 200));
         setProgress(75);
-        
+
         const data = await response.json();
         console.log('取得した記事データ:', data);
-        
+
         // データ処理中
         await new Promise(resolve => setTimeout(resolve, 250));
         setProgress(90);
-        
+
         if (Array.isArray(data)) {
           console.log('利用可能な記事ID一覧:', data.map(article => article.article_id));
           setArticles(data);
@@ -108,11 +107,11 @@ const BodyComp: FC = () => {
           setArticles([]);
           setCurrentPage(1);
         }
-        
+
         // 完了
         await new Promise(resolve => setTimeout(resolve, 100));
         setProgress(100);
-        
+
         // 完了後に少し待ってからローディングを終了
         await new Promise(resolve => setTimeout(resolve, 200));
         setIsInitialLoad(false);
@@ -125,13 +124,12 @@ const BodyComp: FC = () => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
         const listUrl = `${API_URL}/public/articles`;
         const response = await fetch(listUrl);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const data = await response.json();
-        
+
         if (Array.isArray(data)) {
           setArticles(data);
           setCurrentPage(1);
@@ -180,22 +178,18 @@ const BodyComp: FC = () => {
 
   return (
     <>
-      <div className="
-        bg-white py-6
-        sm:py-8 lg:py-12
-      ">
-        <div className="
-          mx-auto max-w-screen-2xl
-          px-4 md:px-8
-        ">
-            <div className="
-              mb-10 md:mb-16
-            ">
-              <h2 className="
-                mb-4 text-center text-2xl
-                font-bold text-gray-800 md:mb-6
-                lg:text-3xl
-              ">
+      <div
+        className="bg-white py-6 sm:py-8 lg:py-12"
+      >
+        <div
+          className="mx-auto max-w-screen-2xl px-4 md:px-8"
+        >
+            <div
+              className="mb-10 md:mb-16"
+            >
+              <h2
+                className="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-6 lg:text-3xl"
+              >
                 ブログを始める
               </h2>
             </div>
@@ -206,21 +200,25 @@ const BodyComp: FC = () => {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                     <CircularProgressWithLabel value={progress} />
                     <Typography variant="body2" color="text.secondary">
-                      記事を読み込み中...
                     </Typography>
                   </Box>
                 ) : (
                   <Typography variant="body2" color="text.secondary">
-                    読み込み中...
                   </Typography>
                 )}
               </div>
             )}
             {/* エラー表示 */}
             {error && (
-              <div className="text-center py-8">
-                <p className="text-red-500 mb-4">{error}</p>
-                <button 
+              <div
+                className="text-center py-8"
+              >
+                <p
+                  className="text-red-500 mb-4"
+                >
+                  {error}
+                </p>
+                <button
                   onClick={() => fetchArticles(true)}
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
@@ -231,37 +229,39 @@ const BodyComp: FC = () => {
             {/* 記事一覧表示 */}
             {!loading && !error && (
               <>
-                <div className="
-                  grid gap-4 sm:grid-cols-2
-                  md:gap-6 lg:grid-cols-3 xl:grid-cols-3
-                  xl:gap-8
-                ">
+                <div
+                  className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-3 xl:gap-8"
+                  >
                   {currentArticles.length === 0 ? (
-                    <div className="col-span-full text-center py-8">
-                      <p className="text-gray-600">まだ記事が投稿されていません。</p>
+                    <div
+                      className="col-span-full text-center py-8"
+                    >
+                      <p
+                        className="text-gray-600"
+                      >
+                        まだ記事が投稿されていません。
+                      </p>
                     </div>
                   ) : (
                     currentArticles.map((article) => (
-                      <div key={article.article_id} className="
-                        flex flex-col overflow-hidden
-                        rounded-lg border bg-white
-                      ">
-                        <div className="
-                          flex flex-1 flex-col
-                          p-4 sm:p-6
-                        ">
-                          <h3 className="
-                            mb-2 text-lg font-semibold
-                            text-gray-800
-                          ">
-                            <Link href={`/demo/articles/${article.article_id}`} className="
-                              transition duration-100
-                              hover:text-indigo-500
-                            ">
+                      <div
+                        key={article.article_id}
+                        className="flex flex-col overflow-hidden rounded-lg border bg-white">
+                        <div
+                          className="flex flex-1 flex-col p-4 sm:p-6"
+                        >
+                          <h3
+                            className="mb-2 text-lg font-semibold text-gray-800"
+                          >
+                            <Link
+                              href={`/demo/articles/${article.article_id}`}
+                              className="transition duration-100 hover:text-indigo-500"
+                            >
                               {article.title}
                             </Link>
                           </h3>
-                          <div className="
+                          <div
+                            className="
                             text-gray-500 mb-8 prose prose-sm max-w-none
                             prose-headings:text-gray-800 prose-p:text-gray-500
                             prose-strong:text-gray-700 prose-em:text-gray-600
@@ -275,13 +275,13 @@ const BodyComp: FC = () => {
                             prose-li:text-gray-600
                           ">
                             {/* HTMLをレンダリングするが、プレビュー用に短縮 */}
-                            <div 
+                            <div
                               dangerouslySetInnerHTML={createMarkdown(
                                 (() => {
                                   const plainText = stripHtml(article.body_html);
                                   if (plainText.length > 100) {
                                     // HTMLコンテンツも短縮する場合の処理
-                                    const truncatedHtml = article.body_html.length > 200 
+                                    const truncatedHtml = article.body_html.length > 200
                                       ? article.body_html.substring(0, 200) + '...'
                                       : article.body_html;
                                     return truncatedHtml;
@@ -291,14 +291,12 @@ const BodyComp: FC = () => {
                               )}
                             />
                           </div>
-                          <div className="
-                            mt-auto flex items-end
-                            justify-between
-                          ">
-                            <span className="
-                              rounded-lg bg-gray-100 px-2
-                              py-1 text-sm text-gray-700
-                            ">
+                          <div
+                            className="mt-auto flex items-end justify-between"
+                          >
+                            <span
+                              className="rounded-lg bg-gray-100 px-2 py-1 text-sm text-gray-700"
+                            >
                               ブログ記事
                             </span>
                           </div>
@@ -310,16 +308,20 @@ const BodyComp: FC = () => {
 
                 {/* ページネーション */}
                 {totalPages > 1 && (
-                  <div className="mt-12 flex justify-center">
-                    <nav className="flex items-center space-x-2">
+                  <div
+                    className="mt-12 flex justify-center"
+                  >
+                    <nav
+                      className="flex items-center space-x-2"
+                    >
                       {/* 前のページボタン */}
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                          currentPage === 1
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        className={
+                          `px-3 py-2 rounded-md text-sm font-medium transition-colors
+                          ${ currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                         }`}
                       >
                         前へ
@@ -332,10 +334,10 @@ const BodyComp: FC = () => {
                           <button
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                              currentPage === pageNumber
-                                ? 'bg-indigo-500 text-white'
-                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                            className={
+                              `px-3 py-2 rounded-md text-sm font-medium transition-colors
+                              ${ currentPage === pageNumber ? 'bg-indigo-500 text-white'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                             }`}
                           >
                             {pageNumber}
@@ -347,10 +349,10 @@ const BodyComp: FC = () => {
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                          currentPage === totalPages
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        className={
+                          `px-3 py-2 rounded-md text-sm font-medium transition-colors
+                          ${ currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                         }`}
                       >
                         次へ

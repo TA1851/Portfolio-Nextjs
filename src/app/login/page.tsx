@@ -16,7 +16,7 @@ const LoginComp: FC = () => {
   ): Promise<void> => {
     event.preventDefault();
 
-    console.log('ログインボタンがクリックされました。');
+    // console.log('ログインボタンがクリックされました。');
 
     if (formRef.current) {
       const email = formRef.current.elements.namedItem('email') as HTMLInputElement;
@@ -36,10 +36,10 @@ const LoginComp: FC = () => {
         formData.append('username', emailValue);
         formData.append('password', passwordValue);
 
-        console.log('送信データ:', {username: emailValue, password: passwordValue});
+        // console.log('送信データ:', {username: emailValue, password: passwordValue});
         // 環境変数からAPIエンドポイントを取得する
         const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
-        console.log('API URL:', apiUrl);
+        // console.log('API URL:', apiUrl);
 
         const response = await axios.post(
           `${apiUrl}/login`,
@@ -48,7 +48,7 @@ const LoginComp: FC = () => {
 
         localStorage.setItem('authToken', response.data.access_token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
-        console.log('ログインに成功しました:', response.data);
+        // console.log('ログインに成功しました:', response.data);
         saveLog('info', 'ログインに成功しました。');
 
         router.push('/user'); // ページ遷移
@@ -65,50 +65,28 @@ const LoginComp: FC = () => {
       }
     }
   };
-
   return (
     <>
-      <div className="
-        bg-white
-        min-h-screen
-        py-6 sm:py-60
-        lg:py-12"
+      <div
+        className="
+        bg-white min-h-screen py-6 sm:py-60 lg:py-12"
       >
-        <h2 className="
-          mb-4
-          text-center
-          text-2xl
-          font-bold
-          text-gray-800
-          md:mb-8
-          lg:text-3xl"
+        <h2
+          className="
+          mb-4 text-center text-2xl font-bold text-gray-800 md:mb-8 lg:text-3xl"
         >
           ログイン
         </h2>
-
         <form
           ref={formRef}
-          className="
-          mx-auto
-          max-w-lg
-          rounded-lg
-          border"
+          className="mx-auto max-w-lg rounded-lg border"
         >
-          <div className="
-            flex
-            flex-col
-            gap-4
-            p-4
-            md:p-8"
+          <div
+            className="flex flex-col gap-4 p-4 md:p-8"
           >
             <div>
               <label htmlFor="email-field"
-                className="
-                  mb-2
-                  inline-block
-                  text-sm
-                  text-gray-800
-                  sm:text-base"
+                className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
                 >
                   Email
                 </label>
@@ -117,24 +95,14 @@ const LoginComp: FC = () => {
                 name="email"
                 type="email"
                 className="
-                  w-full
-                  rounded
-                  border bg-gray-50
-                  px-3 py-2
-                  text-gray-800 outline-none
-                  ring-indigo-300
-                  transition duration-100 focus:ring"
+                w-full rounded border bg-gray-50 px-3 py-2 text-gray-800
+                outline-none ring-indigo-300 transition duration-100 focus:ring"
               />
             </div>
 
             <div>
               <label htmlFor="password-field"
-                className="
-                  mb-2
-                  inline-block
-                  text-sm
-                  text-gray-800
-                  sm:text-base"
+                className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
                 >
                   Password
                 </label>
@@ -143,30 +111,16 @@ const LoginComp: FC = () => {
                 name="password"
                 type="password"
                 className="
-                  w-full rounded border
-                  bg-gray-50 px-3 py-2
-                  text-gray-800
-                  outline-none
-                  ring-indigo-300
-                  transition duration-100
-                  focus:ring"
+                w-full rounded border bg-gray-50 px-3 py-2
+                text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
               />
             </div>
 
-            <button className="
-              block
-              rounded-lg
-              bg-gray-800
-              px-8 py-3
-              text-center text-sm
-              font-semibold text-white
-              outline-none
-              ring-gray-300
-              transition duration-100
-              hover:bg-gray-700
-              focus-visible:ring
-              active:bg-gray-600
-              md:text-base"
+            <button
+              className="
+              block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold
+              text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700
+              focus-visible:ring active:bg-gray-600 md:text-base"
               onClick={onClickLogin}
             >
               ログイン
@@ -177,25 +131,23 @@ const LoginComp: FC = () => {
               </a>
             </div> */}
           </div>
-          <p className="text-center mb-4">
-            <Link href="/register"
-              className="
-                text-gray-800
-                hover:text-blue-600
-                transition
-                duration-100"
-              >
-                新規登録はこちら
+          <p
+            className="text-center mb-4"
+          >
+            <Link
+              href="/register"
+              className="text-gray-800 hover:text-blue-600 transition duration-100"
+            >
+              新規登録はこちら
             </Link>
           </p>
-          <p className="text-center mb-4">
-            <Link href="/"
-              className="
-                text-blue-500
-                hover:text-blue-700
-                transition
-                duration-100"
-              >
+          <p
+            className="text-center mb-4"
+          >
+            <Link
+              href="/"
+              className="text-blue-500 hover:text-blue-700 transition duration-100"
+            >
                 ホームに戻る
             </Link>
           </p>

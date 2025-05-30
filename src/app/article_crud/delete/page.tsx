@@ -82,7 +82,7 @@ export default function DeleteArticlePage() {
           "authToken") || storedToken;
 
         if (currentToken) {
-          console.log("リクエスト送信: トークンあり");
+          // console.log("リクエスト送信: トークンあり");
           config.headers["Authorization"] = `Bearer ${currentToken.trim()}`;
         } else {
           console.warn("リクエスト送信: トークンなし");
@@ -100,12 +100,12 @@ export default function DeleteArticlePage() {
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
-          console.log("401エラー検出: トークンリフレッシュを試行");
+          // console.log("401エラー検出: トークンリフレッシュを試行");
           originalRequest._retry = true;
 
           try {
             const newToken = await refreshToken();
-            console.log("トークンリフレッシュ成功");
+            // console.log("トークンリフレッシュ成功");
 
             // 新しいトークンでリクエストを再試行
             originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
@@ -197,7 +197,7 @@ export default function DeleteArticlePage() {
     setError("");
 
     try {
-      console.log("記事データ取得開始");
+      // console.log("記事データ取得開始");
 
       // 認証トークンの状態を確認
       const currentToken = localStorage.getItem("authToken");
@@ -213,10 +213,10 @@ export default function DeleteArticlePage() {
         }
       });
 
-      console.log("記事データ取得成功:", response.status);
+      // console.log("記事データ取得成功:", response.status);
 
       if (Array.isArray(response.data)) {
-        console.log(`${response.data.length}件の記事を取得しました`);
+        // console.log(`${response.data.length}件の記事を取得しました`);
         // フィルタリング不要: バックエンドでnullを許容しない
         setArticles(response.data);
       } else {
@@ -261,7 +261,7 @@ export default function DeleteArticlePage() {
     }
 
     try {
-      console.log(`記事ID ${articleId} の削除を開始します`);
+      // console.log(`記事ID ${articleId} の削除を開始します`);
       
       // 認証トークンの状態を確認
       const currentToken = localStorage.getItem("authToken");
@@ -271,15 +271,15 @@ export default function DeleteArticlePage() {
       }
 
       // DELETEメソッド
-      const deleteUrl = `${API_URL}/articles?article_id=${articleId}`;
-      console.log("削除リクエスト先:", deleteUrl);
+      // const deleteUrl = `${API_URL}/articles?article_id=${articleId}`;
+      // console.log("削除リクエスト先:", deleteUrl);
 
-      const response = await authAxios.delete(deleteUrl, {
-        headers: {
-          'Authorization': `Bearer ${currentToken.trim()}`
-        }
-      });
-      console.log("削除成功:", response.status, response.data);
+      // const response = await authAxios.delete(deleteUrl, {
+      //   headers: {
+      //     'Authorization': `Bearer ${currentToken.trim()}`
+      //   }
+      // });
+      // console.log("削除成功:", response.status, response.data);
 
       updateArticlesList(articleId);
     } catch (error: unknown) {
@@ -337,9 +337,7 @@ export default function DeleteArticlePage() {
 
   if (loading) {
     return <div
-    className="
-      p-4
-    ">
+    className="p-4">
       記事を読み込み中...
     </div>;
   }
@@ -347,23 +345,18 @@ export default function DeleteArticlePage() {
   if (error) {
     return (
       <div
-      className="
-        p-4
-      ">
+      className="p-4"
+      >
         <p
-        className="
-          text-red-500
-        ">
+        className="text-red-500"
+        >
           {error}
         </p>
         <button
           onClick={handleRetry}
-          className="
-            mt-2 px-4
-            py-2 bg-blue-500
-            text-white rounded
-          ">
-            再試行
+          className="mt-2 px-4py-2 bg-blue-500text-white rounded"
+        >
+          再試行
         </button>
       </div>
     );
@@ -371,42 +364,36 @@ export default function DeleteArticlePage() {
 
   return (
     <div
-    className="
-      p-4
-    ">
+    className="p-4"
+    >
       <div
-      className="
-        flex justify-between
-        items-center mb-4
-      ">
+      className="flex justify-between items-center mb-4"
+      >
         <h1
-        className="
-          text-2xl font-bold
-        ">
+        className="text-2xl font-bold"
+        >
           記事の削除
         </h1>
       </div>
       {articles.length === 0 ? (
         <div
-        className="
-          text-center py-8
-        ">
+        className="text-center py-8"
+        >
           <p>
             記事が見つかりません。
           </p>
           <button
             onClick={() => router.push('/user')}
-            className="
-              mt-4 px-4
-              py-2 bg-gray-200
-              text-gray-800 rounded
-              hover:bg-gray-300
-            ">
+            className="mt-4 px-4 py-2 bg-gray-200
+            text-gray-800 rounded hover:bg-gray-300"
+          >
               会員専用ページに戻る
           </button>
         </div>
       ) : (
-        <ul className="space-y-4">
+        <ul
+          className="space-y-4"
+        >
           {articles.map((article) => {
             const articleId = article.article_id ?? article.id;
             if (!articleId) {
@@ -414,21 +401,33 @@ export default function DeleteArticlePage() {
               return null;
             }
             return (
-              <li key={articleId} className="border p-4 rounded">
-                <div className="flex justify-between items-center">
+              <li
+                key={articleId}
+                className="border p-4 rounded"
+              >
+                <div
+                  className="flex justify-between items-center"
+                >
                   <div>
-                    <h2 className="text-xl font-semibold">{article.title || "無題"}</h2>
-                    <p className="text-gray-600">
+                    <h2
+                      className="text-xl font-semibold"
+                    >
+                      {article.title || "無題"}
+                    </h2>
+                    <p
+                      className="text-gray-600"
+                    >
                       {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
                     </p>
-                    <small className="text-gray-500">
+                    <small
+                      className="text-gray-500"
+                    >
                       記事ID: {articleId} | 投稿者ID: {article.user_id}
                     </small>
                   </div>
                   <div
-                    className="
-                      ml-3 mt-3
-                    ">
+                    className="ml-3 mt-3"
+                  >
                     {/* ゴミ箱アイコンボタン */}
                     <IconButton
                       aria-label="delete"
@@ -457,21 +456,18 @@ export default function DeleteArticlePage() {
         </ul>
       )}
       <div
-        className="
-          flex justify-center
-          text-center items-center
-          min-h-screen
-        ">
+        className="flex justify-center text-center items-center min-h-screen"
+      >
         <Button
           variant="outlined"
           color="primary"
           onClick={() => router.push('/user')}
           sx={{
-            width: '170px', // ボタンの幅を統一
-            height: '40px', // ボタンの高さを統一
-            fontSize: '0.85rem', // フォントサイズを統一
-            padding: '6px 12px', // 内側の余白を統一
-            borderWidth: '2px', // ボーダーの太さを統一
+            width: '170px',
+            height: '40px',
+            fontSize: '0.85rem',
+            padding: '6px 12px',
+            borderWidth: '2px',
           }}
         >
           会員専用ページに戻る
@@ -489,13 +485,15 @@ export default function DeleteArticlePage() {
           {"記事の削除確認"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText
+            id="alert-dialog-description"
+          >
             この記事を本当に削除してもよろしいですか？
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button 
-            onClick={handleClose} 
+          <Button
+            onClick={handleClose}
             color="primary"
             sx={{
               '&:hover': {
@@ -507,9 +505,9 @@ export default function DeleteArticlePage() {
           >
             キャンセル
           </Button>
-          <Button 
-            onClick={handleConfirmDelete} 
-            color="error" 
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
             variant="contained"
             autoFocus
             sx={{

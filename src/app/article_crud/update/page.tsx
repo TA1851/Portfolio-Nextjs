@@ -7,7 +7,8 @@ import { styled } from '@mui/material/styles';
 // Material UIコンポーネント
 import {
   TextField, Button, Box, Typography, Paper, CircularProgress,
-  MenuItem, Popper, Grow, MenuList, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  MenuItem, Popper, Grow, MenuList, ClickAwayListener, Dialog,
+  DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
 
 // Material UIアイコン
@@ -125,12 +126,13 @@ const UpdateArticlePage: React.FC = () => {
   };
 
   return (
-    <div className="
-      container mx-auto
-      px-4 py-8
-      bg-white
-    ">
-      <Box display="flex" justifyContent="space-between" alignItems="center" className="mb-6">
+    <div
+      className="container mx-auto px-4 py-8 bg-white"
+    >
+      <Box
+        display="flex" justifyContent="space-between" alignItems="center"
+        className="mb-6"
+      >
         <Typography
           variant="h4" component="h1"
           className="text-center"
@@ -154,15 +156,21 @@ const UpdateArticlePage: React.FC = () => {
       </Box>
 
       {loading ? (
-        <Box className="flex justify-center p-4">
+        <Box
+          className="flex justify-center p-4"
+        >
           <CircularProgress />
         </Box>
       ) : error ? (
-        <Box className="p-2 bg-red-100 text-red-800 rounded">
+        <Box
+          className="p-2 bg-red-100 text-red-800 rounded"
+        >
           <Typography>
             {error}
           </Typography>
-          <Box mt={3} display="flex" gap={2} justifyContent="center">
+          <Box
+            mt={3} display="flex" gap={2} justifyContent="center"
+          >
             <Button
               variant="contained"
               color="primary"
@@ -184,15 +192,16 @@ const UpdateArticlePage: React.FC = () => {
           <>
             {articles.length === 0 ? (
               <Box
-                className="
-                  p-4 text-center
-                ">
+                className="p-4 text-center"
+              >
                 <Typography
                   variant="h6" gutterBottom
                 >
                   編集可能な記事がありません
                 </Typography>
-                <Box mt={3} display="flex" gap={2} justifyContent="center">
+                <Box
+                  mt={3} display="flex" gap={2} justifyContent="center"
+                >
                   <Button
                     variant="contained"
                     color="primary"
@@ -213,41 +222,37 @@ const UpdateArticlePage: React.FC = () => {
             ) : (
               <>
                 <StyledPaper
-                className="
-                  mb-6
-                  ">
+                className="mb-6"
+                >
                   <Box
-                  className="
-                    p-2
-                  ">
+                  className="p-2"
+                  >
                     <div>
                       {/* ButtonGroupの代わりに単一のButtonコンポーネントを使用 */}
                       <Button
                         variant="contained"
-                        ref={anchorRef} 
+                        ref={anchorRef}
                         aria-label="select article"
                         aria-controls={open ? 'split-button-menu' : undefined}
                         aria-expanded={open ? 'true' : undefined}
                         aria-haspopup="menu"
                         onClick={handleToggle}
-                        sx={{ 
-                          backgroundColor: '#1976d2', 
+                        sx={{
+                          backgroundColor: '#1976d2',
                           color: 'white',
-                          width: { xs: '100%', sm: '100%', md: 'auto' }, // モバイルで幅いっぱいに
-                          padding: { xs: '10px', sm: '8px 16px' }, // パディングも調整
+                          width: { xs: '100%', sm: '100%', md: 'auto' }, // レスポンシブ
+                          padding: { xs: '10px', sm: '8px 16px' },
                           textAlign: 'left',
-                          fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' }, // 画面サイズに応じてフォントサイズ調整
-                          whiteSpace: 'normal', // テキストを折り返し
+                          fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
+                          whiteSpace: 'normal',
                           overflowWrap: 'break-word',
                           wordBreak: 'break-word',
-                          height: 'auto', // 高さを自動調整
+                          height: 'auto',
                           minHeight: '40px',
                           display: 'flex',
-                          justifyContent: 'space-between', // テキストとアイコンを両端に配置
+                          justifyContent: 'space-between',
                           alignItems: 'center',
-                          '&:hover': {
-                            backgroundColor: '#1565c0', // ホバー時の色
-                          }
+                          '&:hover': {backgroundColor: '#1565c0'}
                         }}
                         endIcon={<ArrowDropDownIcon />} // 右端にアイコンを配置
                       >
@@ -256,21 +261,21 @@ const UpdateArticlePage: React.FC = () => {
                       <Popper
                         sx={{
                           zIndex: 1,
-                          width: { 
-                            xs: 'calc(100% - 32px)', // モバイルでは画面幅いっぱい(パディング分を引く)
-                            sm: 'calc(100% - 64px)', 
+                          width: {
+                            xs: 'calc(100% - 32px)',
+                            sm: 'calc(100% - 64px)',
                             md: '500px',
                             lg: '500px'
                           },
-                          maxHeight: '60vh', // 高さ制限を追加
-                          overflowY: 'auto'  // スクロール可能に
+                          maxHeight: '60vh',
+                          overflowY: 'auto'
                         }}
                         open={open}
                         anchorEl={anchorRef.current}
                         role={undefined}
                         transition
                         disablePortal
-                        placement="bottom-start" // 下部に表示
+                        placement="bottom-start"
                       >
                         {({ TransitionProps, placement }) => (
                           <Grow
@@ -278,14 +283,14 @@ const UpdateArticlePage: React.FC = () => {
                             style={{
                               transformOrigin:
                                 placement === 'bottom' ? 'center top' : 'center bottom',
-                              maxHeight: '50vh', // 高さ制限を追加
-                              overflowY: 'auto'  // スクロール可能に
+                              maxHeight: '50vh',
+                              overflowY: 'auto'
                             }}
                           >
                             <Paper sx={{ maxHeight: '50vh', overflowY: 'auto' }}>
                               <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList 
-                                  id="split-button-menu" 
+                                <MenuList
+                                  id="split-button-menu"
                                   autoFocusItem
                                 >
                                   {articles.map((article) => (
@@ -294,7 +299,7 @@ const UpdateArticlePage: React.FC = () => {
                                       selected={article.article_id === selectedArticleId}
                                       onClick={() => handleMenuItemClick(article.article_id)}
                                       sx={{
-                                        whiteSpace: 'normal', // テキストを折り返し
+                                        whiteSpace: 'normal',
                                         wordBreak: 'break-word',
                                         padding: '8px 16px',
                                         minHeight: '40px'
@@ -332,7 +337,9 @@ const PostForm: React.FC<PostFormProps> = (
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
-  const [openDialog, setOpenDialog] = useState<{ action: 'draft' | 'publish' | null }>({ action: null });
+  const [openDialog, setOpenDialog] = useState<{
+    action: 'draft' | 'publish' | null }>({ action: null
+    });
   const router = useRouter();
   // 初期データが変更されたらフォームデータを更新
   useEffect(() => {
@@ -434,8 +441,8 @@ const PostForm: React.FC<PostFormProps> = (
         console.error('API エラーレスポンス:', errorText);
         throw new Error(`記事の更新に失敗しました (${response.status})`);
       }
-      const result = await response.json();
-      console.log('API 成功レスポンス:', result);
+      // const result = await response.json();
+      // console.log('API 成功レスポンス:', result);
       // 成功したら一覧ページに戻る
       router.push('/user');
     } catch (error) {
@@ -508,9 +515,10 @@ const PostForm: React.FC<PostFormProps> = (
         <Box
           mt={2}
           display="flex"
-          justifyContent={{ xs: 'center', sm: 'space-between', lg: 'flex-end' }} // 1400px以上で右寄せ
+          // 1400px以上で右寄せ
+          justifyContent={{ xs: 'center', sm: 'space-between', lg: 'flex-end' }}
           flexDirection={{ xs: 'column', sm: 'row' }} // モバイルでは縦並び
-          gap={{ xs: 2, sm: 2, md:2, lg:2 }} // モバイルではボタン間にスペースを追加
+          gap={{ xs: 2, sm: 2, md:2, lg:2 }}
         >
           <Button
             variant="contained"
@@ -519,9 +527,9 @@ const PostForm: React.FC<PostFormProps> = (
             onClick={() => handleOpenDialog('draft')}
             disabled={saving}
             sx={{
-              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
-              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
-              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+              width: { xs: '100%', sm: 'auto' },
+              height: { xs: '48px', sm: 'auto' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             下書き保存
@@ -533,9 +541,9 @@ const PostForm: React.FC<PostFormProps> = (
             onClick={() => handleOpenDialog('publish')}
             disabled={saving}
             sx={{
-              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
-              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
-              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+              width: { xs: '100%', sm: 'auto' },
+              height: { xs: '48px', sm: 'auto' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             公開
@@ -549,15 +557,18 @@ const PostForm: React.FC<PostFormProps> = (
             sx={{
               color: 'red',
               borderColor: 'red',
-              width: { xs: '100%', sm: 'auto' }, // モバイルでは幅いっぱい
-              height: { xs: '48px', sm: 'auto' }, // モバイルでは高さを固定
-              fontSize: { xs: '0.875rem', sm: '1rem' }, // フォントサイズ調整
+              width: { xs: '100%', sm: 'auto' },
+              height: { xs: '48px', sm: 'auto' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             キャンセル
           </Button>
         </Box>
-        <Box mt={3} textAlign="center" className="border-t pt-4">
+        <Box
+          mt={3} textAlign="center"
+          className="border-t pt-4"
+        >
           <Button
             variant="outlined"
             color="primary"

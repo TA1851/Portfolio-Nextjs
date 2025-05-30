@@ -60,17 +60,17 @@ const DemoBody: FC = () => {
 
         // 初期データロード関数内で記事データを適切に処理
         const data = await response.json();
-        console.log('取得した記事データ:', data);
+        // console.log('取得した記事データ:', data);
 
         // データ取得後のデバッグを強化 (article_idに修正)
         if (Array.isArray(data)) {
-          console.log('記事データの構造：', {
-            totalCount: data.length,
-            firstItem: data[0],
-            ids: data.map(item => item.article_id),
-            hasNullIds: data.some(item =>
-              item.article_id === null || item.article_id === undefined)
-          });
+          // console.log('記事データの構造：', {
+          //   totalCount: data.length,
+          //   firstItem: data[0],
+          //   ids: data.map(item => item.article_id),
+          //   hasNullIds: data.some(item =>
+          //     item.article_id === null || item.article_id === undefined)
+          // });
           // IDがnullや未定義の記事を特定 (article_idに修正)
           data.forEach((article, index) => {
             if (!article.article_id) {
@@ -85,10 +85,10 @@ const DemoBody: FC = () => {
               .map(article => {
                 // IDの有無とタイプを詳細にチェック
                 const hasId = 'article_id' in article && article.article_id !== null;
-                console.log(
-                  `記事「${article.title}」:
-                  ID ${hasId ? article.article_id : 'なし'},
-                  タイプ ${typeof article.article_id}`);
+                // console.log(
+                  // `記事「${article.title}」:
+                  // ID ${hasId ? article.article_id : 'なし'},
+                  // タイプ ${typeof article.article_id}`);
                 return {
                   ...article,
                   // 明示的に存在チェック - 0や空文字も有効なIDとして処理
@@ -140,9 +140,9 @@ const DemoBody: FC = () => {
       return;
     }
     try {
-      console.log(`記事ID: ${articleId} の詳細ページへ遷移します`);
+      // console.log(`記事ID: ${articleId} の詳細ページへ遷移します`);
       const articlePath = `/articles/${articleId}`;
-      console.log(`遷移先: ${articlePath}`);
+      // console.log(`遷移先: ${articlePath}`);
       // router.pushの代わりにwindow.locationを使用
       window.location.href = articlePath;
     } catch (error) {
@@ -152,81 +152,75 @@ const DemoBody: FC = () => {
 
   // レンダリング部分の追加
   return (
-    <div className="
-      container mx-auto
-      px-4 py-8
-    ">
-      <h1 className="
-      text-2xl
-      font-bold mb-6
-    ">
-      記事一覧
-    </h1>
+    <div
+      className="container mx-auto px-4 py-8"
+    >
+      <h1
+        className="text-2xl font-bold mb-6"
+      >
+        記事一覧
+      </h1>
       {loading ? (
-        <div className="
-          text-center
-          py-10
-        ">
-          <p className="
-            text-gray-600
-          ">
+        <div
+          className="text-center py-10"
+        >
+          <p
+            className="text-gray-600"
+          >
             記事を読み込み中...
           </p>
         </div>
       ) : error ? (
-        <div className="
-          text-center py-10
-        ">
-          <p className="
-            text-red-500
-          ">
+        <div
+          className="text-center py-10"
+        >
+          <p
+            className="text-red-500"
+          >
             {error}
           </p>
         </div>
       ) : (
         <>
-          <div className="
-          grid grid-cols-1
-          md:grid-cols-2
-          lg:grid-cols-3
-          gap-6 mb-8">
+          <div
+            className="
+              grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          >
             {getCurrentPageArticles().map(
               (article, index) => (
               <div
                 key={article.article_id || index}
                 className="
-                  bg-white rounded-lg
-                  shadow-md overflow-hidden
-                  hover:shadow-lg transition-shadow
-                  duration-300 cursor-pointer
+                  bg-white rounded-lg shadow-md overflow-hidden
+                  hover:shadow-lg transition-shadow duration-300 cursor-pointer
                   "
                 onClick={(
                 ) => article.article_id && navigateToArticle(
                   article.article_id
                 )}
               >
-                <div className="p-6">
-                  <h2 className="
-                    text-xl font-semibold
-                    mb-2 text-gray-800
-                    hover:text-blue-600
-                  ">
+                <div
+                  className="p-6"
+                >
+                  <h2
+                    className="
+                    text-xl font-semibold mb-2 text-gray-800 hover:text-blue-600"
+                  >
                     {article.title}
                   </h2>
-                  <div 
+                  <div
                     className="text-gray-600 text-sm line-clamp-3"
-                    dangerouslySetInnerHTML={{ 
+                    dangerouslySetInnerHTML={{
                       __html: marked(article.body?.substring(0, 150) || '') + '...'
                     }}
                   />
-                  <div className="
-                    mt-4 flex
-                    justify-between
-                    items-center
-                  ">
-                    <span className="
-                      text-sm text-gray-500
-                    ">
+                  <div
+                    className="
+                      mt-4 flex justify-between items-center"
+                  >
+                    <span
+                      className="text-sm text-gray-500"
+                    >
                       投稿者ID: {article.user_id}
                     </span>
                     <button
@@ -252,11 +246,12 @@ const DemoBody: FC = () => {
             ))}
           </div>
           {/* ページネーションコントロール */}
-          <div className="
-            flex
-            justify-center mt-8
-          ">
-            <ul className="flex">
+          <div
+            className="flex justify-center mt-8"
+          >
+            <ul
+              className="flex"
+            >
               {Array.from(
                 { length: Math.ceil(
                   articles.length / pagination.articlesPerPage
