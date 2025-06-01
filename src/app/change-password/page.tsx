@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from "axios";
 
@@ -22,7 +22,8 @@ interface ApiSuccessResponse {
   token_type?: string;
 }
 
-const ChangePasswordPage: FC = () => {
+// useSearchParamsを使用するコンポーネントを分離
+const ChangePasswordForm: FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState<PasswordChangeFormData>({
@@ -410,6 +411,30 @@ const ChangePasswordPage: FC = () => {
         )}
       </div>
     </div>
+  );
+};
+
+// ローディングコンポーネント
+const LoadingFallback: FC = () => (
+  <div className="bg-white min-h-screen py-6 sm:py-12 lg:py-24">
+    <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
+      <div className="text-center">
+        <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
+          <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></div>
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">読み込み中...</h3>
+        <p className="text-gray-600">パスワード変更ページを準備中です。</p>
+      </div>
+    </div>
+  </div>
+);
+
+// メインページコンポーネント
+const ChangePasswordPage: FC = () => {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ChangePasswordForm />
+    </Suspense>
   );
 };
 
