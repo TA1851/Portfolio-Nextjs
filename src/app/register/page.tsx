@@ -35,7 +35,7 @@ const LoginComp: FC = () => {
   // const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
   const apiUrl = process.env.NODE_ENV === 'development' 
     ? '/api/proxy' // Next.jsプロキシ経由でAPIを呼び出し
-    : process.env.NEXT_PUBLIC_API_URL_V1 || 'http://localhost:8080/api/v1';
+    : process.env.NEXT_PUBLIC_API_URL_V1;
 
   // 開発環境でAPIの動作確認
   useEffect(() => {

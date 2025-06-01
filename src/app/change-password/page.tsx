@@ -42,7 +42,7 @@ const ChangePasswordPage: FC = () => {
 
   const apiUrl = process.env.NODE_ENV === 'development' 
     ? '/api/proxy'
-    : process.env.NEXT_PUBLIC_API_URL_V1 || 'http://localhost:8080/api/v1';
+    : process.env.NEXT_PUBLIC_API_URL_V1;
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {

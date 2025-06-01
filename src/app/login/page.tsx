@@ -38,8 +38,7 @@ const LoginComp: FC = () => {
 
         // console.log('送信データ:', {username: emailValue, password: passwordValue});
         // 環境変数からAPIエンドポイントを取得する
-        // const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
-        const apiUrl = 'http://localhost:8080/api/v1';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         console.log('API URL:', apiUrl);
 
         const response = await axios.post(
