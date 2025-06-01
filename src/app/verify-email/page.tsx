@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from "next/link";
 import axios from "axios";
@@ -12,7 +12,7 @@ interface VerificationResult {
   error?: string;
 }
 
-const VerifyEmailPage: FC = () => {
+const VerifyEmailForm: FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -295,6 +295,30 @@ const VerifyEmailPage: FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// ローディングコンポーネント
+const LoadingFallback: FC = () => (
+  <div className="bg-white min-h-screen py-6 sm:py-12 lg:py-24">
+    <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
+      <div className="text-center">
+        <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
+          <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></div>
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">メール認証確認中...</h3>
+        <p className="text-gray-600">メール認証を処理しています。しばらくお待ちください。</p>
+      </div>
+    </div>
+  </div>
+);
+
+// メインページコンポーネント
+const VerifyEmailPage: FC = () => {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <VerifyEmailForm />
+    </Suspense>
   );
 };
 
