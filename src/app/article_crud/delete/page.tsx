@@ -12,6 +12,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 // 記事の型定義
 interface Article {
@@ -33,6 +35,8 @@ export default function DeleteArticlePage() {
   const [error, setError] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [currentArticleId, setCurrentArticleId] = useState<number | null>(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const router = useRouter();
 
   // authAxiosインスタンスを作成
@@ -175,29 +179,6 @@ export default function DeleteArticlePage() {
     initPage();
   }, [checkAuthentication, fetchArticles]);
 
-  // サーバーヘルスチェック
-  useEffect(() => {
-    const checkApiHealth = async () => {
-      try {
-        const response = await authAxios.get('/api/health', { 
-          timeout: 5000,
-          validateStatus: () => true 
-        });
-        
-        if (response.status === 200) {
-          console.log("API健全性確認: 正常", response.status);
-        } else {
-          console.info("API健全性確認: 応答あり", response.status);
-        }
-      } catch {
-        console.info("API健全性確認: 接続できません - アプリは引き続き動作します");
-      }
-    };
-    
-    const timer = setTimeout(checkApiHealth, 1000);
-    return () => clearTimeout(timer);
-  }, [authAxios]);
-
   // 記事リスト更新用のヘルパー関数
   const updateArticlesList = useCallback((deletedId: number) => {
     setArticles(prevArticles => prevArticles.filter(article => {
@@ -261,7 +242,8 @@ export default function DeleteArticlePage() {
       console.log("削除成功:", response.status, response.data);
 
       updateArticlesList(articleId);
-      alert("記事が正常に削除されました");
+      setSuccessMessage("記事が正常に削除されました");
+      setOpenSnackbar(true);
       
     } catch (error: unknown) {
       console.error("記事の削除中にエラーが発生しました:", error);
@@ -313,6 +295,10 @@ export default function DeleteArticlePage() {
 
   const handleClose = useCallback(() => {
     setOpenDialog(false);
+  }, []);
+
+  const handleCloseSnackbar = useCallback(() => {
+    setOpenSnackbar(false);
   }, []);
 
   const handleConfirmDelete = useCallback(async () => {
@@ -461,6 +447,21 @@ export default function DeleteArticlePage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
