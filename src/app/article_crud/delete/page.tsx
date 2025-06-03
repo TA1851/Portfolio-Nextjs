@@ -161,6 +161,20 @@ export default function DeleteArticlePage() {
     initPage();
   }, []); // 空の依存配列
 
+  // サーバーヘルスチェック
+  useEffect(() => {
+    const checkApiHealth = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/health`, { timeout: 5000 });
+        console.log("API健全性確認:", response.status);
+      } catch (err) {
+        console.warn("API健全性確認失敗:", err);
+      }
+    };
+    
+    checkApiHealth();
+  }, []);
+
   // トークンリフレッシュ関数
   const refreshToken = async () => {
     try {
@@ -266,6 +280,11 @@ export default function DeleteArticlePage() {
     setDeletingArticleIds([...deletingArticleIds, articleId]);
 
     try {
+      // ネットワーク接続確認
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        throw new Error("インターネット接続がありません。ネットワーク接続を確認してください。");
+      }
+
       console.log(`記事ID ${articleId} の削除を開始します`);
       
       // 認証トークンの状態を確認
@@ -275,43 +294,64 @@ export default function DeleteArticlePage() {
         throw new Error("認証情報がありません。再度ログインしてください。");
       }
 
-      // DELETEメソッドを実行（コメントアウトを解除）
+      // DELETEメソッドを実行
       const deleteUrl = `${article_URL}?article_id=${articleId}`;
       console.log("削除リクエスト先:", deleteUrl);
 
-      const response = await authAxios.delete(deleteUrl, {
+      // 完全なリクエスト設定を使用
+      const response = await axios({
+        method: 'DELETE',
+        url: deleteUrl,
         headers: {
-          'Authorization': `Bearer ${currentToken.trim()}`
-        }
-      });
+          'Authorization': `Bearer ${currentToken.trim()}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        timeout: 15000, // 15秒のタイムアウト
+    });
+
       console.log("削除成功:", response.status, response.data);
 
       // 成功した場合のみUIを更新
       updateArticlesList(articleId);
       
-      // 成功メッセージを表示（オプション）
+      // 成功メッセージを表示
       alert("記事が正常に削除されました");
       
     } catch (error: unknown) {
-      // エラーハンドリングは既存のコードを使用
-      console.error("記事の削除中にエラーが発生しました:", error);
+      // 詳細なエラー情報をログに出力
+      console.error("記事の削除中にエラーが発生しました:", {
+        error,
+        type: typeof error,
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : '利用不可'
+      });
 
-      if (axios.isAxiosError(error) && error.response) {
-        console.error("エラーステータス:", error.response.status);
-        console.error("エラーデータ:", error.response.data);
-
-        // 特定のエラーケースに対する処理
-        if (error.response.status === 404) {
+      // より詳細なエラーハンドリング
+      if (error === null || error === undefined) {
+        setError("不明なエラー: エラーオブジェクトがnullまたはundefinedです");
+      } else if (axios.isAxiosError(error)) {
+        if (error.code === 'ECONNABORTED') {
+          setError("リクエストがタイムアウトしました。ネットワーク接続を確認してください。");
+        } else if (!error.response) {
+          setError("サーバーに接続できません。ネットワーク接続を確認してください。");
+        } else if (error.response.status === 404) {
           setError("削除対象の記事が見つかりません。すでに削除された可能性があります。");
         } else if (error.response.status === 403) {
           setError("この記事を削除する権限がありません。");
+        } else if (error.response.status === 401) {
+          setError("認証が無効です。再度ログインしてください。");
+          setTimeout(() => router.push("/login"), 2000);
         } else {
           setError(
-            `記事の削除に失敗しました (${error.response.status}):
-            ${error.response.data?.detail || ''}`);
+            `記事の削除に失敗しました (${error.response.status}): 
+            ${error.response.data?.detail || JSON.stringify(error.response.data) || '不明なエラー'}`
+          );
         }
+      } else if (error instanceof Error) {
+        setError(`エラー: ${error.message || "不明なエラー"}`);
       } else {
-        setError("記事の削除に失敗しました。ネットワーク接続を確認してください。");
+        setError(`不明なエラー: ${String(error)}`);
       }
     } finally {
       // 処理完了後にローディング状態を解除
