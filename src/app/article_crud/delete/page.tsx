@@ -36,6 +36,7 @@ export default function DeleteArticlePage() {
   const [token, setToken] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentArticleId, setCurrentArticleId] = useState<number | null>(null);
+  const [deletingArticleIds, setDeletingArticleIds] = useState<number[]>([]);
   const router = useRouter();
   const authAxios = axios.create({
     baseURL: API_URL,
@@ -260,8 +261,12 @@ export default function DeleteArticlePage() {
       return;
     }
 
+    // 削除中のローディング状態を追加
+    setLoading(true);
+    setDeletingArticleIds([...deletingArticleIds, articleId]);
+
     try {
-      // console.log(`記事ID ${articleId} の削除を開始します`);
+      console.log(`記事ID ${articleId} の削除を開始します`);
       
       // 認証トークンの状態を確認
       const currentToken = localStorage.getItem("authToken");
@@ -270,19 +275,25 @@ export default function DeleteArticlePage() {
         throw new Error("認証情報がありません。再度ログインしてください。");
       }
 
-      // DELETEメソッド
-      // const deleteUrl = `${API_URL}/articles?article_id=${articleId}`;
-      // console.log("削除リクエスト先:", deleteUrl);
+      // DELETEメソッドを実行（コメントアウトを解除）
+      const deleteUrl = `${article_URL}?article_id=${articleId}`;
+      console.log("削除リクエスト先:", deleteUrl);
 
-      // const response = await authAxios.delete(deleteUrl, {
-      //   headers: {
-      //     'Authorization': `Bearer ${currentToken.trim()}`
-      //   }
-      // });
-      // console.log("削除成功:", response.status, response.data);
+      const response = await authAxios.delete(deleteUrl, {
+        headers: {
+          'Authorization': `Bearer ${currentToken.trim()}`
+        }
+      });
+      console.log("削除成功:", response.status, response.data);
 
+      // 成功した場合のみUIを更新
       updateArticlesList(articleId);
+      
+      // 成功メッセージを表示（オプション）
+      alert("記事が正常に削除されました");
+      
     } catch (error: unknown) {
+      // エラーハンドリングは既存のコードを使用
       console.error("記事の削除中にエラーが発生しました:", error);
 
       if (axios.isAxiosError(error) && error.response) {
@@ -302,6 +313,10 @@ export default function DeleteArticlePage() {
       } else {
         setError("記事の削除に失敗しました。ネットワーク接続を確認してください。");
       }
+    } finally {
+      // 処理完了後にローディング状態を解除
+      setLoading(false);
+      setDeletingArticleIds(deletingArticleIds.filter(id => id !== articleId));
     }
   };
 
@@ -509,17 +524,9 @@ export default function DeleteArticlePage() {
             onClick={handleConfirmDelete}
             color="error"
             variant="contained"
-            autoFocus
-            sx={{
-              '&:hover': {
-                backgroundColor: 'error.dark',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 4px 8px rgba(211, 47, 47, 0.3)',
-                transition: 'all 0.2s',
-              },
-            }}
+            disabled={loading} // 削除中は無効化
           >
-            削除
+            {loading ? "削除中..." : "削除"}
           </Button>
         </DialogActions>
       </Dialog>
