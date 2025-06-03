@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import * as React from 'react';
 import Button from '@mui/material/Button';
-// import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
@@ -14,225 +13,90 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-
 // 記事の型定義
 interface Article {
-  article_id: number;  // バックエンドのAPIに合わせて修正
-  id?: number;         // 互換性のために残す
+  article_id: number;
+  id?: number;
   title: string;
   body: string;
   user_id: number;
   created_at?: string;
   updated_at?: string;
 }
+
 // 環境変数からAPI_URLを取得
 const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
-const article_URL = `${API_URL}/articles`;
 
 export default function DeleteArticlePage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [token, setToken] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentArticleId, setCurrentArticleId] = useState<number | null>(null);
-  const [deletingArticleIds, setDeletingArticleIds] = useState<number[]>([]);
   const router = useRouter();
-  const authAxios = axios.create({
+
+  // authAxiosインスタンスを作成
+  const authAxios = React.useMemo(() => axios.create({
     baseURL: API_URL,
-    // タイムアウト設定
     timeout: 10000,
-    // CORS関連の設定
     withCredentials: false,
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     }
-  });
+  }), []);
 
   // 認証状態を確認する関数
-  const checkAuthentication = async () => {
+  const checkAuthentication = useCallback(async (): Promise<boolean> => {
     const storedToken = localStorage.getItem("authToken");
 
-    // トークン存在チェック
-    if (!storedToken) {
+    if (!storedToken || storedToken === 'undefined' || storedToken === 'null') {
       console.warn("認証トークンがありません。ログイン画面にリダイレクトします。");
-      router.push("/login");
-      return false;
-    }
-
-    // トークンの有効性を簡易チェック
-    if (storedToken === 'undefined' || storedToken === 'null') {
-      console.warn("不正なトークン形式です。ログイン画面にリダイレクトします。");
       localStorage.removeItem("authToken");
       router.push("/login");
       return false;
     }
 
-    setToken(storedToken);
     return true;
-  };
-
-  // リクエストインターセプターの設定
-  const setupInterceptors = (storedToken: string | null) => {
-    // リクエストインターセプター
-    const requestInterceptor = authAxios.interceptors.request.use(
-      (config) => {
-        // リクエスト直前に最新のトークンを使用
-        const currentToken = localStorage.getItem(
-          "authToken") || storedToken;
-
-        if (currentToken) {
-          // console.log("リクエスト送信: トークンあり");
-          config.headers["Authorization"] = `Bearer ${currentToken.trim()}`;
-        } else {
-          console.warn("リクエスト送信: トークンなし");
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    // レスポンスインターセプター
-    const responseInterceptor = authAxios.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        // オリジナルリクエストの参照を保存
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          // console.log("401エラー検出: トークンリフレッシュを試行");
-          originalRequest._retry = true;
-
-          try {
-            const newToken = await refreshToken();
-            // console.log("トークンリフレッシュ成功");
-
-            // 新しいトークンでリクエストを再試行
-            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-            return authAxios(originalRequest);
-          } catch (refreshError) {
-            console.error("リフレッシュ失敗:", refreshError);
-
-            // ログイン画面へリダイレクト
-            router.push("/login");
-            return Promise.reject(refreshError);
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    return { requestInterceptor, responseInterceptor };
-  };
-
-  // クライアントサイドでのみ実行される初期化
-  useEffect(() => {
-    const initPage = async () => {
-      const isAuthenticated = await checkAuthentication();
-      if (!isAuthenticated) {
-        return;
-      }
-
-      const storedToken = localStorage.getItem("authToken");
-      setToken(storedToken);
-
-      // インターセプターを設定
-      const interceptors = setupInterceptors(storedToken);
-
-      try {
-        // 記事データ取得
-        await fetchArticles();
-      } catch (error) {
-        console.error("初期化中にエラーが発生しました:", error);
-      }
-
-      // クリーンアップ関数
-      return () => {
-        authAxios.interceptors.request.eject(
-          interceptors.requestInterceptor
-        );
-        authAxios.interceptors.response.eject(
-          interceptors.responseInterceptor
-        );
-      };
-    };
-
-    initPage();
-  }, []); // 空の依存配列
-
-  // サーバーヘルスチェック
-  useEffect(() => {
-    const checkApiHealth = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/health`, { timeout: 5000 });
-        console.log("API健全性確認:", response.status);
-      } catch (err) {
-        console.warn("API健全性確認失敗:", err);
-      }
-    };
-    
-    checkApiHealth();
-  }, []);
+  }, [router]);
 
   // トークンリフレッシュ関数
-  const refreshToken = async () => {
-    try {
-      if (!token) {
-        throw new Error("認証トークンが見つかりません");
-      }
-
-      // 環境変数からAPIエンドポイントを取得
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
-      const response = await axios.post(
-        `${apiUrl}/refresh`,
-        {},
-        {
-          headers: {
-            'Authorization': `Bearer ${token.trim()}`
-          }
-        }
-      );
-
-      // 応答からアクセストークンを取得
-      const newToken = response.data.access_token;
-      localStorage.setItem("authToken", newToken);
-      setToken(newToken);
-      return newToken;
-    } catch (error) {
-      console.error("トークンのリフレッシュに失敗しました:", error);
-      router.push("/login");
-      throw error;
+  const refreshToken = useCallback(async (): Promise<string> => {
+    const currentToken = localStorage.getItem("authToken");
+    if (!currentToken) {
+      throw new Error("認証トークンが見つかりません");
     }
-  };
+
+    const response = await authAxios.post(
+      '/refresh',
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${currentToken.trim()}`
+        }
+      }
+    );
+
+    const newToken = response.data.access_token;
+    localStorage.setItem("authToken", newToken);
+    return newToken;
+  }, [authAxios]);
 
   // 記事の取得
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     setLoading(true);
     setError("");
 
     try {
-      // console.log("記事データ取得開始");
-
-      // 認証トークンの状態を確認
       const currentToken = localStorage.getItem("authToken");
       if (!currentToken) {
         console.error("認証トークンがありません");
         throw new Error("認証情報がありません。再度ログインしてください。");
       }
 
-      // 明示的にトークンをヘッダーに設定（インターセプターとは別に）
-      const response = await authAxios.get(article_URL, {
-        headers: {
-          'Authorization': `Bearer ${currentToken.trim()}`
-        }
-      });
-
-      // console.log("記事データ取得成功:", response.status);
+      const response = await authAxios.get('/articles');
 
       if (Array.isArray(response.data)) {
-        // console.log(`${response.data.length}件の記事を取得しました`);
-        // フィルタリング不要: バックエンドでnullを許容しない
         setArticles(response.data);
       } else {
         console.warn("APIレスポンスが配列ではありません:", response.data);
@@ -243,10 +107,8 @@ export default function DeleteArticlePage() {
     } catch (error: unknown) {
       console.error("記事の取得中にエラーが発生しました:", error);
 
-      // エラーメッセージを詳細化
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError("認証が無効です。再度ログインしてください。");
-        // 1秒後にログイン画面へリダイレクト
         setTimeout(() => router.push("/login"), 1000);
       } else {
         const errorMessage = axios.isAxiosError(error) ? error.message :
@@ -256,85 +118,155 @@ export default function DeleteArticlePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authAxios, router]);
+
+  // インターセプターの設定
+  useEffect(() => {
+    const requestInterceptor = authAxios.interceptors.request.use(
+      (config) => {
+        const currentToken = localStorage.getItem("authToken");
+        if (currentToken) {
+          config.headers["Authorization"] = `Bearer ${currentToken.trim()}`;
+        } else {
+          console.warn("リクエスト送信: トークンなし");
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    const responseInterceptor = authAxios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+
+          try {
+            const newToken = await refreshToken();
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            return authAxios(originalRequest);
+          } catch (refreshError) {
+            console.error("リフレッシュ失敗:", refreshError);
+            router.push("/login");
+            return Promise.reject(refreshError);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      authAxios.interceptors.request.eject(requestInterceptor);
+      authAxios.interceptors.response.eject(responseInterceptor);
+    };
+  }, [authAxios, refreshToken, router]);
+
+  // 初期化
+  useEffect(() => {
+    const initPage = async () => {
+      const isAuthenticated = await checkAuthentication();
+      if (isAuthenticated) {
+        await fetchArticles();
+      }
+    };
+
+    initPage();
+  }, [checkAuthentication, fetchArticles]);
+
+  // サーバーヘルスチェック
+  useEffect(() => {
+    const checkApiHealth = async () => {
+      try {
+        const response = await authAxios.get('/api/health', { 
+          timeout: 5000,
+          validateStatus: () => true 
+        });
+        
+        if (response.status === 200) {
+          console.log("API健全性確認: 正常", response.status);
+        } else {
+          console.info("API健全性確認: 応答あり", response.status);
+        }
+      } catch {
+        console.info("API健全性確認: 接続できません - アプリは引き続き動作します");
+      }
+    };
+    
+    const timer = setTimeout(checkApiHealth, 1000);
+    return () => clearTimeout(timer);
+  }, [authAxios]);
 
   // 記事リスト更新用のヘルパー関数
-  const updateArticlesList = (deletedId: number) => {
-    setArticles(articles.filter(article => {
+  const updateArticlesList = useCallback((deletedId: number) => {
+    setArticles(prevArticles => prevArticles.filter(article => {
       const currentId = article.article_id ?? article.id;
       return currentId !== deletedId;
     }));
+  }, []);
 
-    // alert("記事が正常に削除されました");
-  };
   // 記事の削除
-  const handleDelete = async (articleId: number) => {
+  const handleDelete = useCallback(async (articleId: number) => {
     if (!articleId) {
       console.error("削除対象の記事IDが不正です:", articleId);
       setError("削除対象の記事IDが不正です。");
       return;
     }
 
-    // 削除中のローディング状態を追加
     setLoading(true);
-    setDeletingArticleIds([...deletingArticleIds, articleId]);
+    
+    let retryCount = 0;
+    const maxRetries = 2;
 
-    try {
-      // ネットワーク接続確認
+    const attemptDelete = async (): Promise<AxiosResponse> => {
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
         throw new Error("インターネット接続がありません。ネットワーク接続を確認してください。");
       }
 
-      console.log(`記事ID ${articleId} の削除を開始します`);
+      console.log(`記事ID ${articleId} の削除を開始します (試行: ${retryCount + 1}/${maxRetries + 1})`);
       
-      // 認証トークンの状態を確認
       const currentToken = localStorage.getItem("authToken");
       if (!currentToken) {
-        console.error("認証トークンがありません");
         throw new Error("認証情報がありません。再度ログインしてください。");
       }
 
-      // DELETEメソッドを実行
-      const deleteUrl = `${article_URL}?article_id=${articleId}`;
-      console.log("削除リクエスト先:", deleteUrl);
+      try {
+        return await authAxios({
+          method: 'DELETE',
+          url: `/articles?article_id=${articleId}`,
+          timeout: 15000,
+        });
+      } catch (error: unknown) {
+        if ((axios.isAxiosError(error) && !error.response) || 
+            (error instanceof Error && error.message.includes('ECONNABORTED'))) {
+          if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`ネットワークエラー、${retryCount}回目のリトライを試みます...`);
+            const delay = retryCount * 1000;
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return attemptDelete();
+          }
+        }
+        throw error;
+      }
+    };
 
-      // 完全なリクエスト設定を使用
-      const response = await axios({
-        method: 'DELETE',
-        url: deleteUrl,
-        headers: {
-          'Authorization': `Bearer ${currentToken.trim()}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        timeout: 15000, // 15秒のタイムアウト
-    });
-
+    try {
+      const response = await attemptDelete();
       console.log("削除成功:", response.status, response.data);
 
-      // 成功した場合のみUIを更新
       updateArticlesList(articleId);
-      
-      // 成功メッセージを表示
       alert("記事が正常に削除されました");
       
     } catch (error: unknown) {
-      // 詳細なエラー情報をログに出力
-      console.error("記事の削除中にエラーが発生しました:", {
-        error,
-        type: typeof error,
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : '利用不可'
-      });
+      console.error("記事の削除中にエラーが発生しました:", error);
 
-      // より詳細なエラーハンドリング
-      if (error === null || error === undefined) {
-        setError("不明なエラー: エラーオブジェクトがnullまたはundefinedです");
-      } else if (axios.isAxiosError(error)) {
+      if (axios.isAxiosError(error)) {
         if (error.code === 'ECONNABORTED') {
-          setError("リクエストがタイムアウトしました。ネットワーク接続を確認してください。");
+          setError("リクエストがタイムアウトしました。後でもう一度お試しください。");
         } else if (!error.response) {
-          setError("サーバーに接続できません。ネットワーク接続を確認してください。");
+          setError("ネットワークエラー: サーバーに接続できません。インターネット接続を確認してください。");
         } else if (error.response.status === 404) {
           setError("削除対象の記事が見つかりません。すでに削除された可能性があります。");
         } else if (error.response.status === 403) {
@@ -354,15 +286,11 @@ export default function DeleteArticlePage() {
         setError(`不明なエラー: ${String(error)}`);
       }
     } finally {
-      // 処理完了後にローディング状態を解除
       setLoading(false);
-      setDeletingArticleIds(deletingArticleIds.filter(id => id !== articleId));
     }
-  };
+  }, [authAxios, router, updateArticlesList]);
 
-  // クライアント側でのリロードを行うボタン
-  const handleRetry = () => {
-    // 再試行前に認証チェック
+  const handleRetry = useCallback(() => {
     const currentToken = localStorage.getItem("authToken");
     if (!currentToken) {
       alert("認証情報がありません。ログイン画面に移動します。");
@@ -372,44 +300,35 @@ export default function DeleteArticlePage() {
 
     setError("");
     fetchArticles();
-  };
+  }, [router, fetchArticles]);
 
-  const handleClickOpen = (articleId: number) => {
+  const handleClickOpen = useCallback((articleId: number) => {
     setCurrentArticleId(articleId);
     setOpenDialog(true);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpenDialog(false);
-  };
+  }, []);
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     if (currentArticleId !== null) {
       await handleDelete(currentArticleId);
       setOpenDialog(false);
     }
-  };
+  }, [currentArticleId, handleDelete]);
 
   if (loading) {
-    return <div
-    className="p-4">
-      記事を読み込み中...
-    </div>;
+    return <div className="p-4">記事を読み込み中...</div>;
   }
 
   if (error) {
     return (
-      <div
-      className="p-4"
-      >
-        <p
-        className="text-red-500"
-        >
-          {error}
-        </p>
+      <div className="p-4">
+        <p className="text-red-500">{error}</p>
         <button
           onClick={handleRetry}
-          className="mt-2 px-4py-2 bg-blue-500text-white rounded"
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
         >
           再試行
         </button>
@@ -418,118 +337,88 @@ export default function DeleteArticlePage() {
   }
 
   return (
-    <div
-    className="p-4"
-    >
-      <div
-      className="flex justify-between items-center mb-4"
-      >
-        <h1
-        className="text-2xl font-bold"
-        >
-          記事の削除
-        </h1>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">記事の削除</h1>
       </div>
       {articles.length === 0 ? (
-        <div
-        className="text-center py-8"
-        >
-          <p>
-            記事が見つかりません。
-          </p>
+        <div className="text-center py-8">
+          <p>記事が見つかりません。</p>
           <button
             onClick={() => router.push('/user')}
-            className="mt-4 px-4 py-2 bg-gray-200
-            text-gray-800 rounded hover:bg-gray-300"
+            className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
-              会員専用ページに戻る
+            会員専用ページに戻る
           </button>
         </div>
       ) : (
-        <ul
-          className="space-y-4"
-        >
-          {articles.map((article) => {
-            const articleId = article.article_id ?? article.id;
-            if (!articleId) {
-              console.warn("IDのない記事:", article);
-              return null;
-            }
-            return (
-              <li
-                key={articleId}
-                className="border p-4 rounded"
-              >
-                <div
-                  className="flex justify-between items-center"
-                >
-                  <div>
-                    <h2
-                      className="text-xl font-semibold"
-                    >
-                      {article.title || "無題"}
-                    </h2>
-                    <p
-                      className="text-gray-600"
-                    >
-                      {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
-                    </p>
-                    <small
-                      className="text-gray-500"
-                    >
-                      記事ID: {articleId} | 投稿者ID: {article.user_id}
-                    </small>
+        <>
+          <ul className="space-y-4">
+            {articles.map((article) => {
+              const articleId = article.article_id ?? article.id;
+              if (!articleId) {
+                console.warn("IDのない記事:", article);
+                return null;
+              }
+              return (
+                <li key={articleId} className="border p-4 rounded">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-xl font-semibold">
+                        {article.title || "無題"}
+                      </h2>
+                      <p className="text-gray-600">
+                        {article.body ? article.body.substring(0, 100) + "..." : "本文なし"}
+                      </p>
+                      <small className="text-gray-500">
+                        記事ID: {articleId} | 投稿者ID: {article.user_id}
+                      </small>
+                    </div>
+                    <div className="ml-3">
+                      <IconButton
+                        aria-label="delete"
+                        color="primary"
+                        onClick={() => handleClickOpen(articleId)}
+                        sx={{
+                          width: { xs: '34px', sm: '40px' },
+                          height: { xs: '34px', sm: '40px' },
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          '&:hover': {
+                            backgroundColor: 'transparent',
+                            color: theme => theme.palette.error.main,
+                            transition: 'color 0.2s ease-in-out',
+                          }
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
                   </div>
-                  <div
-                    className="ml-3 mt-3"
-                  >
-                    {/* ゴミ箱アイコンボタン */}
-                    <IconButton
-                      aria-label="delete"
-                      color="primary"  // デフォルトカラー
-                      onClick={() => handleClickOpen(articleId)}
-                      sx={{
-                        width: { xs: '34px', sm: '40px' },
-                        height: { xs: '34px', sm: '40px' },
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        '&:hover': {
-                          backgroundColor: 'transparent',  // 背景色を透明に保つ
-                          color: theme => theme.palette.error.main,  // ホバー時に赤色に変更
-                          transition: 'color 0.2s ease-in-out', // 色の変化にトランジションを適用
-                        }
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="flex justify-center mt-8">
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => router.push('/user')}
+              sx={{
+                width: '170px',
+                height: '40px',
+                fontSize: '0.85rem',
+                padding: '6px 12px',
+                borderWidth: '2px',
+              }}
+            >
+              会員専用ページに戻る
+            </Button>
+          </div>
+        </>
       )}
-      <div
-        className="flex justify-center text-center items-center min-h-screen"
-      >
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => router.push('/user')}
-          sx={{
-            width: '170px',
-            height: '40px',
-            fontSize: '0.85rem',
-            padding: '6px 12px',
-            borderWidth: '2px',
-          }}
-        >
-          会員専用ページに戻る
-        </Button>
-      </div>
 
-      {/* 確認ダイアログ */}
       <Dialog
         open={openDialog}
         onClose={handleClose}
@@ -540,9 +429,7 @@ export default function DeleteArticlePage() {
           {"記事の削除確認"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-          >
+          <DialogContentText id="alert-dialog-description">
             この記事を本当に削除してもよろしいですか？
           </DialogContentText>
         </DialogContent>
@@ -564,7 +451,7 @@ export default function DeleteArticlePage() {
             onClick={handleConfirmDelete}
             color="error"
             variant="contained"
-            disabled={loading} // 削除中は無効化
+            disabled={loading}
           >
             {loading ? "削除中..." : "削除"}
           </Button>
