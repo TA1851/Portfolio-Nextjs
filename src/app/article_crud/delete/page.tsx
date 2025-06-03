@@ -37,6 +37,8 @@ export default function DeleteArticlePage() {
   const [currentArticleId, setCurrentArticleId] = useState<number | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const router = useRouter();
 
   // authAxiosインスタンスを作成
@@ -248,29 +250,31 @@ export default function DeleteArticlePage() {
     } catch (error: unknown) {
       console.error("記事の削除中にエラーが発生しました:", error);
 
+      let errorMsg = "";
       if (axios.isAxiosError(error)) {
         if (error.code === 'ECONNABORTED') {
-          setError("リクエストがタイムアウトしました。後でもう一度お試しください。");
+          errorMsg = "リクエストがタイムアウトしました。後でもう一度お試しください。";
         } else if (!error.response) {
-          setError("ネットワークエラー: サーバーに接続できません。インターネット接続を確認してください。");
+          errorMsg = "ネットワークエラー: サーバーに接続できません。インターネット接続を確認してください。";
         } else if (error.response.status === 404) {
-          setError("削除対象の記事が見つかりません。すでに削除された可能性があります。");
+          errorMsg = "削除対象の記事が見つかりません。すでに削除された可能性があります。";
         } else if (error.response.status === 403) {
-          setError("この記事を削除する権限がありません。");
+          errorMsg = "この記事を削除する権限がありません。";
         } else if (error.response.status === 401) {
-          setError("認証が無効です。再度ログインしてください。");
+          errorMsg = "認証が無効です。再度ログインしてください。";
           setTimeout(() => router.push("/login"), 2000);
         } else {
-          setError(
-            `記事の削除に失敗しました (${error.response.status}): 
-            ${error.response.data?.detail || JSON.stringify(error.response.data) || '不明なエラー'}`
-          );
+          errorMsg = `記事の削除に失敗しました (${error.response.status}): ${error.response.data?.detail || JSON.stringify(error.response.data) || '不明なエラー'}`;
         }
       } else if (error instanceof Error) {
-        setError(`エラー: ${error.message || "不明なエラー"}`);
+        errorMsg = `エラー: ${error.message || "不明なエラー"}`;
       } else {
-        setError(`不明なエラー: ${String(error)}`);
+        errorMsg = `不明なエラー: ${String(error)}`;
       }
+      
+      setErrorMessage(errorMsg);
+      setOpenErrorSnackbar(true);
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -279,8 +283,9 @@ export default function DeleteArticlePage() {
   const handleRetry = useCallback(() => {
     const currentToken = localStorage.getItem("authToken");
     if (!currentToken) {
-      alert("認証情報がありません。ログイン画面に移動します。");
-      router.push("/login");
+      setErrorMessage("認証情報がありません。ログイン画面に移動します。");
+      setOpenErrorSnackbar(true);
+      setTimeout(() => router.push("/login"), 2000);
       return;
     }
 
@@ -299,6 +304,10 @@ export default function DeleteArticlePage() {
 
   const handleCloseSnackbar = useCallback(() => {
     setOpenSnackbar(false);
+  }, []);
+
+  const handleCloseErrorSnackbar = useCallback(() => {
+    setOpenErrorSnackbar(false);
   }, []);
 
   const handleConfirmDelete = useCallback(async () => {
@@ -460,6 +469,21 @@ export default function DeleteArticlePage() {
           sx={{ width: '100%' }}
         >
           {successMessage}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={openErrorSnackbar}
+        autoHideDuration={8000}
+        onClose={handleCloseErrorSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseErrorSnackbar}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {errorMessage}
         </Alert>
       </Snackbar>
     </div>
