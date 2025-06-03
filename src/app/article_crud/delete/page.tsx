@@ -236,6 +236,10 @@ export default function DeleteArticlePage() {
           method: 'DELETE',
           url: `/articles?article_id=${articleId}`,
           timeout: 15000,
+          validateStatus: function (status) {
+            // 200, 204, 404を成功として扱う（削除操作として妥当）
+            return status === 200 || status === 204 || status === 404;
+          },
         });
       } catch (error: unknown) {
         if ((axios.isAxiosError(error) && !error.response) || 
