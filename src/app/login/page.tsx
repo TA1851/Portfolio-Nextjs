@@ -17,6 +17,7 @@ const LoginComp: FC = () => {
     event.preventDefault();
 
     // console.log('ログインボタンがクリックされました。');
+    // console.log('ログインボタンがクリックされました。');
 
     if (formRef.current) {
       const email = formRef.current.elements.namedItem('email') as HTMLInputElement;
