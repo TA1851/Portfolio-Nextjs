@@ -27,6 +27,12 @@ Call log:
     at /Users/tatu/Documents/GitHub/Portfolio-Nextjs/e2e/bug-report.spec.ts:32:20
 ```
 
+対応
+```
+アラートの表示を変更：ログイン情報が不正です。正しいログイン情報を入力して下さい。
+@以降の形式が不正なものはアラートを出す処理に変更
+```
+
 ### バグID：02
 ```
 入力フォームが空の状態でログインボタンをクリックした。
@@ -50,4 +56,9 @@ Call log:
   36 |
   37 |       // エビデンスを保存
     at /Users/tatu/Documents/GitHub/Portfolio-Nextjs/e2e/bug-report.spec.ts:34:20
+```
+
+対応
+```
+アラートの表示を変更：メールアドレスもしくはパスワードが入力されていません。
 ```
