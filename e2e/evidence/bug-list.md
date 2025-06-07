@@ -1,5 +1,7 @@
 ## バグリスト
 
+[バグデータ](/Users/tatu/Documents/GitHub/Portfolio-Nextjs/playwright-report/data/32f10e9f25120eb20fe0bc53117e3f78b524ee0e.md)
+
 ### バグID：01
 
 ```
