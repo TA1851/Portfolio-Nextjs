@@ -16,9 +16,6 @@ const LoginComp: FC = () => {
   ): Promise<void> => {
     event.preventDefault();
 
-    // console.log('ログインボタンがクリックされました。');
-    // console.log('ログインボタンがクリックされました。');
-
     if (formRef.current) {
       const email = formRef.current.elements.namedItem('email') as HTMLInputElement;
       const password = formRef.current.elements.namedItem('password') as HTMLInputElement;
