@@ -24,7 +24,7 @@ const LoginComp: FC = () => {
       const emailValue = email.value;
       const passwordValue = password.value;
 
-      // ログイン情報が空の場合
+      // ログイン情報が空の場合.
       if (!emailValue || !passwordValue) {
         alert('メールアドレスもしくはパスワードが入力されていません。');
         return;
