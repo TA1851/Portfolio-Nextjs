@@ -24,9 +24,14 @@ const LoginComp: FC = () => {
       const emailValue = email.value;
       const passwordValue = password.value;
 
+      // ログイン情報が空の場合
+      if (!emailValue || !passwordValue) {
+        alert('メールアドレスもしくはパスワードが入力されていません。');
+        return;
+      }
+
       // メールアドレスの形式を検証
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(emailValue)) {
+      if (!emailValue.includes('@') || !emailValue.endsWith('@gmail.com')) {
         alert('ログイン情報が不正です。正しいログイン情報を入力して下さい。');
         return;
       }
