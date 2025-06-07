@@ -27,7 +27,7 @@ test.describe('バグリストテスト', () => {
 
       // バグの再現手順を記述
       if (bug.id === '01') {
-        await page.fill('input[name="email"]', 'invalid@example.com');
+        await page.fill('input[name="email"]', 'invalid@gmail.c');
         await page.fill('input[name="password"]', 'wrongpassword');
         await page.click('button[type="submit"]');
       } else if (bug.id === '02') {
