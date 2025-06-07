@@ -24,12 +24,19 @@ const LoginComp: FC = () => {
       const emailValue = email.value;
       const passwordValue = password.value;
 
-      // ログイン情報が空の場合
-      if (!emailValue || !passwordValue) {
-        alert('メールアドレスとパスワードを入力してください。');
-        saveLog('error', 'メールアドレスとパスワードが空です。');
+      // メールアドレスの形式を検証
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailValue)) {
+        alert('ログイン情報が不正です。正しいログイン情報を入力して下さい。');
         return;
       }
+
+      // パスワードが入力されているか検証
+      if (!passwordValue) {
+        alert('ログイン情報が不正です。正しいログイン情報を入力して下さい。');
+        return;
+      }
+
       // FormDataを使用する
       try {
         const formData = new FormData();
@@ -49,7 +56,6 @@ const LoginComp: FC = () => {
         localStorage.setItem('authToken', response.data.access_token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
         // console.log('ログインに成功しました:', response.data);
-        saveLog('info', 'ログインに成功しました。');
 
         router.push('/user'); // ページ遷移
       } catch (error) {
@@ -125,11 +131,6 @@ const LoginComp: FC = () => {
             >
               ログイン
             </button>
-            {/* <div className="flex justify-center">
-              <a href="/logs" className="text-sm text-gray-500 hover:text-blue-500">
-                開発者向け: ログを表示
-              </a>
-            </div> */}
           </div>
           <p
             className="text-center mb-4"
