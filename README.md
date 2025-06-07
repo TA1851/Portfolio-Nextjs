@@ -169,3 +169,8 @@ Notionで管理
   - 記事CRUD機能
   - デモページ機能
   - レスポンシブデザイン
+
+Playwright CLIでブラウザを起動
+```
+npx playwright codegen
+```
