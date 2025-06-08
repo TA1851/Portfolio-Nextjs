@@ -66,7 +66,7 @@ const ChangePasswordForm: FC = () => {
     if (!email && !token) {
       setError("認証情報が不足しています。メール認証リンクから正しくアクセスしてください。");
     }
-  }, [apiUrl, email, token]);
+  }, [apiUrl, email, token, userId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

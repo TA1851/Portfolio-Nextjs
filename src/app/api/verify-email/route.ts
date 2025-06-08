@@ -96,6 +96,25 @@ export async function GET(request: NextRequest) {
       }
     }
     
+    // 成功時のレスポンスを標準化
+    if (response.status >= 200 && response.status < 300) {
+      console.log('Backend verification successful:', data);
+      return NextResponse.json({
+        success: true,
+        message: data.message || data.detail || 'メールアドレスの確認が完了しました。仮パスワードを変更して登録を完了してください。',
+        email: data.email,
+        user_id: data.user_id,
+        ...data
+      }, {
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
+    }
+    
     return NextResponse.json(data, {
       status: response.status,
       headers: {

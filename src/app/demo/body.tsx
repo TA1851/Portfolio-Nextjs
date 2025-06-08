@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { CircularProgress, Box, Typography } from '@mui/material';
 
@@ -50,7 +50,7 @@ const BodyComp: FC = () => {
   };
 
   // 記事の取得
-  const fetchArticles = async (isRetry = false) => {
+  const fetchArticles = useCallback(async (isRetry = false) => {
     try {
       setLoading(true);
       setError("");
@@ -145,11 +145,11 @@ const BodyComp: FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isInitialLoad]);
 
   useEffect(() => {
     fetchArticles();
-  }, []);
+  }, [fetchArticles]);
 
   // CircularProgressWithLabelコンポーネント
   const CircularProgressWithLabel = ({ value }: { value: number }) => {
