@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const code = searchParams.get('code');
 
     // バックエンドAPIのURL
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1 || 'https://blog-api-main.onrender.com/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
     
     // パラメータをバックエンドAPIに転送
     const params = new URLSearchParams();
