@@ -28,6 +28,7 @@ const LoginComp: FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [errorType, setErrorType] = useState<string>(""); // エラータイプを追跡
   const [success, setSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string>("");
   // const [debugInfo, setDebugInfo] = useState<string>("");
@@ -56,6 +57,7 @@ const LoginComp: FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setErrorType(""); // エラータイプをリセット
     setIsLoading(true);
 
     // フロントエンドでの簡単なバリデーション
@@ -66,17 +68,22 @@ const LoginComp: FC = () => {
     }
 
     try {
+      const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://nextjs-app-yvfr.vercel.app';
+      
       console.log("送信データ:", {
-        name: formData.email.split('@')[0], // メールアドレスの@マーク前をnameとして使用
+        username: formData.email.split('@')[0], // usernameフィールドに変更
         email: formData.email,
-        password: "temp_password_will_be_replaced" // 一時的なパスワード
+        password: "temp_password_will_be_replaced", // 一時的なパスワード
+        frontend_url: frontendUrl // メール認証リンク生成用
       });
-      console.log("API URL:", `${apiUrl}/api/v1/user`);
+      console.log("API URL:", `${apiUrl}/user`);
+      console.log("Frontend URL:", frontendUrl);
 
       const response = await axios.post(`${apiUrl}/user`, {
-        name: formData.email.split('@')[0], // 一時的にnameフィールドを追加
+        username: formData.email.split('@')[0], // 一時的にusernameフィールドを追加
         email: formData.email,
-        password: "temp_password_will_be_replaced" // 一時的なパスワード（メール認証後に変更される）
+        password: "temp_password_will_be_replaced", // 一時的なパスワード（メール認証後に変更される）
+        frontend_url: frontendUrl // バックエンドがメール認証リンクを生成するために必要
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -117,27 +124,42 @@ const LoginComp: FC = () => {
           const errorData = err.response.data as ApiErrorResponse;
           switch (err.response.status) {
             case 400:
+              setErrorType("validation");
               setError(errorData.detail || "入力内容に不備があります。");
               break;
             case 409:
-              setError(errorData.detail || "このメールアドレスは既に使用されています。");
+              // メールアドレスが既に登録済みの場合の詳細処理
+              const conflictMessage = errorData.detail || "このメールアドレスは既に使用されています。";
+              console.log("409エラー詳細:", conflictMessage);
+              setErrorType("conflict"); // エラータイプを設定
+              
+              if (conflictMessage.includes('確認済み') || conflictMessage.includes('verified')) {
+                setError(`${conflictMessage} すでにアカウントをお持ちの場合は、ログインページからアクセスしてください。`);
+              } else {
+                setError(`${conflictMessage} 別のメールアドレスをご使用いただくか、既存のアカウントでログインしてください。`);
+              }
               break;
             case 500:
+              setErrorType("server");
               setError(`サーバーエラーが発生しました: ${errorData.detail || "時間をおいて再度お試しください。"}`);
               break;
             default:
+              setErrorType("unknown");
               setError(`エラー(${err.response.status}): ${errorData.detail || "予期しないエラーが発生しました。"}`);
           }
         } else if (err.request) {
           console.error("リクエストエラー:", err.request);
+          setErrorType("network");
           setError("サーバーに接続できませんでした。ネットワーク接続を確認してください。");
           // setDebugInfo(`リクエストエラー: ${JSON.stringify(err.request)}`);
         } else {
           console.error("設定エラー:", err.message);
+          setErrorType("config");
           setError("リクエストの設定エラーが発生しました。");
           // setDebugInfo(`設定エラー: ${err.message}`);
         }
       } else {
+        setErrorType("unknown");
         setError("予期しないエラーが発生しました。");
       }
       console.error("ユーザー作成エラー:", err);
@@ -170,7 +192,31 @@ const LoginComp: FC = () => {
                 className="
                   rounded-lg bg-red-50 border border-red-200 p-3 text-red-800 text-sm"
               >
-                {error}
+                <div className="mb-2">{error}</div>
+                {/* 409エラー（メールアドレス重複）の場合は追加のアクション */}
+                {errorType === "conflict" && (
+                  <div className="mt-3 pt-3 border-t border-red-200">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Link
+                        href="/login"
+                        className="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors"
+                      >
+                        ログインページへ
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setError("");
+                          setErrorType("");
+                          setFormData({ email: "" });
+                        }}
+                        className="inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200 transition-colors"
+                      >
+                        別のメールアドレスで登録
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {/* 成功メッセージ表示 */}

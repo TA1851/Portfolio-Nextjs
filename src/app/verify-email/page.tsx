@@ -27,10 +27,28 @@ const VerifyEmailForm: FC = () => {
 
   useEffect(() => {
     const verifyEmail = async () => {
-      // デバッグ情報をセット
-      const paramInfo = `URL Parameters: token=${token}, email=${email}, code=${code}`;
-      console.log(paramInfo);
-      setDebugInfo(paramInfo);
+      // 詳細なデバッグ情報をセット
+      const currentUrl = window.location.href;
+      const currentOrigin = window.location.origin;
+      const currentPathname = window.location.pathname;
+      const allParams = Object.fromEntries(searchParams.entries());
+      
+      const debugInfoText = [
+        `Current URL: ${currentUrl}`,
+        `Origin: ${currentOrigin}`,
+        `Pathname: ${currentPathname}`,
+        `All URL Parameters: ${JSON.stringify(allParams)}`,
+        `Token: ${token || 'なし'}`,
+        `Email: ${email || 'なし'}`,
+        `Code: ${code || 'なし'}`,
+        `API URL: ${process.env.NEXT_PUBLIC_API_URL_V1}`,
+        `Frontend URL: ${process.env.NEXT_PUBLIC_FRONTEND_URL}`,
+        `Timestamp: ${new Date().toISOString()}`
+      ].join('\n');
+      
+      console.log('=== Email Verification Debug Info ===');
+      console.log(debugInfoText);
+      setDebugInfo(debugInfoText);
       
       // APIで必要なのはtokenのみ
       if (!token) {
