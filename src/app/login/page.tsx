@@ -16,17 +16,20 @@ const LoginComp: FC = () => {
   ): Promise<void> => {
     event.preventDefault();
 
-    // console.log('ログインボタンがクリックされました。');
-
     if (formRef.current) {
       const email = formRef.current.elements.namedItem('email') as HTMLInputElement;
       const password = formRef.current.elements.namedItem('password') as HTMLInputElement;
       const emailValue = email.value;
       const passwordValue = password.value;
 
+      // ログイン情報が空の場合
+      if (!emailValue || !passwordValue) {
+        alert('メールアドレスもしくはパスワードが入力されていません。');
+        return;
+      }
+
       // メールアドレスの形式を検証
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(emailValue)) {
+      if (!emailValue.includes('@') || !emailValue.endsWith('@gmail.com')) {
         alert('ログイン情報が不正です。正しいログイン情報を入力して下さい。');
         return;
       }
@@ -43,7 +46,6 @@ const LoginComp: FC = () => {
         formData.append('username', emailValue);
         formData.append('password', passwordValue);
 
-        // console.log('送信データ:', {username: emailValue, password: passwordValue});
         // 環境変数からAPIエンドポイントを取得する
         const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         console.log('API URL:', apiUrl);
@@ -55,9 +57,8 @@ const LoginComp: FC = () => {
 
         localStorage.setItem('authToken', response.data.access_token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
-        // console.log('ログインに成功しました:', response.data);
 
-        router.push('/user'); // ページ遷移
+        router.push('/user');
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           console.error('ログインに失敗しました:', error.response.data);
@@ -66,7 +67,6 @@ const LoginComp: FC = () => {
           console.error('ログインに失敗しました:', error);
           saveLog('error', 'ログインに失敗しました。');
         }
-
         router.push('/loginfail');
       }
     }
@@ -105,7 +105,6 @@ const LoginComp: FC = () => {
                 outline-none ring-indigo-300 transition duration-100 focus:ring"
               />
             </div>
-
             <div>
               <label htmlFor="password-field"
                 className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
@@ -121,7 +120,6 @@ const LoginComp: FC = () => {
                 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
               />
             </div>
-
             <button
               className="
               block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold
