@@ -13,6 +13,7 @@ export function middleware(request: NextRequest) {
     '/account-verification',
     '/user/verify',
     '/auth/verify',
+    '/v1/verify-email',
   ];
 
   // パスがメール認証関連の場合、/verify-email にリダイレクト
