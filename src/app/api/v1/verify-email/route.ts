@@ -7,7 +7,24 @@ export async function GET(request: NextRequest) {
     const email = searchParams.get('email');
     const code = searchParams.get('code');
 
-    // バックエンドAPIのURL
+    // Accept ヘッダーをチェックして、ブラウザからの直接アクセスかどうかを判定
+    const acceptHeader = request.headers.get('accept') || '';
+    const isDirectBrowserAccess = acceptHeader.includes('text/html');
+
+    // ブラウザからの直接アクセスの場合、フロントエンドの検証ページにリダイレクト
+    if (isDirectBrowserAccess) {
+      const params = new URLSearchParams();
+      if (token) params.append('token', token);
+      if (email) params.append('email', email);
+      if (code) params.append('code', code);
+      
+      const redirectUrl = `/verify-email?${params.toString()}`;
+      console.log('Redirecting browser to frontend verification page:', redirectUrl);
+      
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
+    }
+
+    // APIリクエストの場合は通常の処理を続行
     const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
     
     // パラメータをバックエンドAPIに転送

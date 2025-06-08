@@ -4,6 +4,25 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
+    const email = searchParams.get('email');
+    const code = searchParams.get('code');
+
+    // Accept ヘッダーをチェックして、ブラウザからの直接アクセスかどうかを判定
+    const acceptHeader = request.headers.get('accept') || '';
+    const isDirectBrowserAccess = acceptHeader.includes('text/html');
+
+    // ブラウザからの直接アクセスの場合、フロントエンドの検証ページにリダイレクト
+    if (isDirectBrowserAccess) {
+      const params = new URLSearchParams();
+      if (token) params.append('token', token);
+      if (email) params.append('email', email);
+      if (code) params.append('code', code);
+      
+      const redirectUrl = `/verify-email?${params.toString()}`;
+      console.log('Redirecting browser to frontend verification page:', redirectUrl);
+      
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
+    }
     
     if (!token) {
       return NextResponse.json(

@@ -21,11 +21,13 @@ export function middleware(request: NextRequest) {
     '/user_verify',
     '/auth_verify',
     '/verification/email',
-    '/api/verify-email', // API経由の場合もリダイレクト
   ];
 
-  // パスがメール認証関連の場合、/verify-email にリダイレクト
-  if (verificationPaths.some(path => pathname.startsWith(path))) {
+  // APIパスは除外（APIエンドポイント自体がリダイレクト処理を行うため）
+  const isApiPath = pathname.startsWith('/api/');
+
+  // パスがメール認証関連でAPIパスでない場合、/verify-email にリダイレクト
+  if (!isApiPath && verificationPaths.some(path => pathname.startsWith(path))) {
     const redirectUrl = new URL('/verify-email', request.url);
     redirectUrl.search = search; // クエリパラメータを保持
     
