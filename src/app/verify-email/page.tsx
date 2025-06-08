@@ -10,6 +10,8 @@ interface VerificationResult {
   success: boolean;
   message: string;
   error?: string;
+  email?: string;
+  user_id?: number;
 }
 
 const VerifyEmailForm: FC = () => {
@@ -84,12 +86,14 @@ const VerifyEmailForm: FC = () => {
         console.log('応答データ:', response.data);
         setDebugInfo(prev => prev + `\nResponse status: ${response.status}\nResponse data: ${JSON.stringify(response.data)}`);
 
-        // ステータス200-299の範囲なら成功とみなす
-        if (response.status >= 200 && response.status < 300) {
+        // ステータス200-299の範囲かつレスポンスのsuccessフィールドがtrueなら成功とみなす
+        if (response.status >= 200 && response.status < 300 && response.data.success) {
           setVerificationStatus('success');
           setVerificationResult({
             success: true,
-            message: response.data.message || response.data.detail || 'メール認証が完了しました。アカウントがアクティベートされました。'
+            message: response.data.message || 'メール認証が完了しました。仮パスワードを変更して登録を完了してください。',
+            email: response.data.email,
+            user_id: response.data.user_id
           });
           saveLog('info', 'メール認証が成功しました');
 
@@ -102,11 +106,17 @@ const VerifyEmailForm: FC = () => {
             if (timeLeft <= 0) {
               clearInterval(timer);
               // メール認証成功後はパスワード変更ページにリダイレクト
-              router.push(`/change-password?email=${encodeURIComponent(email || '')}&token=${encodeURIComponent(token || '')}`);
+              const userEmail = response.data.email || email || '';
+              const userId = response.data.user_id || '';
+              console.log('パスワード変更ページにリダイレクト中...', { userEmail, userId, token });
+              router.push(`/change-password?email=${encodeURIComponent(userEmail)}&user_id=${userId}${token ? `&token=${encodeURIComponent(token)}` : ''}`);
             }
           }, 1000);
 
           return () => clearInterval(timer);
+        } else if (response.status >= 200 && response.status < 300 && !response.data.success) {
+          // HTTPステータスは成功だが、successフィールドがfalseの場合
+          throw new Error(response.data.message || response.data.detail || '認証に失敗しました');
         } else {
           throw new Error(response.data.message || response.data.detail || '認証に失敗しました');
         }
@@ -287,7 +297,7 @@ const VerifyEmailForm: FC = () => {
                 ) : (
                   <>
                     <Link
-                      href={`/change-password?email=${encodeURIComponent(email || '')}&token=${encodeURIComponent(token || '')}`}
+                      href={`/change-password?email=${encodeURIComponent(verificationResult?.email || email || '')}&user_id=${verificationResult?.user_id || ''}${token ? `&token=${encodeURIComponent(token)}` : ''}`}
                       className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
                     >
                       今すぐパスワード変更

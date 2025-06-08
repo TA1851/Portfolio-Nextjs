@@ -40,6 +40,7 @@ const ChangePasswordForm: FC = () => {
   // URLパラメータからユーザー情報を取得
   const email = searchParams.get('email');
   const token = searchParams.get('token');
+  const userId = searchParams.get('user_id');
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
 
@@ -49,7 +50,8 @@ const ChangePasswordForm: FC = () => {
       console.log('API URL:', apiUrl);
       console.log('Email:', email);
       console.log('Token:', token);
-      setDebugInfo(`環境: ${process.env.NODE_ENV}\nAPI URL: ${apiUrl}\nEmail: ${email}\nToken: ${token}\n\n=== テスト情報 ===\n新しいユーザーでのテスト用パラメータ:\n- メールアドレス: ${email || '未設定'}\n- 認証トークン: ${token || '未設定'}\n\n初期パスワードはメール認証完了時に送信されるメールに記載されています。`);
+      console.log('User ID:', userId);
+      setDebugInfo(`環境: ${process.env.NODE_ENV}\nAPI URL: ${apiUrl}\nEmail: ${email}\nToken: ${token}\nUser ID: ${userId}\n\n=== テスト情報 ===\n新しいユーザーでのテスト用パラメータ:\n- メールアドレス: ${email || '未設定'}\n- ユーザーID: ${userId || '未設定'}\n- 認証トークン: ${token || '未設定'}\n\n初期パスワードはメール認証完了時に送信されるメールに記載されています。`);
     }
 
     // URLパラメータからメールアドレスが取得された場合はフォームに設定
