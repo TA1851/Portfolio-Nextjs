@@ -26,6 +26,57 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
     
+    // エラーレスポンスの詳細ログ出力
+    if (!response.ok) {
+      console.log(`Backend API error: ${response.status} - ${JSON.stringify(data)}`);
+      
+      // HTTP 409 (Conflict) への特別な処理
+      if (response.status === 409) {
+        return NextResponse.json({
+          detail: 'このメールアドレスは既に認証済みです。ログインページに進んでください。',
+          isAlreadyVerified: true,
+          originalMessage: data.detail || data.message
+        }, {
+          status: 409,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        });
+      }
+      
+      // HTTP 400 (Bad Request) - 無効なトークンなど
+      if (response.status === 400) {
+        return NextResponse.json({
+          detail: data.detail || data.message || '無効なトークンまたはリクエストです。メール内のリンクを再度確認してください。',
+          error: 'INVALID_TOKEN'
+        }, {
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        });
+      }
+      
+      // HTTP 404 (Not Found) - トークンが存在しない
+      if (response.status === 404) {
+        return NextResponse.json({
+          detail: 'トークンが見つかりません。認証リンクの有効期限が切れている可能性があります。',
+          error: 'TOKEN_NOT_FOUND'
+        }, {
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        });
+      }
+    }
+    
     return NextResponse.json(data, {
       status: response.status,
       headers: {

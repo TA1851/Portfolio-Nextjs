@@ -101,13 +101,66 @@ const VerifyEmailForm: FC = () => {
           console.log('エラーレスポンス詳細:', error.response);
           setDebugInfo(prev => prev + `\nError status: ${error.response.status}\nError data: ${JSON.stringify(error.response.data)}`);
           
-          const errorMessage = error.response.data.message || error.response.data.error || error.response.data.detail || '認証に失敗しました';
-          setVerificationResult({
-            success: false,
-            message: errorMessage,
-            error: `エラーコード: ${error.response.status}`
-          });
-          saveLog('error', `メール認証失敗: ${errorMessage}`);
+          // HTTP 409 (Conflict) への特別な処理
+          if (error.response.status === 409) {
+            const responseData = error.response.data;
+            const isAlreadyVerified = responseData.isAlreadyVerified;
+            
+            setVerificationResult({
+              success: isAlreadyVerified ? true : false,
+              message: responseData.detail || 'このメールアドレスは既に認証済みです。',
+              error: isAlreadyVerified ? undefined : `エラーコード: ${error.response.status}`
+            });
+            
+            if (isAlreadyVerified) {
+              // 既に認証済みの場合は成功として扱い、ログインページにリダイレクト
+              setVerificationStatus('success');
+              saveLog('info', 'メールアドレスは既に認証済み - ログインページにリダイレクト');
+              
+              // 3秒後にログインページにリダイレクト
+              let timeLeft = 3;
+              setCountdown(timeLeft);
+              const timer = setInterval(() => {
+                timeLeft -= 1;
+                setCountdown(timeLeft);
+                
+                if (timeLeft <= 0) {
+                  clearInterval(timer);
+                  router.push('/login');
+                }
+              }, 1000);
+              
+              return () => clearInterval(timer);
+            }
+          } 
+          // HTTP 400 (Bad Request) - 無効なトークン
+          else if (error.response.status === 400) {
+            const responseData = error.response.data;
+            setVerificationResult({
+              success: false,
+              message: responseData.detail || '無効なトークンです。メール内のリンクを再度確認してください。',
+              error: `エラーコード: ${error.response.status}`
+            });
+          }
+          // HTTP 404 (Not Found) - トークンが存在しない
+          else if (error.response.status === 404) {
+            const responseData = error.response.data;
+            setVerificationResult({
+              success: false,
+              message: responseData.detail || 'トークンが見つかりません。認証リンクの有効期限が切れている可能性があります。',
+              error: `エラーコード: ${error.response.status}`
+            });
+          }
+          // その他のエラー
+          else {
+            const errorMessage = error.response.data.message || error.response.data.error || error.response.data.detail || '認証に失敗しました';
+            setVerificationResult({
+              success: false,
+              message: errorMessage,
+              error: `エラーコード: ${error.response.status}`
+            });
+          }
+          saveLog('error', `メール認証失敗: ${error.response.data.detail || error.response.data.message || 'Unknown error'}`);
         } else {
           console.log('ネットワークエラー詳細:', error);
           setDebugInfo(prev => prev + `\nNetwork error: ${error instanceof Error ? error.message : '不明なエラー'}`);
@@ -186,25 +239,49 @@ const VerifyEmailForm: FC = () => {
               </p>
               <div className="mb-8">
                 <p className="text-sm text-gray-500">
-                  {countdown}秒後にパスワード変更ページにリダイレクトします...
+                  {verificationResult?.message?.includes('既に認証済み') 
+                    ? `${countdown}秒後にログインページにリダイレクトします...`
+                    : `${countdown}秒後にパスワード変更ページにリダイレクトします...`
+                  }
                 </p>
-                <p className="text-xs text-blue-600 mt-2">
-                  💡 セキュリティのため、初回ログイン時にパスワードの変更をお願いしています
-                </p>
+                {!verificationResult?.message?.includes('既に認証済み') && (
+                  <p className="text-xs text-blue-600 mt-2">
+                    💡 セキュリティのため、初回ログイン時にパスワードの変更をお願いしています
+                  </p>
+                )}
               </div>
               <div className="space-x-4">
-                <Link
-                  href={`/change-password?email=${encodeURIComponent(email || '')}&token=${encodeURIComponent(token || '')}`}
-                  className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
-                >
-                  今すぐパスワード変更
-                </Link>
-                <Link
-                  href="/"
-                  className="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                >
-                  ホームに戻る
-                </Link>
+                {verificationResult?.message?.includes('既に認証済み') ? (
+                  <>
+                    <Link
+                      href="/login"
+                      className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                    >
+                      今すぐログイン
+                    </Link>
+                    <Link
+                      href="/"
+                      className="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                    >
+                      ホームに戻る
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={`/change-password?email=${encodeURIComponent(email || '')}&token=${encodeURIComponent(token || '')}`}
+                      className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                    >
+                      今すぐパスワード変更
+                    </Link>
+                    <Link
+                      href="/"
+                      className="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                    >
+                      ホームに戻る
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           )}
