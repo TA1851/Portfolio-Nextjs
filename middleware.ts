@@ -14,6 +14,14 @@ export function middleware(request: NextRequest) {
     '/user/verify',
     '/auth/verify',
     '/v1/verify-email',
+    '/email_verification',
+    '/verify_email',
+    '/confirm_email',
+    '/account_verification',
+    '/user_verify',
+    '/auth_verify',
+    '/verification/email',
+    '/api/verify-email', // API経由の場合もリダイレクト
   ];
 
   // パスがメール認証関連の場合、/verify-email にリダイレクト

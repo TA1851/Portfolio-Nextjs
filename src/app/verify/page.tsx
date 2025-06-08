@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 
-function V1VerifyEmailRedirectContent() {
+function VerifyRedirectContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -12,7 +12,7 @@ function V1VerifyEmailRedirectContent() {
     const queryString = searchParams.toString();
     const redirectUrl = `/verify-email${queryString ? `?${queryString}` : ''}`;
     
-    console.log('Redirecting from /v1/verify-email to:', redirectUrl);
+    console.log('Redirecting from /verify to:', redirectUrl);
     router.replace(redirectUrl);
   }, [router, searchParams]);
 
@@ -28,8 +28,8 @@ function V1VerifyEmailRedirectContent() {
   );
 }
 
-// `/v1/verify-email` パスから `/verify-email` にリダイレクトするページ
-export default function V1VerifyEmailRedirect() {
+// `/verify` パスから `/verify-email` にリダイレクトするページ
+export default function VerifyRedirect() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -41,7 +41,7 @@ export default function V1VerifyEmailRedirect() {
         </div>
       </div>
     }>
-      <V1VerifyEmailRedirectContent />
+      <VerifyRedirectContent />
     </Suspense>
   );
 }
