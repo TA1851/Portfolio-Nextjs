@@ -41,9 +41,7 @@ const ChangePasswordForm: FC = () => {
   const email = searchParams.get('email');
   const token = searchParams.get('token');
 
-  const apiUrl = process.env.NODE_ENV === 'development' 
-    ? '/api/proxy'
-    : process.env.NEXT_PUBLIC_API_URL_V1;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {

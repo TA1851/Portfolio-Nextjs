@@ -30,19 +30,18 @@ const LoginComp: FC = () => {
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string>("");
-  const [debugInfo, setDebugInfo] = useState<string>("");
+  // const [debugInfo, setDebugInfo] = useState<string>("");
 
   // const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
-  const apiUrl = process.env.NODE_ENV === 'development' 
-    ? '/api/proxy' // Next.jsプロキシ経由でAPIを呼び出し
-    : process.env.NEXT_PUBLIC_API_URL_V1;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
+    console.log('API URL:', apiUrl);
 
   // 開発環境でAPIの動作確認
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       console.log('環境:', process.env.NODE_ENV);
       console.log('API URL:', apiUrl);
-      setDebugInfo(`環境: ${process.env.NODE_ENV}\nAPI URL: ${apiUrl}`);
+      // setDebugInfo(`環境: ${process.env.NODE_ENV}\nAPI URL: ${apiUrl}`);
     }
   }, [apiUrl]);
 
@@ -72,7 +71,7 @@ const LoginComp: FC = () => {
         email: formData.email,
         password: "temp_password_will_be_replaced" // 一時的なパスワード
       });
-      console.log("API URL:", `${apiUrl}/user`);
+      console.log("API URL:", `${apiUrl}/api/v1/user`);
 
       const response = await axios.post(`${apiUrl}/user`, {
         name: formData.email.split('@')[0], // 一時的にnameフィールドを追加
@@ -132,11 +131,11 @@ const LoginComp: FC = () => {
         } else if (err.request) {
           console.error("リクエストエラー:", err.request);
           setError("サーバーに接続できませんでした。ネットワーク接続を確認してください。");
-          setDebugInfo(`リクエストエラー: ${JSON.stringify(err.request)}`);
+          // setDebugInfo(`リクエストエラー: ${JSON.stringify(err.request)}`);
         } else {
           console.error("設定エラー:", err.message);
           setError("リクエストの設定エラーが発生しました。");
-          setDebugInfo(`設定エラー: ${err.message}`);
+          // setDebugInfo(`設定エラー: ${err.message}`);
         }
       } else {
         setError("予期しないエラーが発生しました。");
@@ -259,12 +258,12 @@ const LoginComp: FC = () => {
         </form>
 
         {/* 開発環境でのデバッグ情報表示 */}
-        {process.env.NODE_ENV === 'development' && debugInfo && (
+        {/* {process.env.NODE_ENV === 'development' && debugInfo && (
           <div className="mt-8 p-4 bg-gray-100 border border-gray-300 rounded-lg text-left max-w-lg mx-auto">
             <h3 className="font-semibold text-gray-800 mb-2">デバッグ情報</h3>
             <pre className="text-sm text-gray-600 whitespace-pre-wrap">{debugInfo}</pre>
           </div>
-        )}
+        )} */}
       </div>
     </>
   )

@@ -44,9 +44,7 @@ const VerifyEmailForm: FC = () => {
       }
 
       try {
-        const apiUrl = process.env.NODE_ENV === 'development' 
-          ? '/api/proxy'
-          : process.env.NEXT_PUBLIC_API_URL_V1 || 'http://localhost:8080/api/v1';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         
         console.log('API URL:', apiUrl);
         console.log('認証トークン:', token);
@@ -134,9 +132,7 @@ const VerifyEmailForm: FC = () => {
     }
 
     try {
-      const apiUrl = process.env.NODE_ENV === 'development' 
-        ? '/api/proxy'
-        : process.env.NEXT_PUBLIC_API_URL_V1 || 'http://localhost:8080/api/v1';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
       
       // 正しいクエリパラメータ形式でAPIを呼び出し
       await axios.post(`${apiUrl}/resend-verification?email=${encodeURIComponent(email)}`);
