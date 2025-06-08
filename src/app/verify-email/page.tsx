@@ -51,9 +51,9 @@ const VerifyEmailForm: FC = () => {
         setDebugInfo(prev => prev + `\nAPI URL: ${apiUrl}\nToken: ${token}`);
         saveLog('info', 'メール認証を開始');
 
-        // GETリクエストでトークンをクエリパラメータとして送信
+        // ローカルAPIプロキシ経由でリクエストを送信
         const response = await axios.get(
-          `${apiUrl}/verify-email?token=${encodeURIComponent(token)}`,
+          `/api/verify-email?token=${encodeURIComponent(token)}`,
           {
             headers: {
               'Content-Type': 'application/json',
