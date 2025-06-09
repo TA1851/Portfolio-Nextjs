@@ -174,5 +174,3 @@ Playwright CLIでブラウザを起動
 ```
 npx playwright codegen
 ```
-
-test
