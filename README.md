@@ -153,6 +153,30 @@ src/
 ## プロジェクト管理
 Notionで管理
 
+## CI/CD
+
+このプロジェクトはGitHub Actionsを使用して継続的インテグレーション/デプロイメント（CI/CD）を実装しています。
+
+### 自動テスト
+
+- **E2Eテスト**: Playwrightを使用したエンドツーエンドテスト
+- **実行タイミング**: 
+  - `main`ブランチへのプッシュ時
+  - プルリクエスト作成時  
+  - 毎日午後3時（日本時間）の定期実行
+
+### GitHub Secretsの設定
+
+CI/CD環境でE2Eテストを実行するには、以下のSecretsをGitHubリポジトリに設定する必要があります：
+
+- `E2E_TEST_EMAIL_1`: E2Eテスト用メールアドレス1
+- `E2E_TEST_EMAIL_2`: E2Eテスト用メールアドレス2  
+- `E2E_TEST_PASSWORD_1`: テストユーザー1のパスワード
+- `E2E_TEST_PASSWORD_2`: テストユーザー2のパスワード
+- `NEXT_PUBLIC_API_URL_V1_E2E`: E2Eテスト用API URL
+
+詳細な設定方法は [GITHUB_CICD_SETUP.md](./GITHUB_CICD_SETUP.md) を参照してください。
+
 ## ライセンス
 
 このプロジェクトはMITライセンスの下で公開されています。
