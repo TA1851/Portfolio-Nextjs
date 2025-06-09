@@ -1,5 +1,9 @@
 import { test } from '@playwright/test';
 
+// 環境変数からテスト用メールアドレスとパスワードを取得
+const TEST_EMAIL_1 = process.env.E2E_TEST_EMAIL_1 || 'test1@example.com';
+const TEST_PASSWORD_1 = process.env.E2E_TEST_PASSWORD_1 || 'password123';
+
 test('test', async ({ page }) => {
   await page.goto('https://nextjs-app-yvfr.vercel.app/user');
   await page.getByRole('button', { name: 'ログアウト' }).click();
@@ -9,9 +13,9 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill('');
   await page.getByRole('textbox', { name: 'Email' }).fill('Eisu');
-  await page.getByRole('textbox', { name: 'Email' }).fill('darry6335@gmail.com');
+  await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL_1);
   await page.getByRole('textbox', { name: 'Email' }).press('Tab');
-  await page.getByRole('textbox', { name: 'Password' }).fill('123');
+  await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD_1);
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.getByRole('link', { name: '記事を書く' }).click();
   await page.getByRole('textbox', { name: 'タイトル' }).click();
