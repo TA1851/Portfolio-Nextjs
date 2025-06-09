@@ -68,8 +68,7 @@ const LoginComp: FC = () => {
     }
 
     try {
-      const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://nextjs-app-yvfr.vercel.app';
-      
+      const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
       console.log("送信データ:", {
         username: formData.email.split('@')[0], // usernameフィールドに変更
         email: formData.email,
@@ -141,7 +140,7 @@ const LoginComp: FC = () => {
               break;
             case 500:
               setErrorType("server");
-              setError(`サーバーエラーが発生しました: ${errorData.detail || "時間をおいて再度お試しください。"}`);
+              setError(`${errorData.detail}`);
               break;
             default:
               setErrorType("unknown");
