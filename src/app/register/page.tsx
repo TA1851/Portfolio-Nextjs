@@ -123,15 +123,10 @@ const LoginComp: FC = () => {
           const errorData = err.response.data as ApiErrorResponse;
           switch (err.response.status) {
             case 400:
-              setErrorType("validation");
-              setError(errorData.detail || "入力内容に不備があります。");
-              break;
-            case 409:
               // メールアドレスが既に登録済みの場合の詳細処理
               const conflictMessage = errorData.detail || "このメールアドレスは既に使用されています。";
               console.log("409エラー詳細:", conflictMessage);
               setErrorType("conflict"); // エラータイプを設定
-              
               if (conflictMessage.includes('確認済み') || conflictMessage.includes('verified')) {
                 setError(`${conflictMessage} すでにアカウントをお持ちの場合は、ログインページからアクセスしてください。`);
               } else {
