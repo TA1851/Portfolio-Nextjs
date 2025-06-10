@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import axios from "axios";
 
 interface SignupFormData {
@@ -28,23 +28,10 @@ const LoginComp: FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
-  const [errorType, setErrorType] = useState<string>(""); // エラータイプを追跡
+  const [errorType, setErrorType] = useState<string>("");
   const [success, setSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string>("");
-  // const [debugInfo, setDebugInfo] = useState<string>("");
-
-  // const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
-    console.log('API URL:', apiUrl);
-
-  // 開発環境でAPIの動作確認
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('環境:', process.env.NODE_ENV);
-      console.log('API URL:', apiUrl);
-      // setDebugInfo(`環境: ${process.env.NODE_ENV}\nAPI URL: ${apiUrl}`);
-    }
-  }, [apiUrl]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,7 +44,7 @@ const LoginComp: FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setErrorType(""); // エラータイプをリセット
+    setErrorType("");
     setIsLoading(true);
 
     // フロントエンドでの簡単なバリデーション
@@ -69,64 +56,35 @@ const LoginComp: FC = () => {
 
     try {
       const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
-      console.log("送信データ:", {
-        username: formData.email.split('@')[0], // usernameフィールドに変更
-        email: formData.email,
-        password: "temp_password_will_be_replaced", // 一時的なパスワード
-        frontend_url: frontendUrl // メール認証リンク生成用
-      });
-      console.log("API URL:", `${apiUrl}/user`);
-      console.log("Frontend URL:", frontendUrl);
 
       const response = await axios.post(`${apiUrl}/user`, {
-        username: formData.email.split('@')[0], // 一時的にusernameフィールドを追加
+        username: formData.email.split('@')[0],
         email: formData.email,
-        password: "temp_password_will_be_replaced", // 一時的なパスワード（メール認証後に変更される）
-        frontend_url: frontendUrl // バックエンドがメール認証リンクを生成するために必要
+        password: "temp_password_will_be_replaced",
+        frontend_url: frontendUrl
       }, {
         headers: {
           'Content-Type': 'application/json'
         },
         validateStatus: function (status) {
-          // 200-299の範囲のステータスコードを成功として扱う
           return status >= 200 && status < 300;
         }
       });
 
-      // 成功時の処理
-      console.log("ユーザー作成成功:", response.data);
-      console.log("レスポンスステータス:", response.status);
-
-      // レスポンスの形式をチェック
       const userData = response.data as ApiSuccessResponse;
       if (userData.email) {
         setRegisteredEmail(userData.email);
         setSuccess(true);
         setFormData({ email: "" });
-        // メール認証の案内メッセージを表示
-        // ユーザーにメール確認を促す
-      } else {
-        console.warn("予期しないレスポンス形式:", userData);
-        setError("登録は完了しましたが、レスポンス形式が予期されたものと異なります。");
       }
     } catch (err) {
-      console.error("詳細エラー情報:", err);
-
       if (axios.isAxiosError(err)) {
-        console.error("Axiosエラー詳細:", {
-          status: err.response?.status,
-          statusText: err.response?.statusText,
-          data: err.response?.data,
-          headers: err.response?.headers
-        });
         if (err.response) {
           const errorData = err.response.data as ApiErrorResponse;
           switch (err.response.status) {
             case 400:
-              // メールアドレスが既に登録済みの場合の詳細処理
               const conflictMessage = errorData.detail || "このメールアドレスは既に使用されています。";
-              console.log("409エラー詳細:", conflictMessage);
-              setErrorType("conflict"); // エラータイプを設定
+              setErrorType("conflict");
               if (conflictMessage.includes('確認済み') || conflictMessage.includes('verified')) {
                 setError(`${conflictMessage} すでにアカウントをお持ちの場合は、ログインページからアクセスしてください。`);
               } else {
@@ -142,21 +100,16 @@ const LoginComp: FC = () => {
               setError(`エラー(${err.response.status}): ${errorData.detail || "予期しないエラーが発生しました。"}`);
           }
         } else if (err.request) {
-          console.error("リクエストエラー:", err.request);
           setErrorType("network");
           setError("サーバーに接続できませんでした。ネットワーク接続を確認してください。");
-          // setDebugInfo(`リクエストエラー: ${JSON.stringify(err.request)}`);
         } else {
-          console.error("設定エラー:", err.message);
           setErrorType("config");
           setError("リクエストの設定エラーが発生しました。");
-          // setDebugInfo(`設定エラー: ${err.message}`);
         }
       } else {
         setErrorType("unknown");
         setError("予期しないエラーが発生しました。");
       }
-      console.error("ユーザー作成エラー:", err);
     } finally {
       setIsLoading(false);
     }
@@ -193,7 +146,9 @@ const LoginComp: FC = () => {
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Link
                         href="/login"
-                        className="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors"
+                        className="
+                          inline-flex items-center justify-center px-4 py-2 bg-blue-500
+                          text-white text-sm rounded-md hover:bg-blue-600 transition-colors"
                       >
                         ログインページへ
                       </Link>
@@ -204,7 +159,9 @@ const LoginComp: FC = () => {
                           setErrorType("");
                           setFormData({ email: "" });
                         }}
-                        className="inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200 transition-colors"
+                        className="
+                          inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700
+                          text-sm rounded-md hover:bg-gray-200 transition-colors"
                       >
                         別のメールアドレスで登録
                       </button>
@@ -250,7 +207,6 @@ const LoginComp: FC = () => {
                 </div>
               </div>
             )}
-
             <div>
               <label htmlFor="email"
                 className="
@@ -272,7 +228,6 @@ const LoginComp: FC = () => {
                 placeholder="example@example.com"
               />
             </div>
-
             <button
               type="submit"
               disabled={isLoading}
@@ -296,14 +251,6 @@ const LoginComp: FC = () => {
             </Link>
           </p>
         </form>
-
-        {/* 開発環境でのデバッグ情報表示 */}
-        {/* {process.env.NODE_ENV === 'development' && debugInfo && (
-          <div className="mt-8 p-4 bg-gray-100 border border-gray-300 rounded-lg text-left max-w-lg mx-auto">
-            <h3 className="font-semibold text-gray-800 mb-2">デバッグ情報</h3>
-            <pre className="text-sm text-gray-600 whitespace-pre-wrap">{debugInfo}</pre>
-          </div>
-        )} */}
       </div>
     </>
   )
