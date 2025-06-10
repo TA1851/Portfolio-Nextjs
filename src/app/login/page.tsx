@@ -4,7 +4,6 @@ import Link from "next/link";
 import { FC, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
-import { saveLog } from "..//../utils/logger";
 
 
 const LoginComp: FC = () => {
@@ -27,28 +26,23 @@ const LoginComp: FC = () => {
         alert('メールアドレスもしくはパスワードが入力されていません。');
         return;
       }
-
       // メールアドレスの形式を検証
       if (!emailValue.includes('@') || !emailValue.endsWith('@gmail.com')) {
         alert('ログイン情報が不正です。正しいログイン情報を入力して下さい。');
         return;
       }
-
       // パスワードが入力されているか検証
       if (!passwordValue) {
         alert('ログイン情報が不正です。正しいログイン情報を入力して下さい。');
         return;
       }
-
       // FormDataを使用する
       try {
         const formData = new FormData();
         formData.append('username', emailValue);
         formData.append('password', passwordValue);
-
         // 環境変数からAPIエンドポイントを取得する
         const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
-        console.log('API URL:', apiUrl);
 
         const response = await axios.post(
           `${apiUrl}/login`,
@@ -59,14 +53,7 @@ const LoginComp: FC = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
 
         router.push('/user');
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-          console.error('ログインに失敗しました:', error.response.data);
-          saveLog('error', 'ログインに失敗しました。');
-        } else {
-          console.error('ログインに失敗しました:', error);
-          saveLog('error', 'ログインに失敗しました。');
-        }
+      } catch {
         router.push('/loginfail');
       }
     }
