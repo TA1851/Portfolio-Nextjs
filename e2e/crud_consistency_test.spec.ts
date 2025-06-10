@@ -1,11 +1,31 @@
 import { test, expect } from '@playwright/test';
 
-const TEST_EMAIL = process.env.E2E_TEST_EMAIL_2;
-const TEST_PASSWORD = process.env.E2E_TEST_PASSWORD_2;
+const TEST_EMAIL = process.env.E2E_TEST_EMAIL_1;
+const TEST_PASSWORD = process.env.E2E_TEST_PASSWORD_1;
 // テスト対象URLを環境変数で設定可能にし、デフォルトで本番環境を使用
 const BASE_URL = process.env.E2E_BASE_URL || 'https://nextjs-app-yvfr.vercel.app';
 
+// 環境変数のチェック
+if (!TEST_EMAIL || !TEST_PASSWORD) {
+  throw new Error('E2E test credentials are not set. Please set E2E_TEST_EMAIL_1/2 and E2E_TEST_PASSWORD_1/2 environment variables.');
+}
+
 test.describe.serial('記事CRUD整合性テスト（UIフィードバック対応版）', () => {
+  
+  test.beforeEach(async () => {
+    // 環境変数の存在確認
+    console.log('=== Environment Variables Check ===');
+    console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('E2E')));
+    console.log('TEST_EMAIL:', TEST_EMAIL ? 'Set' : 'Not set');
+    console.log('TEST_PASSWORD:', TEST_PASSWORD ? 'Set' : 'Not set');
+    console.log('BASE_URL:', BASE_URL);
+    console.log('E2E_TEST_EMAIL_1:', process.env.E2E_TEST_EMAIL_1 ? 'Set' : 'Not set');
+    console.log('================================');
+    
+    if (!TEST_EMAIL || !TEST_PASSWORD) {
+      throw new Error(`Missing credentials - Email: ${TEST_EMAIL ? 'OK' : 'MISSING'}, Password: ${TEST_PASSWORD ? 'OK' : 'MISSING'}`);
+    }
+  });
   
   test('記事作成・確認・削除の完全フロー', async ({ page }) => {
     const timestamp = Date.now();

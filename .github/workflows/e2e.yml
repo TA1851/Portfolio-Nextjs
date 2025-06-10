@@ -31,7 +31,9 @@ jobs:
           E2E_TEST_EMAIL_1: ${{ secrets.E2E_TEST_EMAIL_1 }}
           E2E_TEST_PASSWORD_1: ${{ secrets.E2E_TEST_PASSWORD_1 }}
           NEXT_PUBLIC_API_URL_V1_E2E: ${{ secrets.NEXT_PUBLIC_API_URL_V1_E2E }}
-        run: npx playwright test crud_consistency_test.spec.ts
+        run: |
+          echo "Starting E2E test for crud_consistency_test.spec.ts"
+          npx playwright test crud_consistency_test.spec.ts
         
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
