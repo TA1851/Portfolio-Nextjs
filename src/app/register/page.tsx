@@ -14,8 +14,8 @@ interface ApiErrorResponse {
 
 interface ApiSuccessResponse {
   email: string;
-  password: string;
-  is_active: boolean;
+  password: string | null;
+  is_active: boolean | null;
   id?: number;
   name?: string;
   created_at?: string;
@@ -31,7 +31,8 @@ const LoginComp: FC = () => {
   const [errorType, setErrorType] = useState<string>("");
   const [success, setSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string>("");
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
+  // プロキシAPI経由でリクエストを送信
+  const apiUrl = '/api/register';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -65,7 +66,7 @@ const LoginComp: FC = () => {
     try {
       const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
-      const response = await axios.post(`${apiUrl}/user`, {
+      const response = await axios.post(apiUrl, {
         username: formData.email.split('@')[0],
         email: formData.email,
         password: "temp_password_will_be_replaced",
@@ -74,13 +75,25 @@ const LoginComp: FC = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        validateStatus: function (status) {
-          return status >= 200 && status < 300;
-        }
+        timeout: 30000 // 30秒のタイムアウト
+        // validateStatus を削除して、400エラーも適切にキャッチできるようにする
       });
 
       const userData = response.data as ApiSuccessResponse;
+      
+      // レスポンスの詳細を確認して適切にハンドリング
+      console.log('Registration API response:', userData);
+      
       if (userData.email) {
+        // パスワードがnullの場合、既存ユーザーの可能性を確認
+        if (userData.password === null && userData.is_active === null) {
+          // 既存ユーザーの場合
+          setError(`このメールアドレス（${userData.email}）は既に登録済みです。ログインページからアカウントにアクセスできます。`);
+          setErrorType("conflict");
+          return;
+        }
+        
+        // 新規ユーザー作成成功の場合
         setRegisteredEmail(userData.email);
         setSuccess(true);
         setFormData({ email: "" });
@@ -93,15 +106,27 @@ const LoginComp: FC = () => {
             case 400:
               const conflictMessage = errorData.detail || "このメールアドレスは既に使用されています。";
               setErrorType("conflict");
-              if (conflictMessage.includes('確認済み') || conflictMessage.includes('verified')) {
-                setError(`${conflictMessage} すでにアカウントをお持ちの場合は、ログインページからアクセスしてください。`);
+              
+              // 特定のメッセージパターンに基づいてユーザーフレンドリーなメッセージを表示
+              if (conflictMessage.includes('確認済み') || conflictMessage.includes('verified') || conflictMessage.includes('既に登録済')) {
+                setError(`このメールアドレス（${formData.email}）は既に登録・認証済みです。ログインページからアカウントにアクセスできます。`);
+              } else if (conflictMessage.includes('既に使用') || conflictMessage.includes('already exists')) {
+                setError(`このメールアドレス（${formData.email}）は既に登録されています。まだメール認証が完了していない場合は、メールをご確認ください。`);
               } else {
                 setError(`${conflictMessage} 別のメールアドレスをご使用いただくか、既存のアカウントでログインしてください。`);
               }
               break;
             case 500:
-              setErrorType("server");
-              setError(`${errorData.detail}`);
+              const serverErrorMessage = errorData.detail || "サーバーエラーが発生しました。";
+              
+              // 500エラーでも既存ユーザーのメッセージが含まれている場合は、conflictとして扱う
+              if (serverErrorMessage.includes('既に登録済') || serverErrorMessage.includes('already exists')) {
+                setErrorType("conflict");
+                setError(`このメールアドレス（${formData.email}）は既に登録済みです。ログインページからアカウントにアクセスできます。`);
+              } else {
+                setErrorType("server");
+                setError(serverErrorMessage);
+              }
               break;
             default:
               setErrorType("unknown");
