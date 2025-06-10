@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 const TEST_EMAIL = process.env.E2E_TEST_EMAIL_2;
 const TEST_PASSWORD = process.env.E2E_TEST_PASSWORD_2;
+// テスト対象URLを環境変数で設定可能にし、デフォルトで本番環境を使用
+const BASE_URL = process.env.E2E_BASE_URL || 'https://nextjs-app-yvfr.vercel.app';
 
 test.describe.serial('記事CRUD整合性テスト（UIフィードバック対応版）', () => {
   
@@ -10,7 +12,7 @@ test.describe.serial('記事CRUD整合性テスト（UIフィードバック対�
     const testTitle = `整合性テスト-${timestamp}`;
     
     // ログイン
-    await page.goto('http://localhost:3000/');
+    await page.goto(`${BASE_URL}/`);
     await page.getByRole('link', { name: 'ログイン' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD);
@@ -83,7 +85,7 @@ test.describe.serial('記事CRUD整合性テスト（UIフィードバック対�
     ];
     
     // ログイン
-    await page.goto('http://localhost:3000/');
+    await page.goto(`${BASE_URL}/`);
     await page.getByRole('link', { name: 'ログイン' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD);

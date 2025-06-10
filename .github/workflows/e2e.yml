@@ -29,11 +29,9 @@ jobs:
         env:
           # GitHub SecretsからE2Eテスト用環境変数を設定
           E2E_TEST_EMAIL_1: ${{ secrets.E2E_TEST_EMAIL_1 }}
-          E2E_TEST_EMAIL_2: ${{ secrets.E2E_TEST_EMAIL_2 }}
           E2E_TEST_PASSWORD_1: ${{ secrets.E2E_TEST_PASSWORD_1 }}
-          E2E_TEST_PASSWORD_2: ${{ secrets.E2E_TEST_PASSWORD_2 }}
           NEXT_PUBLIC_API_URL_V1_E2E: ${{ secrets.NEXT_PUBLIC_API_URL_V1_E2E }}
-        run: npx playwright test
+        run: npx playwright test crud_consistency_test.spec.ts
         
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4

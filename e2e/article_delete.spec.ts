@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // 環境変数からテスト用メールアドレスとパスワードを取得
-const TEST_EMAIL_1 = process.env.E2E_TEST_EMAIL_1 || 'test1@example.com';
-const TEST_PASSWORD_1 = process.env.E2E_TEST_PASSWORD_1 || 'password123';
+const TEST_EMAIL_1 = process.env.E2E_TEST_EMAIL_2;
+const TEST_PASSWORD_1 = process.env.E2E_TEST_PASSWORD_2;
 
 test('記事削除テスト（安全版）', async ({ page }) => {
   // ログイン処理

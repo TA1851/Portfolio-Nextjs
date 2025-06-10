@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 // 環境変数からテスト用メールアドレスとパスワードを取得
 const TEST_EMAIL = process.env.E2E_TEST_EMAIL_1;
 const TEST_PASSWORD = process.env.E2E_TEST_PASSWORD_1;
+// テスト対象URLを環境変数で設定可能にし、デフォルトで本番環境を使用
+const BASE_URL = process.env.E2E_BASE_URL || 'https://nextjs-app-yvfr.vercel.app';
 
 // テストタイムアウトを大幅に延長
 test.setTimeout(180000); // 3分
@@ -11,7 +13,7 @@ test.describe('手動記事削除支援ツール', () => {
   
   test('記事リスト表示＆削除対象候補の特定', async ({ page }) => {
     // ログイン
-    await page.goto('https://nextjs-app-yvfr.vercel.app/');
+    await page.goto(`${BASE_URL}/`);
     await page.getByRole('link', { name: 'ログイン' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL!);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD!);
@@ -111,7 +113,7 @@ test.describe('手動記事削除支援ツール', () => {
 🛠️ 削除方法:
 1. 一括削除: npx playwright test e2e/cleanup_test_articles.spec.ts --grep "一括削除"
 2. 手動削除: npx playwright test e2e/manual_article_cleanup.spec.ts --grep "手動削除"
-3. Web UI: ブラウザで https://nextjs-app-yvfr.vercel.app/ にアクセスして手動削除
+3. Web UI: ブラウザで ${BASE_URL}/ にアクセスして手動削除
 
 ⚠️ 注意: 削除は元に戻せません。重要な記事がないか十分確認してください。
     `);
@@ -123,7 +125,7 @@ test.describe('手動記事削除支援ツール', () => {
   
   test('手動削除モード（1件ずつ確認）', async ({ page }) => {
     // ログイン
-    await page.goto('https://nextjs-app-yvfr.vercel.app/');
+    await page.goto(`${BASE_URL}/`);
     await page.getByRole('link', { name: 'ログイン' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL!);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD!);
@@ -252,7 +254,7 @@ test.describe('手動記事削除支援ツール', () => {
   
   test('特定記事名で検索＆削除', async ({ page }) => {
     // ログイン
-    await page.goto('https://nextjs-app-yvfr.vercel.app/');
+    await page.goto(`${BASE_URL}/`);
     await page.getByRole('link', { name: 'ログイン' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL!);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD!);

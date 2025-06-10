@@ -1,9 +1,9 @@
 import { test } from '@playwright/test';
 
 // 環境変数からテスト用メールアドレスとパスワードを取得
-const TEST_EMAIL_1 = process.env.E2E_TEST_EMAIL_1 || 'test1@example.com';
+const TEST_EMAIL_1 = process.env.E2E_TEST_EMAIL_2 || 'test2@example.com';
 const TEST_EMAIL_2 = process.env.E2E_TEST_EMAIL_2 || 'test2@example.com';
-const TEST_PASSWORD_1 = process.env.E2E_TEST_PASSWORD_1 || 'password123';
+const TEST_PASSWORD_1 = process.env.E2E_TEST_PASSWORD_2 || 'password456';
 const TEST_PASSWORD_2 = process.env.E2E_TEST_PASSWORD_2 || 'password456';
 
 test('test', async ({ page }) => {

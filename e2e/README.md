@@ -13,9 +13,10 @@
 ### 👤 **ユーザー管理テスト**
 - `users.spec.ts` - ユーザー管理機能テスト
 - `register.spec.ts` - ユーザー登録機能テスト
+- `existing_user_registration_test.spec.ts` - 既存ユーザー登録エラーハンドリングテスト
 
-### 🐛 **その他の機能テスト**
-- `bug-report.spec.ts` - バグレポート機能テスト
+### 🧹 **メンテナンス**
+- `manual_article_cleanup.spec.ts` - 手動記事クリーンアップツール
 
 ### 📋 **テスト証跡**
 - `evidence/` - テスト実行時の証跡・スクリーンショット

@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // 環境変数からテスト用メールアドレスとパスワードを取得
-const TEST_EMAIL = process.env.E2E_TEST_EMAIL_1;
-const TEST_PASSWORD = process.env.E2E_TEST_PASSWORD_1;
+const TEST_EMAIL = process.env.E2E_TEST_EMAIL_2;
+const TEST_PASSWORD = process.env.E2E_TEST_PASSWORD_2;
 
 test('記事更新テスト（改良版）', async ({ page }) => {
   const timestamp = Date.now();
