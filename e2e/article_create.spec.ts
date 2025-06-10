@@ -22,26 +22,55 @@ test('記事作成テスト（改良版）', async ({ page }) => {
   await page.getByRole('textbox', { name: 'タイトル' }).fill(`下書きテスト-${timestamp}`);
   await page.getByRole('textbox', { name: '記事本文' }).fill('これは下書き記事のテストです。');
   await page.getByRole('button', { name: '下書き保存' }).click();
+  // 成功メッセージの確認
+  const successAlert = page.locator('[role="alert"]').filter({ hasText: '下書き保存しました' });
+  await successAlert.waitFor({ state: 'visible', timeout: 10000 });
   
-  // フォームクリアの確認
-  await page.waitForTimeout(2000);
+  const messageText = await successAlert.textContent();
+  expect(messageText).toContain(`下書きテスト-${timestamp}`);
+  
+  // 少し待ってからフォームクリアの確認
+  await page.waitForTimeout(3000);
+  
+  // 記事作成ページに再度移動してフォームがクリアされているか確認
+  await page.getByRole('link', { name: '記事を書く' }).click();
+  await page.waitForLoadState('networkidle');
+  
   const titleValue1 = await page.getByRole('textbox', { name: 'タイトル' }).inputValue();
   expect(titleValue1).toBe('');
   console.log(`✅ 下書き記事作成: 下書きテスト-${timestamp}`);
 
   // 2. 公開記事の作成テスト  
-  await page.getByRole('link', { name: '記事を書く' }).click();
   await page.getByRole('textbox', { name: 'タイトル' }).fill(`公開テスト-${timestamp}`);
   await page.getByRole('textbox', { name: '記事本文' }).fill('これは公開記事のテストです。');
   await page.getByRole('button', { name: '公開する' }).click();
   
-  // フォームクリアの確認
-  await page.waitForTimeout(2000);
+  // 確認ダイアログで「公開する」ボタンをクリック
+  await page.getByRole('button', { name: '公開する' }).click();
+  
+  // 成功メッセージの確認
+  const publishAlert = page.locator('[role="alert"]').filter({ hasText: '公開しました' });
+  await publishAlert.waitFor({ state: 'visible', timeout: 10000 });
+  
+  const publishMessageText = await publishAlert.textContent();
+  expect(publishMessageText).toContain(`公開テスト-${timestamp}`);
+  
+  // 少し待ってからフォームクリアの確認
+  await page.waitForTimeout(3000);
+  
+  // 記事作成ページに再度移動してフォームがクリアされているか確認
+  await page.getByRole('link', { name: '記事を書く' }).click();
+  await page.waitForLoadState('networkidle');
+  
   const titleValue2 = await page.getByRole('textbox', { name: 'タイトル' }).inputValue();
   expect(titleValue2).toBe('');
   console.log(`✅ 公開記事作成: 公開テスト-${timestamp}`);
 
   // 3. 作成した記事の削除（クリーンアップ）
+  // まず会員専用ページに戻る
+  await page.getByRole('button', { name: '会員専用ページに戻る' }).click();
+  await page.waitForLoadState('networkidle');
+  
   await page.getByRole('link', { name: '記事を削除する' }).click();
   
   // 下書き記事の削除
