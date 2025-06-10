@@ -10,7 +10,7 @@ test.describe.serial('記事CRUD整合性テスト（UIフィードバック対�
     const testTitle = `整合性テスト-${timestamp}`;
     
     // ログイン
-    await page.goto('https://nextjs-app-yvfr.vercel.app/');
+    await page.goto('http://localhost:3000/');
     await page.getByRole('link', { name: 'ログイン' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD);
@@ -83,7 +83,7 @@ test.describe.serial('記事CRUD整合性テスト（UIフィードバック対�
     ];
     
     // ログイン
-    await page.goto('https://nextjs-app-yvfr.vercel.app/');
+    await page.goto('http://localhost:3000/');
     await page.getByRole('link', { name: 'ログイン' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD);

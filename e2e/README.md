@@ -22,13 +22,13 @@
 
 ## 🔧 環境変数の設定
 
-E2Eテストでは個人のメールアドレスを環境変数として設定しています。  
+E2Eテストでは許可されたメールアドレス（`taosaka1851@gmail.com`）を環境変数として設定しています。  
 プロジェクトルートに `.env.local` ファイルを作成し、以下の環境変数を設定してください：
 
 ```bash
 # E2Eテスト用環境変数
-E2E_TEST_EMAIL_1=your-test-email-1@example.com
-E2E_TEST_EMAIL_2=your-test-email-2@example.com
+E2E_TEST_EMAIL_1=taosaka1851@gmail.com
+E2E_TEST_EMAIL_2=taosaka1851@gmail.com
 E2E_TEST_PASSWORD_1=your-password-1
 E2E_TEST_PASSWORD_2=your-password-2
 ```

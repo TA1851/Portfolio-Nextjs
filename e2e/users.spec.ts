@@ -7,7 +7,7 @@ const TEST_PASSWORD_1 = process.env.E2E_TEST_PASSWORD_1 || 'password123';
 const TEST_PASSWORD_2 = process.env.E2E_TEST_PASSWORD_2 || 'password456';
 
 test('test', async ({ page }) => {
-  await page.goto('https://nextjs-app-yvfr.vercel.app/');
+  await page.goto('http://localhost:3000/');
   await page.getByRole('link', { name: 'ログイン' }).click();
   await page.getByRole('link', { name: 'ホームに戻る' }).click();
   await page.getByRole('link', { name: 'ログイン' }).click();

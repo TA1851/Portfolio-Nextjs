@@ -54,6 +54,14 @@ const LoginComp: FC = () => {
       return;
     }
 
+    // 許可されたメールアドレスのチェック
+    if (formData.email !== "taosaka1851@gmail.com") {
+      setError("このメールアドレスでの新規登録は許可されていません。");
+      setErrorType("restricted");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
 

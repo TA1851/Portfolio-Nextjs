@@ -28,6 +28,9 @@ const VerifyEmailForm: FC = () => {
   const code = searchParams.get('code');
 
   useEffect(() => {
+    // ページタイトルを設定
+    document.title = 'メール認証 - ブログサービス';
+    
     const verifyEmail = async () => {
       // 詳細なデバッグ情報をセット
       const currentUrl = window.location.href;
@@ -78,6 +81,10 @@ const VerifyEmailForm: FC = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            validateStatus: function (status) {
+              // すべてのステータスコードを受け入れて適切にハンドリング
+              return status >= 200 && status < 600;
+            }
           }
         );
 
