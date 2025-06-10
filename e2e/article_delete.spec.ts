@@ -1,76 +1,48 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 // 環境変数からテスト用メールアドレスとパスワードを取得
 const TEST_EMAIL_1 = process.env.E2E_TEST_EMAIL_1 || 'test1@example.com';
 const TEST_PASSWORD_1 = process.env.E2E_TEST_PASSWORD_1 || 'password123';
 
-test('test', async ({ page }) => {
-  await page.goto('https://nextjs-app-yvfr.vercel.app/user');
-  await page.getByRole('button', { name: 'ログアウト' }).click();
-  await page.getByRole('button', { name: 'ログアウト' }).click();
+test('記事削除テスト（安全版）', async ({ page }) => {
+  // ログイン処理
   await page.goto('https://nextjs-app-yvfr.vercel.app/');
   await page.getByRole('link', { name: 'ログイン' }).click();
-  await page.getByRole('textbox', { name: 'Email' }).click();
-  await page.getByRole('textbox', { name: 'Email' }).fill('');
-  await page.getByRole('textbox', { name: 'Email' }).fill('Eisu');
   await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL_1);
-  await page.getByRole('textbox', { name: 'Email' }).press('Tab');
   await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD_1);
   await page.getByRole('button', { name: 'ログイン' }).click();
+
+  // ログイン成功確認
+  await expect(page.getByRole('link', { name: '記事を削除する' })).toBeVisible();
+
+  // まず削除用のテスト記事を作成
+  const testTitle = `削除テスト用記事-${Date.now()}`;
+  
   await page.getByRole('link', { name: '記事を書く' }).click();
-  await page.getByRole('textbox', { name: 'タイトル' }).click();
-  await page.getByRole('textbox', { name: 'タイトル' }).fill('KanjiMode');
-  await page.getByRole('textbox', { name: 'タイトル' }).press('Tab');
-  await page.getByRole('textbox', { name: '記事本文' }).fill('テスト');
-  await page.getByRole('button', { name: 'キャンセル' }).click();
-  await page.getByRole('link', { name: '記事を書く' }).click();
-  await page.getByRole('textbox', { name: 'タイトル' }).click();
-  await page.getByRole('textbox', { name: 'タイトル' }).fill('公開');
-  await page.getByRole('textbox', { name: 'タイトル' }).press('Enter');
-  await page.getByRole('textbox', { name: 'タイトル' }).press('Tab');
-  await page.getByRole('textbox', { name: '記事本文' }).fill('テスト');
-  await page.getByRole('textbox', { name: '記事本文' }).press('Tab');
-  await page.getByRole('button', { name: '下書き保存' }).press('Tab');
-  await page.getByRole('button', { name: '公開する' }).click();
-  await page.getByRole('button', { name: '公開する' }).click();
-  await page.getByRole('link', { name: '記事を書く' }).click();
-  await page.getByRole('textbox', { name: 'タイトル' }).click();
-  await page.getByRole('textbox', { name: 'タイトル' }).fill('KanjiMode');
-  await page.getByRole('textbox', { name: '記事本文' }).click();
-  await page.getByRole('textbox', { name: '記事本文' }).fill('テスト');
+  await page.getByRole('textbox', { name: 'タイトル' }).fill(testTitle);
+  await page.getByRole('textbox', { name: '記事本文' }).fill('削除テスト用の記事です。');
   await page.getByRole('button', { name: '下書き保存' }).click();
-  await page.getByRole('link', { name: '記事を編集する' }).click();
-  await page.getByRole('button', { name: 'select article' }).click();
-  await page.getByRole('menuitem', { name: 'test' }).click();
-  await page.getByRole('textbox', { name: '本文' }).click();
-  await page.getByRole('textbox', { name: '本文' }).fill('test\n');
-  await page.getByRole('textbox', { name: '本文' }).fill('KanjiMode');
-  await page.getByRole('textbox', { name: '本文' }).fill('test\n編集のテスト');
-  await page.getByRole('textbox', { name: '本文' }).click();
-  await page.getByRole('textbox', { name: '本文' }).fill('test\n編集のキャンセル');
-  await page.getByRole('button', { name: 'キャンセル' }).click();
-  await page.getByRole('link', { name: '記事を編集する' }).click();
-  await page.getByRole('button', { name: '戻る' }).click();
-  await page.getByRole('link', { name: '記事を編集する' }).click();
-  await page.getByRole('button', { name: 'select article' }).click();
-  await page.getByRole('menuitem', { name: 'test' }).click();
-  await page.getByRole('textbox', { name: '本文' }).click();
-  await page.getByRole('textbox', { name: '本文' }).fill('編集');
-  await page.getByRole('button', { name: '公開' }).click();
-  await page.getByRole('button', { name: '確認' }).click();
-  await page.getByRole('link', { name: '記事を編集する' }).click();
-  await page.getByRole('button', { name: 'select article' }).click();
-  await page.getByRole('menuitem', { name: 'test' }).click();
-  await page.getByRole('textbox', { name: '本文' }).click();
-  await page.getByRole('textbox', { name: '本文' }).fill('編集\n\n下書き');
-  await page.getByRole('button', { name: '下書き保存' }).click();
-  await page.getByRole('button', { name: '確認' }).click();
+  
+  // 作成完了の待機
+  await page.waitForTimeout(2000);
+
+  // 削除ページに移動
   await page.getByRole('link', { name: '記事を削除する' }).click();
-  await page.getByRole('button', { name: '会員専用ページに戻る' }).click();
-  await page.getByRole('link', { name: '記事を削除する' }).click();
-  await page.getByRole('listitem').filter({ hasText: 'KanjiMode' }).getByLabel('delete').first().click();
+  
+  // 作成した記事が存在することを確認
+  const articleItem = page.getByRole('listitem').filter({ hasText: testTitle });
+  await expect(articleItem).toBeVisible({ timeout: 10000 });
+  
+  // 記事を削除
+  await articleItem.getByLabel('delete').first().click();
   await page.getByRole('button', { name: '削除' }).click();
-  await page.getByRole('listitem').filter({ hasText: 'test' }).getByLabel('delete').first().click();
-  await page.getByRole('button', { name: 'キャンセル' }).click();
-  await page.getByRole('button', { name: '会員専用ページに戻る' }).click();
+  
+  // 削除完了の待機
+  await page.waitForTimeout(2000);
+  
+  // 記事が削除されたことを確認
+  const deletedItem = page.getByText(testTitle);
+  await expect(deletedItem).not.toBeVisible();
+  
+  console.log(`✅ 記事削除テスト完了: ${testTitle}`);
 });

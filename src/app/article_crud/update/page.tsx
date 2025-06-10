@@ -8,7 +8,8 @@ import { styled } from '@mui/material/styles';
 import {
   TextField, Button, Box, Typography, Paper, CircularProgress,
   MenuItem, Popper, Grow, MenuList, ClickAwayListener, Dialog,
-  DialogActions, DialogContent, DialogContentText, DialogTitle
+  DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Snackbar, Alert
 } from '@mui/material';
 
 // Material UIアイコン
@@ -340,6 +341,13 @@ const PostForm: React.FC<PostFormProps> = (
   const [openDialog, setOpenDialog] = useState<{
     action: 'draft' | 'publish' | null }>({ action: null
     });
+  
+  // 成功・エラーメッセージの状態管理
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [showSuccessSnackbar, setShowSuccessSnackbar] = useState<boolean>(false);
+  const [showErrorSnackbar, setShowErrorSnackbar] = useState<boolean>(false);
+  
   const router = useRouter();
   // 初期データが変更されたらフォームデータを更新
   useEffect(() => {
@@ -443,14 +451,20 @@ const PostForm: React.FC<PostFormProps> = (
       }
       // const result = await response.json();
       // console.log('API 成功レスポンス:', result);
-      // 成功したら一覧ページに戻る
-      router.push('/user');
+      // 成功メッセージを表示
+      setSuccessMessage(`記事「${formData.title}」を${action === 'publish' ? '公開' : '下書き保存'}しました`);
+      setShowSuccessSnackbar(true);
+      
+      // 1.5秒後に一覧ページに戻る
+      setTimeout(() => {
+        router.push('/user');
+      }, 1500);
     } catch (error) {
       console.error('更新エラー:', error);
-      alert(
-        `記事の更新に失敗しました:
-        ${error instanceof Error ? error.message : '不明なエラー'}`
+      setErrorMessage(
+        `記事の更新に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`
       );
+      setShowErrorSnackbar(true);
     } finally {
       setSaving(false);
       handleCloseDialog();
@@ -605,6 +619,38 @@ const PostForm: React.FC<PostFormProps> = (
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* 成功メッセージ */}
+      <Snackbar
+        open={showSuccessSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setShowSuccessSnackbar(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setShowSuccessSnackbar(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
+
+      {/* エラーメッセージ */}
+      <Snackbar
+        open={showErrorSnackbar}
+        autoHideDuration={8000}
+        onClose={() => setShowErrorSnackbar(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setShowErrorSnackbar(false)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </StyledPaper>
   );
 };

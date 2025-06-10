@@ -12,6 +12,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import PublishIcon from '@mui/icons-material/Publish';
 import SaveIcon from '@mui/icons-material/Save';
@@ -66,6 +68,13 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false); // ダイアログのオープン状態
+  
+  // 成功・エラーメッセージの状態管理
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [showSuccessSnackbar, setShowSuccessSnackbar] = useState<boolean>(false);
+  const [showErrorSnackbar, setShowErrorSnackbar] = useState<boolean>(false);
+  
   const router = useRouter();
 
   // 入力フィールドの変更ハンドラー
@@ -263,20 +272,34 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         // console.log('作成成功:', result);
 
         // 成功したら記事一覧ページに戻る
-        router.push('/user');
+        setSuccessMessage(`記事「${formData.title}」を${action === 'publish' ? '公開' : '下書き保存'}しました`);
+        setShowSuccessSnackbar(true);
+        
+        // フォームをクリア
+        setFormData({
+          title: '',
+          content: '',
+          publishStatus: 'draft',
+        });
+        
+        // 1.5秒後にページ遷移
+        setTimeout(() => {
+          router.push('/user');
+        }, 1500);
       } catch (error) {
         console.error('Error during API call:', error);
-        alert(
+        setErrorMessage(
           'API呼び出し中にエラーが発生しました：'
           + (error instanceof Error ? error.message : String(error))
         );
+        setShowErrorSnackbar(true);
       }
     } catch (error) {
       console.error('投稿エラー:', error);
-      alert(
-        `記事の保存に失敗しました:
-        ${error instanceof Error ? error.message : '不明なエラー'}`
+      setErrorMessage(
+        `記事の保存に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`
       );
+      setShowErrorSnackbar(true);
     } finally {
       setSaving(false);
     }
@@ -450,6 +473,38 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* 成功メッセージ */}
+      <Snackbar
+        open={showSuccessSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setShowSuccessSnackbar(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setShowSuccessSnackbar(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
+
+      {/* エラーメッセージ */}
+      <Snackbar
+        open={showErrorSnackbar}
+        autoHideDuration={8000}
+        onClose={() => setShowErrorSnackbar(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setShowErrorSnackbar(false)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </StyledPaper>
   );
 };
