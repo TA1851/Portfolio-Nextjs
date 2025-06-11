@@ -48,13 +48,12 @@ const LoginComp: FC = () => {
     setErrorType("");
     setIsLoading(true);
 
-    // フロントエンドでの簡単なバリデーション
+    // バリデーション
     if (!formData.email) {
       setError("メールアドレスを入力してください。");
       setIsLoading(false);
       return;
     }
-
     // 許可されたメールアドレスのチェック
     if (formData.email !== "taosaka1851@gmail.com") {
       setError("このメールアドレスでの新規登録は許可されていません。");
@@ -62,10 +61,8 @@ const LoginComp: FC = () => {
       setIsLoading(false);
       return;
     }
-
     try {
       const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
-
       const response = await axios.post(apiUrl, {
         username: formData.email.split('@')[0],
         email: formData.email,
@@ -76,23 +73,21 @@ const LoginComp: FC = () => {
           'Content-Type': 'application/json'
         },
         timeout: 30000 // 30秒のタイムアウト
-        // validateStatus を削除して、400エラーも適切にキャッチできるようにする
       });
 
       const userData = response.data as ApiSuccessResponse;
-      
       // レスポンスの詳細を確認して適切にハンドリング
-      console.log('Registration API response:', userData);
-      
       if (userData.email) {
         // パスワードがnullの場合、既存ユーザーの可能性を確認
         if (userData.password === null && userData.is_active === null) {
           // 既存ユーザーの場合
-          setError(`このメールアドレス（${userData.email}）は既に登録済みです。ログインページからアカウントにアクセスできます。`);
+          setError(
+            `このメールアドレス（${userData.email}）は既に登録済みです。
+            ログインページからアカウントにアクセスできます。`
+          );
           setErrorType("conflict");
           return;
         }
-        
         // 新規ユーザー作成成功の場合
         setRegisteredEmail(userData.email);
         setSuccess(true);
@@ -106,23 +101,42 @@ const LoginComp: FC = () => {
             case 400:
               const conflictMessage = errorData.detail || "このメールアドレスは既に使用されています。";
               setErrorType("conflict");
-              
               // 特定のメッセージパターンに基づいてユーザーフレンドリーなメッセージを表示
-              if (conflictMessage.includes('確認済み') || conflictMessage.includes('verified') || conflictMessage.includes('既に登録済')) {
-                setError(`このメールアドレス（${formData.email}）は既に登録・認証済みです。ログインページからアカウントにアクセスできます。`);
-              } else if (conflictMessage.includes('既に使用') || conflictMessage.includes('already exists')) {
-                setError(`このメールアドレス（${formData.email}）は既に登録されています。まだメール認証が完了していない場合は、メールをご確認ください。`);
+              if (
+                conflictMessage.includes('確認済み')
+                || conflictMessage.includes('verified')
+                || conflictMessage.includes('既に登録済')
+              ) {
+                setError(
+                  `このメールアドレス（${formData.email}）は既に登録・認証済みです。
+                  ログインページからアカウントにアクセスできます。`
+                );
+              } else if (
+                conflictMessage.includes('既に使用')
+                || conflictMessage.includes('already exists')
+              ) {
+                setError(
+                  `このメールアドレス（${formData.email}）は既に登録されています。
+                  まだメール認証が完了していない場合は、メールをご確認ください。`
+                );
               } else {
-                setError(`${conflictMessage} 別のメールアドレスをご使用いただくか、既存のアカウントでログインしてください。`);
+                setError(
+                  `${conflictMessage} 別のメールアドレスをご使用いただくか、既存のアカウントでログインしてください。`
+                );
               }
               break;
             case 500:
-              const serverErrorMessage = errorData.detail || "サーバーエラーが発生しました。";
-              
+              const serverErrorMessage = errorData.detail
+              || "サーバーエラーが発生しました。";
               // 500エラーでも既存ユーザーのメッセージが含まれている場合は、conflictとして扱う
-              if (serverErrorMessage.includes('既に登録済') || serverErrorMessage.includes('already exists')) {
+              if (
+                serverErrorMessage.includes('既に登録済')
+                || serverErrorMessage.includes('already exists')
+              ) {
                 setErrorType("conflict");
-                setError(`このメールアドレス（${formData.email}）は既に登録済みです。ログインページからアカウントにアクセスできます。`);
+                setError(
+                  `このメールアドレス（${formData.email}）は既に登録済みです。
+                  ログインページからアカウントにアクセスできます。`);
               } else {
                 setErrorType("server");
                 setError(serverErrorMessage);
@@ -130,11 +144,16 @@ const LoginComp: FC = () => {
               break;
             default:
               setErrorType("unknown");
-              setError(`エラー(${err.response.status}): ${errorData.detail || "予期しないエラーが発生しました。"}`);
+              setError(
+                `エラー(${err.response.status}): ${errorData.detail
+                  || "予期しないエラーが発生しました。"}`
+                );
           }
         } else if (err.request) {
           setErrorType("network");
-          setError("サーバーに接続できませんでした。ネットワーク接続を確認してください。");
+          setError(
+            "サーバーに接続できませんでした。ネットワーク接続を確認してください。"
+          );
         } else {
           setErrorType("config");
           setError("リクエストの設定エラーが発生しました。");
@@ -151,7 +170,8 @@ const LoginComp: FC = () => {
   return (
     <>
       <div
-        className="bg-white min-h-screenpy-6 sm:py-60 lg:py-12"
+        className="
+          bg-white min-h-screen py-6 sm:py-60 lg:py-12"
       >
         <h2
           className="

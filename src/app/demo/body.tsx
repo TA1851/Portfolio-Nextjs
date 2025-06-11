@@ -4,12 +4,14 @@ import { FC, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { CircularProgress, Box, Typography } from '@mui/material';
 
+
 // 記事の型定義
 interface Article {
   article_id: number;
   title: string;
   body_html: string;
 }
+
 
 const BodyComp: FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -24,7 +26,7 @@ const BodyComp: FC = () => {
     }
     return true;
   });
-  const articlesPerPage = 6;
+  const articlesPerPage = 6; // 1ページあたりの記事数
 
   // HTMLタグを除去してプレーンテキストに変換する関数
   const stripHtml = (html: string) => {
@@ -45,7 +47,6 @@ const BodyComp: FC = () => {
   // ページ変更ハンドラ
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // ページ変更時にトップにスクロール
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -175,7 +176,6 @@ const BodyComp: FC = () => {
       </Box>
     );
   };
-
   return (
     <>
       <div
@@ -344,7 +344,6 @@ const BodyComp: FC = () => {
                           </button>
                         );
                       })}
-
                       {/* 次のページボタン */}
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
@@ -360,14 +359,6 @@ const BodyComp: FC = () => {
                     </nav>
                   </div>
                 )}
-
-                {/* ページ情報 */}
-                {/* {articles.length > 0 && (
-                  <div className="mt-6 text-center text-sm text-gray-500">
-                    {articles.length}件中 {indexOfFirstArticle + 1}-{Math.min(indexOfLastArticle, articles.length)}件を表示
-                    {totalPages > 1 && ` (${currentPage}/${totalPages}ページ)`}
-                  </div>
-                )} */}
               </>
             )}
         </div>

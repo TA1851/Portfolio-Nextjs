@@ -12,6 +12,7 @@ import {
   Snackbar, Alert
 } from '@mui/material';
 
+
 // Material UIアイコン
 import {
   Save as SaveIcon,
@@ -28,6 +29,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
 }));
 
+
 // 記事データの型定義
 interface Article {
   article_id: number;
@@ -36,12 +38,14 @@ interface Article {
   user_id: number;
 }
 
+
 // フォームデータの型定義
 interface PostFormData {
   title: string;
   content: string;
   publishStatus: 'draft' | 'published';
 }
+
 
 // エラーの型定義
 interface FormErrors {
@@ -50,10 +54,12 @@ interface FormErrors {
   articleId?: string;
 }
 
+
 // コンポーネントのpropsの型定義
 interface PostFormProps {
   initialData?: Article | null;
 }
+
 
 // 記事更新ページのメインコンポーネント
 const UpdateArticlePage: React.FC = () => {
@@ -125,7 +131,6 @@ const UpdateArticlePage: React.FC = () => {
     }
     setOpen(false);
   };
-
   return (
     <div
       className="container mx-auto px-4 py-8 bg-white"
@@ -155,7 +160,6 @@ const UpdateArticlePage: React.FC = () => {
           </Button>
         )}
       </Box>
-
       {loading ? (
         <Box
           className="flex justify-center p-4"
@@ -326,7 +330,6 @@ const UpdateArticlePage: React.FC = () => {
     </div>
   );
 };
-
 const PostForm: React.FC<PostFormProps> = (
   { initialData = null }
   ) => {
@@ -341,15 +344,15 @@ const PostForm: React.FC<PostFormProps> = (
   const [openDialog, setOpenDialog] = useState<{
     action: 'draft' | 'publish' | null }>({ action: null
     });
-  
+
   // 成功・エラーメッセージの状態管理
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showSuccessSnackbar, setShowSuccessSnackbar] = useState<boolean>(false);
   const [showErrorSnackbar, setShowErrorSnackbar] = useState<boolean>(false);
-  
-  const router = useRouter();
+
   // 初期データが変更されたらフォームデータを更新
+  const router = useRouter();
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -449,12 +452,10 @@ const PostForm: React.FC<PostFormProps> = (
         console.error('API エラーレスポンス:', errorText);
         throw new Error(`記事の更新に失敗しました (${response.status})`);
       }
-      // const result = await response.json();
-      // console.log('API 成功レスポンス:', result);
       // 成功メッセージを表示
       setSuccessMessage(`記事「${formData.title}」を${action === 'publish' ? '公開' : '下書き保存'}しました`);
       setShowSuccessSnackbar(true);
-      
+
       // 1.5秒後に一覧ページに戻る
       setTimeout(() => {
         router.push('/user');

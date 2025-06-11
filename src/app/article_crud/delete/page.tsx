@@ -15,6 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+
 // 記事の型定義
 interface Article {
   article_id: number;
@@ -25,6 +26,7 @@ interface Article {
   created_at?: string;
   updated_at?: string;
 }
+
 
 // 環境変数からAPI_URLを取得
 const API_URL = process.env.NEXT_PUBLIC_API_URL_V1;
@@ -198,7 +200,6 @@ export default function DeleteArticlePage() {
     }
 
     setLoading(true);
-    
     let retryCount = 0;
     const maxRetries = 2;
 
@@ -208,7 +209,6 @@ export default function DeleteArticlePage() {
       }
 
       console.log(`記事ID ${articleId} の削除を開始します (試行: ${retryCount + 1}/${maxRetries + 1})`);
-      
       const currentToken = localStorage.getItem("authToken");
       if (!currentToken) {
         throw new Error("認証情報がありません。再度ログインしてください。");
@@ -246,7 +246,6 @@ export default function DeleteArticlePage() {
       updateArticlesList(articleId);
       setSuccessMessage("記事が正常に削除されました");
       setOpenSnackbar(true);
-      
     } catch (error: unknown) {
       console.error("記事の削除中にエラーが発生しました:", error);
 
@@ -271,7 +270,6 @@ export default function DeleteArticlePage() {
       } else {
         errorMsg = `不明なエラー: ${String(error)}`;
       }
-      
       setErrorMessage(errorMsg);
       setOpenErrorSnackbar(true);
       setError(errorMsg);

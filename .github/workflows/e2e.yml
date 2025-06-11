@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   schedule:
-    - cron: '0 6 * * *'  # 毎日午前2時（日本時間 午後3時）
+    - cron: '0 */1 * * *'  # 毎時0分に実行（1時間おき）
   push:
     branches: [main]
   pull_request:
@@ -27,10 +27,10 @@ jobs:
         
       - name: Run E2E Tests
         env:
-          # GitHub SecretsからE2Eテスト用環境変数を設定
           E2E_TEST_EMAIL_1: ${{ secrets.E2E_TEST_EMAIL_1 }}
           E2E_TEST_PASSWORD_1: ${{ secrets.E2E_TEST_PASSWORD_1 }}
           NEXT_PUBLIC_API_URL_V1_E2E: ${{ secrets.NEXT_PUBLIC_API_URL_V1_E2E }}
+        # 実行されるファイル
         run: |
           echo "Starting E2E test for crud_consistency_test.spec.ts"
           npx playwright test crud_consistency_test.spec.ts

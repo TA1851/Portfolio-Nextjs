@@ -170,39 +170,26 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
         user_id: 6,
         publish_status: action === 'publish' ? 'published' : 'draft',
       };
-
-      // console.log('送信データ:', postData);
-
       try {
         // トークン取得とログ出力
         const token = localStorage.getItem('authToken');
-        // console.log('Token in storage:', token); // トークン全体を出力
-
         // トークンの存在確認
         if (!token) {
-          // console.error('トークンがありません');
           alert('ログインが必要です。ログイン画面に移動します。');
           router.push('/login');
           return;
         }
-
-        // JWT判定
-        // const isJWT = token.split('.').length === 3;
-        // console.log('トークン形式:', isJWT ? 'JWT形式' : '通常文字列');
-
         // トークンをクリーン化
         cleanToken = token.trim();
 
         // トークンの正当性を確認
         if (
           cleanToken === 'undefined' || cleanToken === 'null' || cleanToken === '') {
-          // console.error('無効なトークン:', cleanToken);
           localStorage.removeItem('authToken');
           alert('認証情報が無効です。再度ログインしてください。');
           router.push('/login');
           return;
         }
-
         // 環境変数からAPIエンドポイントを取得する
         const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         const response = await fetch(
@@ -214,9 +201,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           },
           body: JSON.stringify(postData)
         });
-
-        // console.log('レスポンスステータス:', response.status); // デバッグログ追加
-
         // 401エラー発生時に一度リフレッシュを試す
         if (response.status === 401) {
           const newToken = await refreshToken();
@@ -243,8 +227,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
 
         // レスポンスのテキストを取得
         const responseText = await response.text();
-        // console.log('レスポンスボディ:', responseText);
-
         if (!response.ok) {
           let errorData = null;
           try {
@@ -253,35 +235,21 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
             console.error('JSONパースエラー:', e);
             errorData = responseText;
           }
-
           console.error('APIエラー:', response.status, errorData);
           throw new Error(
             `記事の保存に失敗しました(${response.status}):
             ${typeof errorData === 'object' ? JSON.stringify(errorData) : errorData}`);
         }
-
-        // 正常なレスポンスをJSONとしてパース
-        // let result;
-        // try {
-        //   result = responseText ? JSON.parse(responseText) : {};
-        // } catch (e) {
-        //   console.warn('成功レスポンスのJSONパースエラー:', e);
-        //   result = { message: '記事が作成されましたが、レスポンスの解析に失敗しました' };
-        // }
-
-        // console.log('作成成功:', result);
-
         // 成功したら記事一覧ページに戻る
         setSuccessMessage(`記事「${formData.title}」を${action === 'publish' ? '公開' : '下書き保存'}しました`);
         setShowSuccessSnackbar(true);
-        
+
         // フォームをクリア
         setFormData({
           title: '',
           content: '',
           publishStatus: 'draft',
         });
-        
         // 1.5秒後にページ遷移
         setTimeout(() => {
           router.push('/user');
@@ -309,7 +277,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
   const handleClose = () => {
     setOpen(false);
   };
-
   return (
     <StyledPaper elevation={0}
     className="

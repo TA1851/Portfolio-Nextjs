@@ -11,6 +11,7 @@ marked.setOptions({
   gfm: true,    // GitHub Flavored Markdownを有効
 });
 
+
 // 記事詳細の型定義
 interface ArticleDetail {
   title: string;
@@ -18,6 +19,7 @@ interface ArticleDetail {
   user_id: number;
   article_id: number;
 }
+
 
 // 記事詳細ページのコンポーネント
 const ArticleDetailPage: FC = () => {
@@ -29,25 +31,19 @@ const ArticleDetailPage: FC = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        // console.log('パラメータ:', params);
         const id = params.id;
-        // console.log('URLから取得したID:', id, '型:', typeof id);
-
         if (!id) {
           console.error('無効な記事ID:', id);
           setError('無効な記事IDです');
           setLoading(false);
           return;
         }
-
         const token = localStorage.getItem('authToken');
         if (!token) {
           setError('認証情報がありません。再度ログインしてください。');
           setLoading(false);
           return;
         }
-
-        // console.log(`記事ID: ${id} の詳細を取得します`);
         // 環境変数からAPIのURLを取得
         const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
         const response = await fetch(
@@ -56,11 +52,14 @@ const ArticleDetailPage: FC = () => {
             'Authorization': `Bearer ${token.trim()}`
           }
         });
-
         if (!response.ok) {
-          if (response.status === 404) {
+          if (
+            response.status === 404
+          ) {
             setError('記事が見つかりません');
-          } else if (response.status === 422) {
+          } else if (
+            response.status === 422
+          ) {
             const errorText = await response.text();
             console.error('APIエラー詳細:', errorText);
             setError('記事の取得に失敗しました（無効なID形式）');
@@ -70,9 +69,7 @@ const ArticleDetailPage: FC = () => {
           setLoading(false);
           return;
         }
-
         const data = await response.json();
-        // console.log('取得した記事詳細:', data);
         setArticle(data);
         setLoading(false);
       } catch (err) {
@@ -81,10 +78,8 @@ const ArticleDetailPage: FC = () => {
         setLoading(false);
       }
     };
-
     fetchArticle();
   }, [params]);
-
   return (
     <div
       className="bg-gray-100 min-h-screen py-8 px-4"
@@ -156,14 +151,12 @@ const ArticleDetailPage: FC = () => {
           markdown-content article-content"
         >
         {article.body ? (
-          <div 
+          <div
             className="mb-4 article-content"
             dangerouslySetInnerHTML={{ 
               __html: (() => {
                 const markdownResult = marked.parse ? marked.parse(article.body) : marked(article.body);
                 const htmlContent = typeof markdownResult === 'string' ? markdownResult : String(markdownResult);
-                // console.log('Original markdown:', article.body);
-                // console.log('Converted HTML:', htmlContent);
                 return htmlContent;
               })()
             }}
