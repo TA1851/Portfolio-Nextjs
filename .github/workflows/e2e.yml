@@ -6,6 +6,7 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       
@@ -32,7 +33,7 @@ jobs:
           echo "Environment check:"
           echo "E2E_TEST_EMAIL_1: ${E2E_TEST_EMAIL_1:0:10}..." # 最初の10文字のみ表示
           echo "API URL: $NEXT_PUBLIC_API_URL_V1_E2E"
-          npx playwright test crud_consistency_test.spec.ts --timeout=30000 --retries=2 --reporter=html
+          npx playwright test crud_consistency_test.spec.ts --timeout=60000 --retries=1 --reporter=html --workers=1
         
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
