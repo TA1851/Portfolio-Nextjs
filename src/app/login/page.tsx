@@ -27,7 +27,7 @@ const LoginComp: FC = () => {
         return;
       }
       // メールアドレスの形式を検証
-      if (!emailValue.includes('@') || !emailValue.endsWith('@gmail.com')) {
+      if (!emailValue.includes('@')) {
         alert('ログイン情報が不正です。正しいログイン情報を入力して下さい。');
         return;
       }
