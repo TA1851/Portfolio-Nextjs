@@ -29,11 +29,8 @@ const HeaderComp: FC = () => {
   }, []);
 
   // テストユーザーかどうかを判定（複数のパターンをチェック）
-  const isTestUser = userEmail === "testuser@example.com" || 
-                     userEmail === "test@example.com" || 
-                     userEmail === "testuser@test.com" ||
-                     (userEmail && userEmail.includes("test"));
-  
+  const isTestUser = userEmail === "testuser@example.com" &&
+                     (userEmail && userEmail.includes("test")); 
   console.log('Current userEmail:', userEmail); // デバッグ用
   console.log('Is test user:', isTestUser); // デバッグ用
 
@@ -55,7 +52,7 @@ const HeaderComp: FC = () => {
     
     // 念のため、追加でチェック
     if (!userEmail) {
-      alert("ユーザー情報を取得できません。再度ログインしてください。");
+      alert("このアカウントは退会できません。");
       return;
     }
     
