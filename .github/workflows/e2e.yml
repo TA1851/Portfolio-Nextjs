@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   schedule:
-    - cron: '0 6 * * *'  # 毎日午前2時（日本時間 午後3時）
+    - cron: '0 6 * * *'  # 毎日午前6時
   push:
     branches: [main]
   pull_request:
