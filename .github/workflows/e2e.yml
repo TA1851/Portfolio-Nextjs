@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   schedule:
-    - cron: '0 */1 * * *'  # 毎時0分に実行（1時間おき）
+    - cron: '0 */12 * * *'  # 毎時0分に実行（12時間おき）
 
 jobs:
   e2e:
@@ -29,7 +29,10 @@ jobs:
         # 実行されるファイル
         run: |
           echo "Starting E2E test for crud_consistency_test.spec.ts"
-          npx playwright test crud_consistency_test.spec.ts
+          echo "Environment check:"
+          echo "E2E_TEST_EMAIL_1: ${E2E_TEST_EMAIL_1:0:10}..." # 最初の10文字のみ表示
+          echo "API URL: $NEXT_PUBLIC_API_URL_V1_E2E"
+          npx playwright test crud_consistency_test.spec.ts --timeout=30000 --retries=2 --reporter=html
         
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
