@@ -18,6 +18,8 @@ const HeaderComp: FC = () => {
       // JWTトークンからユーザー情報を取得する（簡易実装）
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('JWT Payload:', payload); // デバッグ用
+        console.log('Email from token:', payload.email); // デバッグ用
         setUserEmail(payload.email || null);
       } catch (error) {
         console.error('トークンの解析に失敗しました:', error);
@@ -26,8 +28,14 @@ const HeaderComp: FC = () => {
     }
   }, []);
 
-  // テストユーザーかどうかを判定
-  const isTestUser = userEmail === "testuser@example.com";
+  // テストユーザーかどうかを判定（複数のパターンをチェック）
+  const isTestUser = userEmail === "testuser@example.com" || 
+                     userEmail === "test@example.com" || 
+                     userEmail === "testuser@test.com" ||
+                     (userEmail && userEmail.includes("test"));
+  
+  console.log('Current userEmail:', userEmail); // デバッグ用
+  console.log('Is test user:', isTestUser); // デバッグ用
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -35,11 +43,24 @@ const HeaderComp: FC = () => {
 
   // 退会処理関数
   const handleDeleteAccount = () => {
+    console.log('退会ボタンがクリックされました'); // デバッグ用
+    console.log('現在のユーザーメール:', userEmail); // デバッグ用
+    console.log('テストユーザー判定:', isTestUser); // デバッグ用
+    
     if (isTestUser) {
       alert("テストユーザーは退会できません。");
+      saveLog('warn', `テストユーザー(${userEmail})が退会を試行しました`);
       return;
     }
+    
+    // 念のため、追加でチェック
+    if (!userEmail) {
+      alert("ユーザー情報を取得できません。再度ログインしてください。");
+      return;
+    }
+    
     // 通常の退会処理（実際のリンク遷移）
+    saveLog('info', `ユーザー(${userEmail})が退会処理を開始しました`);
     router.push('/delete-account');
   };
 
@@ -147,10 +168,11 @@ const HeaderComp: FC = () => {
               <button
                 onClick={handleDeleteAccount}
                 disabled={isTestUser}
+                style={isTestUser ? { pointerEvents: 'none' } : {}}
                 className={`
                   hidden lg:block px-4 py-1 rounded transition duration-100
                   ${isTestUser 
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60' 
                     : 'bg-red-500 text-white hover:bg-red-400'
                   }
                 `}
@@ -226,10 +248,11 @@ const HeaderComp: FC = () => {
                 <button
                   onClick={handleDeleteAccount}
                   disabled={isTestUser}
+                  style={isTestUser ? { pointerEvents: 'none' } : {}}
                   className={`
                     block w-full text-left px-4 py-2 rounded transition duration-100
                     ${isTestUser 
-                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
+                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-60' 
                       : 'text-red-600 hover:bg-red-100'
                     }
                   `}

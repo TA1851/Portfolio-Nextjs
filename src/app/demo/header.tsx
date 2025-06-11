@@ -215,6 +215,17 @@ const HeaderComp: FC = () => {
                     <p>・記事の削除</p>
                     <p>・記事の下書き（公開されます）</p>
                   </div>
+                  {/* ログインはこちらから */}
+                  <div className="mt-4">
+                    <Link
+                      href="/login"
+                      className="
+                        inline-block rounded-lg px-4 py-2 text-sm
+                        font-semibold text-indigo-500 hover:bg-indigo-100"
+                    >
+                      ログインはこちらから
+                    </Link>
+                  </div>
                 </div>
               </nav>
             </div>
