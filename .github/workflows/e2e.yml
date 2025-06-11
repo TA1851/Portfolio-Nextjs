@@ -2,10 +2,6 @@ name: E2E Tests
 on:
   schedule:
     - cron: '0 */1 * * *'  # 毎時0分に実行（1時間おき）
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   e2e:
