@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   schedule:
-    - cron: '0 */1 * * *'  # 毎時0分に実行（1時間おき）
+    - cron: '0 */12 * * *'  # 毎時0分に実行（12時間おき）
 
 jobs:
   e2e:
