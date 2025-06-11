@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DemoBody from "./home/page";
@@ -9,9 +9,38 @@ import { saveLog } from "..//../utils/logger";
 const HeaderComp: FC = () => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  // ユーザー情報を取得してテストユーザーかどうかを判定
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // JWTトークンからユーザー情報を取得する（簡易実装）
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUserEmail(payload.email || null);
+      } catch (error) {
+        console.error('トークンの解析に失敗しました:', error);
+        setUserEmail(null);
+      }
+    }
+  }, []);
+
+  // テストユーザーかどうかを判定
+  const isTestUser = userEmail === "testuser@example.com";
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  // 退会処理関数
+  const handleDeleteAccount = () => {
+    if (isTestUser) {
+      alert("テストユーザーは退会できません。");
+      return;
+    }
+    // 通常の退会処理（実際のリンク遷移）
+    router.push('/delete-account');
   };
 
   // ログアウト処理関数
@@ -115,14 +144,20 @@ const HeaderComp: FC = () => {
               className="flex items-center gap-4"
             >
               {/* 退会ボタン */}
-              <Link
-                href="/delete-account"
-                className="
-                  hidden lg:block text-white px-4 py-1
-                  bg-red-500 hover:bg-red-400 rounded transition duration-100"
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isTestUser}
+                className={`
+                  hidden lg:block px-4 py-1 rounded transition duration-100
+                  ${isTestUser 
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                    : 'bg-red-500 text-white hover:bg-red-400'
+                  }
+                `}
+                title={isTestUser ? "テストユーザーは退会できません" : "退会する"}
               >
-                退会
-              </Link>
+                {isTestUser ? '退会不可' : '退会'}
+              </button>
               {/* ログアウトボタン */}
               <button
                 type="button"
@@ -188,13 +223,20 @@ const HeaderComp: FC = () => {
                 >
                   記事を削除する
                 </Link>
-                <Link
-                  href="/delete-account"
-                  className="
-                    block px-4 py-2 text-red-600 hover:bg-red-100 rounded"
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isTestUser}
+                  className={`
+                    block w-full text-left px-4 py-2 rounded transition duration-100
+                    ${isTestUser 
+                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
+                      : 'text-red-600 hover:bg-red-100'
+                    }
+                  `}
+                  title={isTestUser ? "テストユーザーは退会できません" : "退会する"}
                 >
-                  退会
-                </Link>
+                  {isTestUser ? '退会不可（テストユーザー）' : '退会'}
+                </button>
                 <button
                   onClick={handleLogout}
                   className="
