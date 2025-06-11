@@ -44,18 +44,10 @@ const HeaderComp: FC = () => {
     console.log('現在のユーザーメール:', userEmail); // デバッグ用
     console.log('テストユーザー判定:', isTestUser); // デバッグ用
     
-    if (isTestUser) {
-      alert("テストユーザーは退会できません。");
-      saveLog('warn', `テストユーザー(${userEmail})が退会を試行しました`);
-      return;
-    }
-    
-    // 念のため、追加でチェック
     if (!userEmail) {
-      alert("このアカウントは退会できません。");
+      alert("テストユーザーは退会できません。");
       return;
     }
-    
     // 通常の退会処理（実際のリンク遷移）
     saveLog('info', `ユーザー(${userEmail})が退会処理を開始しました`);
     router.push('/delete-account');
