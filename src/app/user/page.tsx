@@ -18,8 +18,6 @@ const HeaderComp: FC = () => {
       // JWTトークンからユーザー情報を取得する（簡易実装）
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('JWT Payload:', payload); // デバッグ用
-        console.log('Email from token:', payload.email); // デバッグ用
         setUserEmail(payload.email || null);
       } catch (error) {
         console.error('トークンの解析に失敗しました:', error);
@@ -29,10 +27,8 @@ const HeaderComp: FC = () => {
   }, []);
 
   // テストユーザーかどうかを判定（複数のパターンをチェック）
-  const isTestUser = userEmail === "testuser@example.com" &&
-                     (userEmail && userEmail.includes("test")); 
-  console.log('Current userEmail:', userEmail); // デバッグ用
-  console.log('Is test user:', isTestUser); // デバッグ用
+  const isTestUser = userEmail === "testuser@example.com"
+  && (userEmail && userEmail.includes("test"));
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -43,7 +39,7 @@ const HeaderComp: FC = () => {
     console.log('退会ボタンがクリックされました'); // デバッグ用
     console.log('現在のユーザーメール:', userEmail); // デバッグ用
     console.log('テストユーザー判定:', isTestUser); // デバッグ用
-    
+
     if (!userEmail) {
       alert("テストユーザーは退会できません。");
       return;
@@ -58,14 +54,12 @@ const HeaderComp: FC = () => {
     try {
       // ローカルストレージからトークンを取得
       const token = localStorage.getItem('authToken');
-      // console.log(`トークン：${token}`);
       if (!token) {
         console.error('トークンがありません');
         return;
       }
       // 環境変数からAPIエンドポイントを取得する
       const apiUrl = process.env.NEXT_PUBLIC_API_URL_V1;
-      // console.log('API URL:', apiUrl);
 
       const response = await fetch(
         `${apiUrl}/logout`, {
@@ -76,8 +70,7 @@ const HeaderComp: FC = () => {
       });
       if (response.ok) {
         // ログアウト成功
-        localStorage.removeItem('authToken'); // トークンをローカルストレージから削除
-        // console.log('ログアウトしました');
+        localStorage.removeItem('authToken');
         saveLog('info', 'ログアウトしました');
         // ログイン画面にリダイレクト
         router.push('/logout');
@@ -90,7 +83,6 @@ const HeaderComp: FC = () => {
       saveLog('error', 'ログアウト処理中にエラーが発生しました');
     }
   };
-
   return (
     <>
       <div
@@ -149,7 +141,6 @@ const HeaderComp: FC = () => {
                   記事を削除する
               </Link>
             </nav>
-
             <div
               className="flex items-center gap-4"
             >

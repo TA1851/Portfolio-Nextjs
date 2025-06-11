@@ -250,10 +250,6 @@ const PostForm: React.FC<PostFormProps> = ({ initialData = null }) => {
           content: '',
           publishStatus: 'draft',
         });
-        // 1.5秒後にページ遷移
-        setTimeout(() => {
-          router.push('/user');
-        }, 1500);
       } catch (error) {
         console.error('Error during API call:', error);
         setErrorMessage(

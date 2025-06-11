@@ -455,11 +455,6 @@ const PostForm: React.FC<PostFormProps> = (
       // 成功メッセージを表示
       setSuccessMessage(`記事「${formData.title}」を${action === 'publish' ? '公開' : '下書き保存'}しました`);
       setShowSuccessSnackbar(true);
-
-      // 1.5秒後に一覧ページに戻る
-      setTimeout(() => {
-        router.push('/user');
-      }, 1500);
     } catch (error) {
       console.error('更新エラー:', error);
       setErrorMessage(
