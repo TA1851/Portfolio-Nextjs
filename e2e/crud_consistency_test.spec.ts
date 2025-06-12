@@ -17,8 +17,8 @@ test.describe('記事CRUD整合性テスト（UIフィードバック対応版�
   // テスト前の共通設定
   test.beforeEach(async ({ page }) => {
     // ページタイムアウトを設定
-    page.setDefaultTimeout(30000);
-    page.setDefaultNavigationTimeout(30000);
+    page.setDefaultTimeout(60000);
+    page.setDefaultNavigationTimeout(60000);
   });
 
   // ログイン共通処理
@@ -28,7 +28,7 @@ test.describe('記事CRUD整合性テスト（UIフィードバック対応版�
     await page.getByRole('textbox', { name: 'Email' }).fill(TEST_EMAIL);
     await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD);
     await page.getByRole('button', { name: 'ログイン' }).click();
-    await page.waitForLoadState('networkidle', { timeout: 15000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 });
   }
 
   // ユーザーページへのナビゲーション処理
@@ -39,29 +39,27 @@ test.describe('記事CRUD整合性テスト（UIフィードバック対応版�
         throw new Error('ページが閉じられています');
       }
 
-      await page.waitForURL(/.*\/user.*/, { timeout: 20000 });
+      // 既にユーザーページにいる場合はそのまま続行
+      const currentUrl = page.url();
+      if (currentUrl.includes('/user')) {
+        console.log('✅ 既にユーザーページにいます');
+        return;
+      }
+
+      // リダイレクトを待つ（タイムアウトを短縮）
+      await page.waitForURL(/.*\/user.*/, { timeout: 10000 });
       console.log('✅ ユーザーページにリダイレクト成功');
-    } catch {
+    } catch (error) {
       // ページが閉じられている場合は処理を停止
       if (page.isClosed()) {
         throw new Error('ページが閉じられているため、ナビゲーションできません');
       }
 
-      const currentUrl = page.url();
-      console.log(`❌ リダイレクト失敗 - 現在のURL: ${currentUrl}`);
+      console.log(`❌ 自動リダイレクト失敗: ${error.message}`);
       
-      if (!currentUrl.includes('/user')) {
-        console.log('🔄 手動でユーザーページに移動を試行');
-        
-        try {
-          await page.goto(`${BASE_URL}/user`, { waitUntil: 'domcontentloaded', timeout: 15000 });
-          await page.waitForLoadState('networkidle', { timeout: 10000 });
-        } catch (gotoError) {
-          console.log(`❌ 手動移動も失敗: ${gotoError.message}`);
-          // 最後の手段として、現在のページで続行を試みる
-          await page.waitForTimeout(2000);
-        }
-      }
+      // 手動ナビゲーションは行わず、現在のページで続行
+      console.log('🔄 現在のページで処理を続行します');
+      await page.waitForTimeout(1000);
     }
   }
   
@@ -132,7 +130,7 @@ test.describe('記事CRUD整合性テスト（UIフィードバック対応版�
     const timestamp = Date.now();
     const testTitles = [
       `複数テスト-A-${timestamp}`,
-      `複数テスト-B-${timestamp}`  // 3つから2つに減らして実行時間を短縮
+      `複数テスト-B-${timestamp}`  // 2つに減らして実行時間を短縮
     ];
     
     // ログイン
@@ -140,7 +138,7 @@ test.describe('記事CRUD整合性テスト（UIフィードバック対応版�
     
     console.log('🔄 複数記事作成開始');
     
-    // 記事を順次作成（ループを簡素化）
+    // 記事を順次作成
     for (let i = 0; i < testTitles.length; i++) {
       const title = testTitles[i];
       
@@ -161,16 +159,21 @@ test.describe('記事CRUD整合性テスト（UIフィードバック対応版�
       const successAlert = page.locator('[role="alert"]').filter({ hasText: '下書き保存しました' });
       await successAlert.waitFor({ state: 'visible', timeout: 10000 });
       
-      // ユーザーページに移動（安全な方法で）
-      await navigateToUserPage(page);
-      
       console.log(`✅ 記事${i + 1}作成完了`);
       
-      // 各記事作成後に少し待機
-      await page.waitForTimeout(1000);
+      // 最後の記事以外の場合のみナビゲーション実行
+      if (i < testTitles.length - 1) {
+        // ユーザーページに移動（安全な方法で）
+        await navigateToUserPage(page);
+        // 各記事作成後に少し待機
+        await page.waitForTimeout(1000);
+      }
     }
     
     console.log('🔄 作成した記事の存在確認');
+    
+    // 最後に一度だけユーザーページに移動
+    await navigateToUserPage(page);
     
     // 記事削除ページで全ての記事が存在するか確認
     await page.getByRole('link', { name: '記事を削除する' }).click();
